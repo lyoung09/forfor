@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:forfor/home/bottom_navigation.dart';
+import 'package:forfor/login/signup/sigup_main.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:hexcolor/hexcolor.dart';
 //login screen  <kakao wechat google instagram line>
 
 class Login extends StatefulWidget {
@@ -8,24 +12,372 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController _usernameControl = new TextEditingController();
+  final TextEditingController _passwordControl = new TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
+  Future<bool> _willPopCallback() async {
+    // await Show dialog of exit or what you want
+    // then
+    return false; //
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
+    return WillPopScope(
+      onWillPop: _willPopCallback,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.blue[200],
+          automaticallyImplyLeading: false,
+          title: Text(
+            "Login",
+            style: TextStyle(
+                fontWeight: FontWeight.w500, color: Colors.purple[900]),
+          ),
+          actions: [],
+        ),
+        body: ListView(
+          shrinkWrap: true,
           children: <Widget>[
-            Container(),
-            Padding(padding: EdgeInsets.only(bottom: height*0.02)),
-            Container(),
-            Container(),
+            SizedBox(height: 10.0),
+            Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(
+                top: 25.0,
+              ),
+              child: Text(
+                "",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.purple,
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              padding: EdgeInsets.only(left: 35, right: 35),
+              child: Card(
+                elevation: 3.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5.0),
+                    ),
+                  ),
+                  child: TextField(
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      hintText: "Email",
+                      hintStyle: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    maxLines: 1,
+                    controller: _usernameControl,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              padding: EdgeInsets.only(left: 35, right: 35),
+              child: Card(
+                elevation: 3.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5.0),
+                    ),
+                  ),
+                  child: TextField(
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      hintText: "Password",
+                      // prefixIcon: Icon(
+                      //   Icons.lock_outline,
+                      //   color: Colors.black,
+                      // ),
+                      hintStyle: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    obscureText: true,
+                    maxLines: 1,
+                    controller: _passwordControl,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.only(right: 35),
+              child: TextButton(
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.purple[900],
+                  ),
+                ),
+                onPressed: () {},
+              ),
+            ),
+            SizedBox(height: 15.0),
+            Container(
+              height: 50.0,
+              padding: EdgeInsets.only(left: 30, right: 30),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue[200],
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                  ),
+                ),
+                child: Text(
+                  "LOGIN",
+                  style: TextStyle(
+                    color: Colors.purple[900],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return BottomNavigation();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Container(
+              height: 50.0,
+              padding: EdgeInsets.only(left: 30, right: 30),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue[200],
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                  ),
+                ),
+                child: Text(
+                  "SIGN UP".toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.purple[900],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return SignUp();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 15.0),
+            Container(
+              child: Divider(
+                thickness: 2.5,
+                color: Colors.blue[800],
+              ),
+              padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 0.0),
+            ),
+            SizedBox(height: 15.0),
+            Container(
+              padding: EdgeInsets.only(left: 45, right: 45),
+              child: InkWell(
+                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+                onTap: () {},
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.yellow),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/icon/icon_kakao.png",
+                          height: 25.0,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+                        Text(
+                          'kakao login',
+                          style: TextStyle(
+                              color: Colors.brown,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'nanumB'),
+                        )
+                      ]),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 45, right: 45),
+              child: InkWell(
+                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+                onTap: () {},
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(
+                            15.0) //                 <--- border radius here
+                        ),
+                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/icon/instagramlogo.jpeg",
+                          height: 25.0,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+                        Text(
+                          'instagram login',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'nanumB'),
+                        )
+                      ]),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 45, right: 45),
+              child: InkWell(
+                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+                onTap: () {},
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.green),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/icon/wechatlogo.jpeg",
+                          height: 25.0,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+                        Text(
+                          'wechat login',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'nanumB'),
+                        )
+                      ]),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 45, right: 45),
+              child: InkWell(
+                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+                onTap: () {},
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  padding: EdgeInsets.only(left: 30, right: 30),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(
+                            15.0) //                 <--- border radius here
+                        ),
+                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/icon/googlelogo.jpg",
+                          height: 25.0,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+                        Text(
+                          'google login',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'nanumB'),
+                        )
+                      ]),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
           ],
         ),
       ),

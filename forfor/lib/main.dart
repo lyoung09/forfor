@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forfor/login/login_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -20,7 +22,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),
-      routes: {'/main': (context) => BottomNavigation()},
+      routes: {
+        '/bottomScreen': (context) => BottomNavigation(),
+        '/login': (context) => Login()
+      },
     );
   }
 }
@@ -48,8 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
     bool _seen = (prefs.getBool('seen') ?? false);
     bool _login = (prefs.getBool('login') ?? false);
 
-    
-    Navigator.pushNamed(context, '/main');
+    if (_login == true) {
+      Navigator.pushNamed(context, '/bottomScreen');
+    } else {
+      Navigator.pushNamed(context, '/login');
+    }
   }
 
   @override

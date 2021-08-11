@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signup/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 //login screen  <kakao wechat google instagram line>
 
 class Login extends StatefulWidget {
@@ -14,11 +17,12 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _usernameControl = new TextEditingController();
   final TextEditingController _passwordControl = new TextEditingController();
-
+  bool _isKakaoTalkInstalled = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _initKakaoTalkInstalled();
   }
 
   Future<bool> _willPopCallback() async {
@@ -26,6 +30,74 @@ class _LoginState extends State<Login> {
     // then
     return false; //
   }
+
+  //카카오 설치되있는지
+  _initKakaoTalkInstalled() async {
+    final installed = await isKakaoTalkInstalled();
+    setState(() {
+      _isKakaoTalkInstalled = installed;
+    });
+  }
+
+  //카카오 설치요청
+  _loginWithKakao() async {
+    try {
+      var code = await AuthCodeClient.instance.request();
+
+      await _issueAccessToken(code);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+//카카오 로그인
+  _loginWithTalk() async {
+    try {
+      var code = await AuthCodeClient.instance.requestWithTalk();
+
+      await _issueAccessToken(code);
+    } catch (e) {
+      print('hoit ${e}');
+    }
+  }
+
+  _issueAccessToken(String authCode) async {
+    try {
+      var token = await AuthApi.instance.issueAccessToken(authCode);
+
+      AccessTokenStore.instance.toStore(token);
+      Navigator.pushNamed(context, '/userInfomation');
+    } catch (e) {
+      print("error on issuing access token: $e");
+    }
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<String?> signInwithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      await _auth.signInWithCredential(credential);
+      Navigator.pushNamed(context, '/userInfomation');
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      throw e;
+    }
+  }
+  //////////////////////
+  //////////////////////
+  //////////////////////
+  ////////instagram//////
+  //////////////////////
+  //////////////////////
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +139,12 @@ class _LoginState extends State<Login> {
             Container(
               padding: EdgeInsets.only(left: 35, right: 35),
               child: Card(
-                elevation: 3.0,
+                elevation: 0.0,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(5.0),
+                    border: Border(
+                      bottom: BorderSide(width: 1.0, color: Colors.black),
                     ),
                   ),
                   child: TextField(
@@ -110,12 +182,12 @@ class _LoginState extends State<Login> {
             Container(
               padding: EdgeInsets.only(left: 35, right: 35),
               child: Card(
-                elevation: 3.0,
+                elevation: 0.0,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(5.0),
+                    border: Border(
+                      bottom: BorderSide(width: 1.0, color: Colors.black),
                     ),
                   ),
                   child: TextField(
@@ -199,35 +271,35 @@ class _LoginState extends State<Login> {
                 },
               ),
             ),
-            SizedBox(height: 20.0),
-            Container(
-              height: 50.0,
-              padding: EdgeInsets.only(left: 30, right: 30),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue[200],
-                  onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32.0),
-                  ),
-                ),
-                child: Text(
-                  "SIGN UP".toUpperCase(),
-                  style: TextStyle(
-                    color: Colors.purple[900],
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) {
-                        return SignUp();
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
+            // SizedBox(height: 20.0),
+            // Container(
+            //   height: 50.0,
+            //   padding: EdgeInsets.only(left: 30, right: 30),
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       primary: Colors.blue[200],
+            //       onPrimary: Colors.white,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(32.0),
+            //       ),
+            //     ),
+            //     child: Text(
+            //       "SIGN UP".toUpperCase(),
+            //       style: TextStyle(
+            //         color: Colors.purple[900],
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       Navigator.of(context).push(
+            //         MaterialPageRoute(
+            //           builder: (BuildContext context) {
+            //             return SignUp();
+            //           },
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
             SizedBox(height: 15.0),
             Container(
               child: Divider(
@@ -236,148 +308,207 @@ class _LoginState extends State<Login> {
               ),
               padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 0.0),
             ),
-            SizedBox(height: 15.0),
+
+            // SizedBox(height: 20.0),
+            // Container(
+            //   padding: EdgeInsets.only(left: 45, right: 45),
+            //   child: InkWell(
+            //     // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+            //     onTap: () {},
+            //     child: Container(
+            //       width: MediaQuery.of(context).size.width * 0.6,
+            //       height: MediaQuery.of(context).size.height * 0.07,
+            //       decoration: BoxDecoration(
+            //         border: Border.all(
+            //           color: Colors.black,
+            //           width: 1.5,
+            //         ),
+            //         borderRadius: BorderRadius.all(Radius.circular(
+            //                 15.0) //                 <--- border radius here
+            //             ),
+            //       ),
+            //       child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Image.asset(
+            //               "assets/icon/instagramlogo.jpeg",
+            //               height: 25.0,
+            //             ),
+            //             Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+            //             Text(
+            //               'instagram login',
+            //               style: TextStyle(
+            //                   color: Colors.black,
+            //                   fontSize: 15.0,
+            //                   fontWeight: FontWeight.w500,
+            //                   fontFamily: 'nanumB'),
+            //             )
+            //           ]),
+            //     ),
+            //   ),
+            // ),
+            SizedBox(height: 20.0),
             Container(
               padding: EdgeInsets.only(left: 45, right: 45),
               child: InkWell(
                 // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return SignUp();
+                      },
+                    ),
+                  );
+                },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.6,
                   height: MediaQuery.of(context).size.height * 0.07,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.yellow),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(
+                            15.0) //                 <--- border radius here
+                        ),
+                  ),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
+                          "assets/icon/email.png",
+                          height: 25.0,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+                        Text(
+                          'Email signup',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'nanumB'),
+                        )
+                      ]),
+                ),
+              ),
+            ),
+            SizedBox(height: 25.0),
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: width * 0.2,
+                    ),
+                    RawMaterialButton(
+                      onPressed: signInwithGoogle,
+                      fillColor: Colors.white,
+                      shape: CircleBorder(),
+                      elevation: 4.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(17.5),
+                        child: Icon(
+                          FontAwesomeIcons.google,
+                          // color: Colors.transparent,
+                          size: 35,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.1,
+                    ),
+                    RawMaterialButton(
+                      onPressed: _isKakaoTalkInstalled
+                          ? _loginWithTalk
+                          : _loginWithKakao,
+                      fillColor: Colors.yellow,
+                      shape: CircleBorder(),
+                      elevation: 4.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(17.5),
+                        child: Image.asset(
                           "assets/icon/icon_kakao.png",
-                          height: 25.0,
+                          height: 35.0,
+                          width: 35,
                         ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
-                        Text(
-                          'kakao login',
-                          style: TextStyle(
-                              color: Colors.brown,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'nanumB'),
-                        )
-                      ]),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 45, right: 45),
-              child: InkWell(
-                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
-                onTap: () {},
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 1.5,
+                      ),
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(
-                            15.0) //                 <--- border radius here
-                        ),
-                  ),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/icon/instagramlogo.jpeg",
-                          height: 25.0,
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
-                        Text(
-                          'instagram login',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'nanumB'),
-                        )
-                      ]),
+                  ],
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 45, right: 45),
-              child: InkWell(
-                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
-                onTap: () {},
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.green),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/icon/wechatlogo.jpeg",
-                          height: 25.0,
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
-                        Text(
-                          'wechat login',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'nanumB'),
-                        )
-                      ]),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 45, right: 45),
-              child: InkWell(
-                // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
-                onTap: () {},
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  padding: EdgeInsets.only(left: 30, right: 30),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(
-                            15.0) //                 <--- border radius here
-                        ),
-                  ),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/icon/googlelogo.jpg",
-                          height: 25.0,
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
-                        Text(
-                          'google login',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'nanumB'),
-                        )
-                      ]),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
+            // Container(
+            //   padding: EdgeInsets.only(left: 45, right: 45),
+            //   child: InkWell(
+            //     // onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+            //     onTap: signInwithGoogle,
+            //     child: Container(
+            //       width: MediaQuery.of(context).size.width * 0.6,
+            //       height: MediaQuery.of(context).size.height * 0.07,
+            //       padding: EdgeInsets.only(left: 30, right: 30),
+            //       decoration: BoxDecoration(
+            //         border: Border.all(
+            //           color: Colors.black,
+            //           width: 1.5,
+            //         ),
+            //         borderRadius: BorderRadius.all(Radius.circular(
+            //                 15.0) //                 <--- border radius here
+            //             ),
+            //       ),
+            //       child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Image.asset(
+            //               "assets/icon/googlelogo.jpg",
+            //               height: 25.0,
+            //             ),
+            //             Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+            //             Text(
+            //               'google login',
+            //               style: TextStyle(
+            //                   color: Colors.black,
+            //                   fontSize: 15.0,
+            //                   fontWeight: FontWeight.w500,
+            //                   fontFamily: 'nanumB'),
+            //             )
+            //           ]),
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(height: 15.0),
+            // Container(
+            //   padding: EdgeInsets.only(left: 45, right: 45),
+            //   child: InkWell(
+            //     onTap: _isKakaoTalkInstalled ? _loginWithTalk : _loginWithKakao,
+            //     child: Container(
+            //       width: MediaQuery.of(context).size.width * 0.6,
+            //       height: MediaQuery.of(context).size.height * 0.07,
+            //       decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(15),
+            //           color: Colors.yellow),
+            //       child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Image.asset(
+            //               "assets/icon/icon_kakao.png",
+            //               height: 25.0,
+            //             ),
+            //             Padding(padding: EdgeInsets.symmetric(horizontal: 7.0)),
+            //             Text(
+            //               'kakao login',
+            //               style: TextStyle(
+            //                   color: Colors.brown,
+            //                   fontSize: 15.0,
+            //                   fontWeight: FontWeight.w500,
+            //                   fontFamily: 'nanumB'),
+            //             )
+            //           ]),
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(height: 20.0),
           ],
         ),
       ),

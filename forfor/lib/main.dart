@@ -1,14 +1,20 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/login/login_main.dart';
+import 'package:forfor/login/signup/signupDetail/userInfo.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
+  KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -24,7 +30,8 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(),
       routes: {
         '/bottomScreen': (context) => BottomNavigation(),
-        '/login': (context) => Login()
+        '/login': (context) => Login(),
+        '/userInfomation': (context) => UserInfomation(),
       },
     );
   }

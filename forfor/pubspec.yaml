@@ -28,14 +28,28 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  shared_preferences: ^0.5.7+3
+  shared_preferences: 
   flutter_svg: 0.20.0-nullsafety.3
   cloud_firestore:
   firebase: ^8.0.0
   google_fonts: ^1.1.0
+  firebase_core: ^0.7.0
   font_awesome_flutter: ^8.5.0
   flutter_signin_button: ^1.1.0
   hexcolor: ^2.0.4
+  firebase_auth: ^0.20.0+1
+  kakao_flutter_sdk: ^0.5.4
+  email_auth: ^0.0.1+1.9
+  dio: 
+  json_annotation: 
+  platform:  
+  package_info:
+  google_sign_in: ^4.5.9
+  country_list_pick: ^1.0.1+4
+  flutter_cupertino_date_picker: ^1.0.26+2
+  gender_picker: ^1.1.0
+  image_picker: ^0.6.7+22
+  gallery_saver: ^1.0.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -55,6 +69,9 @@ flutter:
   assets:
     - assets/svg/chattingBottom.svg   
     - assets/svg/friendBottom.svg   
+    - assets/svg/album.svg   
+    - assets/svg/calender.svg   
+    - assets/svg/camera.svg   
     - assets/svg/infomationBottom.svg   
     - assets/svg/profileBottom.svg   
     - assets/icon/icon_kakao.png
@@ -62,6 +79,7 @@ flutter:
     - assets/icon/wechatlogo.png
     - assets/icon/wechatlogo.jpeg
     - assets/icon/instagramlogo.jpeg
+    - assets/icon/email.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

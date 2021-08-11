@@ -1,4 +1,4 @@
-package com.example.forfor
+package com.wtom.forfor
 
 import io.flutter.embedding.android.FlutterActivity
 

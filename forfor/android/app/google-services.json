@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:767895469306:android:491b27b5dbcd9779331d43",
         "android_client_info": {
-          "package_name": "com.example.forfor"
+          "package_name": "com.wtom.forfor"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "767895469306-ovrb19jkj61vmudnoi214lfjdirtfls7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.forfor",
+            "package_name": "com.wtom.forfor",
             "certificate_hash": "f361335f4d7c363ff42e1cb05212bc8987b03f86"
           }
         },

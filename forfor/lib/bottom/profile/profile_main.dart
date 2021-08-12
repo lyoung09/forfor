@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileMainScreen extends StatefulWidget {
   const ProfileMainScreen({Key? key}) : super(key: key);
@@ -22,6 +24,16 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
           style: TextStyle(fontSize: 22),
         ),
       ),
+      body: TextButton(
+          onPressed: () async {
+            FirebaseAuth.instance.signOut();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            setState(() {
+              prefs.setBool('login', false);
+            });
+          },
+          child: Text("logout")),
     );
   }
 }

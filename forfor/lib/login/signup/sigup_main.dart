@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signup/signupDetail/userInfo.dart';
 import 'package:email_auth/email_auth.dart';
+import 'package:forfor/service/authService.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -13,6 +17,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final _auth = FirebaseAuth.instance;
   final TextEditingController _emailControl = new TextEditingController();
   final TextEditingController _passwordControl = new TextEditingController();
 
@@ -20,6 +25,9 @@ class _SignUpState extends State<SignUp> {
   bool checkOtp = false;
   bool verifyOtp = false;
   bool canSignUp = false;
+  bool passwordRule = true;
+  bool emailRule = true;
+
   void sendOtp() async {
     EmailAuth.sessionName = "forfor";
 
@@ -62,20 +70,61 @@ class _SignUpState extends State<SignUp> {
   }
 
   void checkDialog() {
+    setState(() {
+      canSignUp = true;
+    });
     showDialog(
         context: context,
         builder: (_) => CupertinoAlertDialog(
               actions: <Widget>[
                 CupertinoDialogAction(
-                    child: Text('Check!'),
-                    onPressed: () {
-                      setState(() {
-                        canSignUp = true;
-                      });
-                      Navigator.of(context).pop();
-                    }),
+                  child: Text('Check!'),
+                ),
               ],
             ));
+  }
+
+  void signUpLoginButton() async {
+    if (_passwordControl.text.isEmpty || _passwordControl.text.length < 6) {
+      if (canSignUp == true) {
+        print("password wrong");
+        setState(() {
+          passwordRule = false;
+        });
+      } else {
+        print("both email and password wrong");
+        setState(() {
+          passwordRule = false;
+          emailRule = false;
+        });
+      }
+    } else {
+      if (canSignUp == true) {
+        print("success");
+        final email = _emailControl.text.trim();
+        final password = _passwordControl.text.trim();
+        context.read<AuthService>().signup(email, password).then((value) async {
+          User user = FirebaseAuth.instance.currentUser;
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(user.uid)
+              .set({'uid': user.uid, 'email': email, 'password': password});
+        });
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return UserInfomation();
+            },
+          ),
+        );
+      } else {
+        print("email wrong");
+        setState(() {
+          emailRule = false;
+        });
+      }
+    }
   }
 
   @override
@@ -168,7 +217,7 @@ class _SignUpState extends State<SignUp> {
                         bottom: BorderSide(width: 1.0, color: Colors.black),
                       ),
                     ),
-                    child: TextField(
+                    child: TextFormField(
                       style: TextStyle(
                         fontSize: 15.0,
                         color: Colors.black,
@@ -209,9 +258,18 @@ class _SignUpState extends State<SignUp> {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: ElevatedButton(
                     onPressed: () => sendOtp(), child: Text("OTP")),
-              )
+              ),
             ],
           ),
+          emailRule == true
+              ? Text("")
+              : Container(
+                  padding: EdgeInsets.only(left: 15, right: 35),
+                  width: width * 0.8,
+                  child: Text(
+                    "email authentication",
+                    style: TextStyle(fontSize: 15, color: Colors.red),
+                  )),
           checkOtp == true
               ? Container(
                   height: height * 0.3,
@@ -245,7 +303,7 @@ class _SignUpState extends State<SignUp> {
                     bottom: BorderSide(width: 1.0, color: Colors.black),
                   ),
                 ),
-                child: TextField(
+                child: TextFormField(
                   style: TextStyle(
                     fontSize: 15.0,
                     color: Colors.black,
@@ -274,13 +332,22 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.black,
                     ),
                   ),
+                  controller: _passwordControl,
                   obscureText: true,
                   maxLines: 1,
-                  controller: _passwordControl,
                 ),
               ),
             ),
           ),
+          passwordRule == true
+              ? Text("")
+              : Container(
+                  padding: EdgeInsets.only(left: 15, right: 35),
+                  width: width * 0.8,
+                  child: Text(
+                    "check your password! (at least 6)",
+                    style: TextStyle(fontSize: 15, color: Colors.red),
+                  )),
 
           // SizedBox(height: 20.0),
           // Container(
@@ -344,28 +411,7 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.black,
                     ),
                   ),
-                  onPressed: () {
-                    canSignUp == true
-                        ? Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (BuildContext context) {
-                                return UserInfomation();
-                              },
-                            ),
-                          )
-                        : showDialog(
-                            context: context,
-                            builder: (_) => CupertinoAlertDialog(
-                                  content: Text("You need to check OTP"),
-                                  actions: <Widget>[
-                                    CupertinoDialogAction(
-                                      child: Text('확인'),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                    ),
-                                  ],
-                                ));
-                  },
+                  onPressed: signUpLoginButton,
                 ),
                 padding: EdgeInsets.only(right: 15),
               )),

@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserInfomation extends StatefulWidget {
@@ -22,7 +23,7 @@ class _UserInfomationState extends State<UserInfomation> {
   var _country;
   var _birthYear;
   var _gender;
-  var _userProfile;
+
   bool selectCountry = false;
   bool selectBirth = false;
 
@@ -145,256 +146,312 @@ class _UserInfomationState extends State<UserInfomation> {
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
 
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-              title: Text('이미지로 저장하시겠습니까?'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text('아니요'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                CupertinoDialogAction(
-                    child: Text('네'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
-              ],
-            ));
+    setState(() {
+      _image = image;
+    });
+    // showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) => CupertinoAlertDialog(
+    //           title: Text('이미지로 저장하시겠습니까?'),
+    //           actions: <Widget>[
+    //             CupertinoDialogAction(
+    //               child: Text('아니요'),
+    //               onPressed: () => Navigator.of(context).pop(),
+    //             ),
+    //             CupertinoDialogAction(
+    //                 child: Text('네'),
+    //                 onPressed: () {
+    //                   Navigator.of(context).pop();
+    //                 }),
+    //           ],
+    //         ));
   }
 
   _imgFromGallery() async {
     File image = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 50);
-
+    setState(() {
+      _image = image;
+    });
     // showSave();
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-              title: Text('이미지로 저장하시겠습니까?'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text('아니요'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                CupertinoDialogAction(
-                    child: Text('네'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
-              ],
-            ));
+    // showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) => CupertinoAlertDialog(
+    //           title: Text('이미지로 저장하시겠습니까?'),
+    //           actions: <Widget>[
+    //             CupertinoDialogAction(
+    //               child: Text('아니요'),
+    //               onPressed: () => Navigator.of(context).pop(),
+    //             ),
+    //             CupertinoDialogAction(
+    //                 child: Text('네'),
+    //                 onPressed: () {
+    //                   Navigator.of(context).pop();
+    //                 }),
+    //           ],
+    //         ));
+  }
+
+  void userInfomationSave() async {
+    print(_gender.toString());
+
+    print(_usernameControl.text);
+    print(_country.toString());
+    print(_image.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: height * 0.06,
-        centerTitle: true,
-        // backgroundColor: Colors.black,
-        automaticallyImplyLeading: false,
-        title: Text(
-          "my infomation",
-          style: TextStyle(fontSize: 22),
+    return WillPopScope(
+      onWillPop: () {
+        return Future(() => false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: height * 0.06,
+          centerTitle: true,
+          // backgroundColor: Colors.black,
+          automaticallyImplyLeading: false,
+          title: Text(
+            "my infomation",
+            style: TextStyle(fontSize: 22),
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: width,
-          height: height,
-          child: Column(
-            children: [
-              Padding(padding: EdgeInsets.only(top: height * 0.08)),
-              Container(
-                  height: height * 0.2,
-                  width: height * 0.25,
-                  child: GestureDetector(
-                    onTap: () {
-                      _showPicker(context);
-                    },
-                    child: _image != null
-                        ? Image.file(
-                            _image,
-                            fit: BoxFit.fitHeight,
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(10),
+        body: SingleChildScrollView(
+          child: Container(
+            width: width,
+            height: height,
+            child: Column(
+              children: [
+                Padding(padding: EdgeInsets.only(top: height * 0.08)),
+                Container(
+                    height: height * 0.2,
+                    width: height * 0.2,
+                    child: GestureDetector(
+                      onTap: () {
+                        _showPicker(context);
+                      },
+                      child: _image != null
+                          ? Image.file(
+                              _image,
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.contain,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.grey[800],
+                                size: 50,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey[800],
-                              size: 50,
-                            ),
-                          ),
-                  )),
-              Padding(padding: EdgeInsets.only(top: height * 0.05)),
-              Container(
-                  height: height * 0.1,
-                  width: width * 0.8,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      // contentPadding: EdgeInsets.all(10.0),
-                      // border: OutlineInputBorder(
-                      //   borderRadius: BorderRadius.circular(5.0),
-                      //   borderSide: BorderSide(
-                      //     color: Colors.white,
-                      //   ),
-                      // ),
+                    )),
+                Padding(padding: EdgeInsets.only(top: height * 0.05)),
+                Container(
+                    height: height * 0.1,
+                    width: width * 0.75,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        // contentPadding: EdgeInsets.all(10.0),
+                        // border: OutlineInputBorder(
+                        //   borderRadius: BorderRadius.circular(5.0),
+                        //   borderSide: BorderSide(
+                        //     color: Colors.white,
+                        //   ),
+                        // ),
 
-                      // enabledBorder: OutlineInputBorder(
-                      //   borderSide: BorderSide(
-                      //     color: Colors.white,
-                      //   ),
-                      //   borderRadius: BorderRadius.circular(5.0),
-                      // ),
-                      hintText: "nickname",
-                      // prefixIcon: Icon(
-                      //   Icons.mail_outline,
-                      //   color: Colors.black,
-                      // ),
-                      hintStyle: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.grey[400],
+                        // enabledBorder: OutlineInputBorder(
+                        //   borderSide: BorderSide(
+                        //     color: Colors.white,
+                        //   ),
+                        //   borderRadius: BorderRadius.circular(5.0),
+                        // ),
+                        hintText: "   nickname",
+                        // prefixIcon: Icon(
+                        //   Icons.mail_outline,
+                        //   color: Colors.black,
+                        // ),
+                        hintStyle: TextStyle(
+                          fontSize: 15.0,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      controller: _usernameControl,
+                      maxLines: 1,
+                    )),
+
+                // Padding(padding: EdgeInsets.only(top: height * 0.02)),
+                Container(
+                    // height: height * 0.1,
+                    width: width * 0.8,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: SvgPicture.asset(
+                            "assets/svg/calender.svg",
+                            fit: BoxFit.fill,
+                            width: 25,
+                            height: 25,
+                          ),
+                          onPressed: _pickDateDialog,
+                        ),
+                        Padding(padding: EdgeInsets.only(right: width * 0.1)),
+                        selectBirth == true
+                            ? Text(_birthYear.toString(),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 15))
+                            : Text("Age",
+                                style: TextStyle(
+                                    color: Colors.grey[400], fontSize: 15)),
+                      ],
+                    )),
+                Container(
+                  child: Divider(
+                    thickness: 1,
+                    color: Colors.grey[800],
+                  ),
+                  padding: EdgeInsets.only(
+                      left: width * 0.1, right: width * 0.1, bottom: 0.0),
+                ),
+                Container(
+                    // height: height * 0.1,
+                    width: width * 0.8,
+                    child: Row(
+                      children: [
+                        CountryListPick(
+                            theme: CountryTheme(
+                              isShowFlag: true,
+                              isShowTitle: false,
+                              isShowCode: false,
+                              isDownIcon: true,
+                              showEnglishName: true,
+                            ),
+                            // initialSelection: '+82',
+                            onChanged: (CountryCode? code) {
+                              print(code?.name);
+                              setState(() {
+                                selectCountry = true;
+                                _country = code?.name;
+                              });
+                            },
+                            useUiOverlay: true,
+                            // Whether the country list should be wrapped in a SafeArea
+                            useSafeArea: false),
+                        Padding(padding: EdgeInsets.only(right: width * 0.05)),
+                        selectCountry == true
+                            ? Text(
+                                _country.length > 30
+                                    ? _country.substring(0, 30)
+                                    : _country,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 15))
+                            : Text("country",
+                                style: TextStyle(
+                                    color: Colors.grey[400], fontSize: 15)),
+                      ],
+                    )),
+                Container(
+                  child: Divider(
+                    thickness: 1,
+                    color: Colors.grey[800],
+                  ),
+                  padding: EdgeInsets.only(
+                      left: width * 0.1, right: width * 0.1, bottom: 0.0),
+                ),
+                Row(
+                  children: [
+                    Padding(padding: EdgeInsets.only(left: width * 0.06)),
+                    Container(
+                      width: width * 0.2,
+                      child: Image.asset(
+                        "assets/icon/gender.png",
+                        height: 35.0,
+                        width: 35,
                       ),
                     ),
-                    controller: _usernameControl,
-                    maxLines: 1,
-                  )),
-
-              // Padding(padding: EdgeInsets.only(top: height * 0.02)),
-              Container(
-                  // height: height * 0.1,
-                  width: width * 0.8,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: SvgPicture.asset(
-                          "assets/svg/calender.svg",
-                          fit: BoxFit.fill,
-                          width: 25,
-                          height: 25,
-                        ),
-                        onPressed: _pickDateDialog,
-                      ),
-                      Padding(padding: EdgeInsets.only(right: width * 0.1)),
-                      selectBirth == true
-                          ? Text(_birthYear.toString(),
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 15))
-                          : Text("Age",
-                              style: TextStyle(
-                                  color: Colors.grey[400], fontSize: 15)),
-                    ],
-                  )),
-              Container(
-                child: Divider(
-                  thickness: 1,
-                  color: Colors.grey[800],
-                ),
-                padding: EdgeInsets.only(
-                    left: width * 0.1, right: width * 0.1, bottom: 0.0),
-              ),
-              Container(
-                  // height: height * 0.1,
-                  width: width * 0.8,
-                  child: Row(
-                    children: [
-                      CountryListPick(
-                          theme: CountryTheme(
-                            isShowFlag: true,
-                            isShowTitle: false,
-                            isShowCode: false,
-                            isDownIcon: true,
-                            showEnglishName: true,
-                          ),
-                          // initialSelection: '+82',
-                          onChanged: (CountryCode? code) {
-                            print(code?.name);
-                            setState(() {
-                              selectCountry = true;
-                              _country = code?.name;
-                            });
-                          },
-                          useUiOverlay: true,
-                          // Whether the country list should be wrapped in a SafeArea
-                          useSafeArea: false),
-                      Padding(padding: EdgeInsets.only(right: width * 0.05)),
-                      selectCountry == true
-                          ? Text(
-                              _country.length > 30
-                                  ? _country.substring(0, 30)
-                                  : _country,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 15))
-                          : Text("country",
-                              style: TextStyle(
-                                  color: Colors.grey[400], fontSize: 15)),
-                    ],
-                  )),
-              Container(
-                child: Divider(
-                  thickness: 1,
-                  color: Colors.grey[800],
-                ),
-                padding: EdgeInsets.only(
-                    left: width * 0.1, right: width * 0.1, bottom: 0.0),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width * 0.5,
-                alignment: Alignment.center,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: sampleData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (_gender == sampleData[index].buttonText) {
-                      sampleData[index].isSelected = true;
-                      return new InkWell(
-                        //highlightColor: Colors.red,
-                        splashColor: Colors.blueAccent,
-                        onTap: () {
-                          setState(() {
-                            sampleData.forEach(
-                                (element) => element.isSelected = false);
+                    Padding(padding: EdgeInsets.only(left: width * 0.08)),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      alignment: Alignment.center,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: sampleData.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (_gender == sampleData[index].buttonText) {
                             sampleData[index].isSelected = true;
-                            print(sampleData[index].buttonText);
-                            _gender = sampleData[index].buttonText;
-                          });
+                            return new InkWell(
+                              //highlightColor: Colors.red,
+                              splashColor: Colors.blueAccent,
+                              onTap: () {
+                                setState(() {
+                                  sampleData.forEach(
+                                      (element) => element.isSelected = false);
+                                  sampleData[index].isSelected = true;
+                                  print(sampleData[index].buttonText);
+                                  _gender = sampleData[index].buttonText;
+                                });
+                              },
+                              child: new RadioItem(sampleData[index]),
+                            );
+                          }
+                          return new InkWell(
+                            //highlightColor: Colors.red,
+                            splashColor: Colors.blueAccent,
+                            onTap: () {
+                              setState(() {
+                                sampleData.forEach(
+                                    (element) => element.isSelected = false);
+                                sampleData[index].isSelected = true;
+                                print(sampleData[index].buttonText);
+                                _gender = sampleData[index].buttonText;
+                              });
+                            },
+                            child: new RadioItem(sampleData[index]),
+                          );
                         },
-                        child: new RadioItem(sampleData[index]),
-                      );
-                    }
-                    return new InkWell(
-                      //highlightColor: Colors.red,
-                      splashColor: Colors.blueAccent,
-                      onTap: () {
-                        setState(() {
-                          sampleData
-                              .forEach((element) => element.isSelected = false);
-                          sampleData[index].isSelected = true;
-                          print(sampleData[index].buttonText);
-                          _gender = sampleData[index].buttonText;
-                        });
-                      },
-                      child: new RadioItem(sampleData[index]),
-                    );
-                  },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Container(
-                child: Divider(
-                  thickness: 1,
-                  color: Colors.grey[800],
+                SizedBox(height: height * 0.06),
+                Container(
+                  height: 50.0,
+                  margin: EdgeInsets.all(10),
+                  child: RaisedButton(
+                    onPressed: userInfomationSave,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(80.0)),
+                    padding: EdgeInsets.all(0.0),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xff374ABE), Color(0xff64B6FF)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(30.0)),
+                      child: Container(
+                        constraints:
+                            BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Continue",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-                padding: EdgeInsets.only(
-                    left: width * 0.1, right: width * 0.1, bottom: 0.0),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -425,8 +482,8 @@ class RadioItem extends StatelessWidget {
             decoration: new BoxDecoration(
               // color: _item.isSelected ? Colors.black : Colors.transparent,
               border: new Border.all(
-                  width: 1.0,
-                  color: _item.isSelected ? Colors.black : Colors.white),
+                  width: _item.isSelected ? 2.0 : 1.0,
+                  color: _item.isSelected ? Colors.black : Colors.grey),
               borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
             ),
           ),

@@ -8,6 +8,10 @@ class BuddyMainScreen extends StatefulWidget {
 }
 
 class _BuddyMainScreenState extends State<BuddyMainScreen> {
+  initState() {
+    super.initState();
+  }
+
   Widget _category() {
     return Row(
       children: [],

@@ -1,12 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signup/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:forfor/service/authService.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:kakao_flutter_sdk/all.dart';
+import 'package:kakao_flutter_sdk/auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
+
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //login screen  <kakao wechat google instagram line>
 
 class Login extends StatefulWidget {
@@ -22,6 +30,8 @@ class _LoginState extends State<Login> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
+    KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
     _initKakaoTalkInstalled();
   }
 
@@ -57,7 +67,7 @@ class _LoginState extends State<Login> {
 
       await _issueAccessToken(code);
     } catch (e) {
-      print('hoit ${e}');
+      print(e);
     }
   }
 
@@ -66,6 +76,17 @@ class _LoginState extends State<Login> {
       var token = await AuthApi.instance.issueAccessToken(authCode);
 
       AccessTokenStore.instance.toStore(token);
+      final kakaotalUser.User userKakao =
+          await kakaotalUser.UserApi.instance.me();
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(token.accessToken)
+          .set({
+        'uid': token.accessToken,
+        'email': userKakao.kakaoAccount.email,
+      });
+
       Navigator.pushNamed(context, '/userInfomation');
     } catch (e) {
       print("error on issuing access token: $e");
@@ -75,29 +96,94 @@ class _LoginState extends State<Login> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<String?> signInwithGoogle() async {
-    try {
+  Future<User?> signInwithGoogle() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+
+    if (kIsWeb) {
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
+
+      try {
+        final UserCredential userCredential =
+            await auth.signInWithPopup(authProvider);
+
+        user = userCredential.user;
+        await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
+          'uid': user.uid,
+          'email': user.email,
+        });
+
+        Navigator.pushNamed(context, '/userInfomation');
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-      await _auth.signInWithCredential(credential);
-      Navigator.pushNamed(context, '/userInfomation');
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-      throw e;
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        try {
+          final UserCredential userCredential =
+              await auth.signInWithCredential(credential);
+
+          user = userCredential.user;
+
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(user.uid)
+              .set({
+            'uid': user.uid,
+            'email': user.email,
+          });
+
+          Navigator.pushNamed(context, '/userInfomation');
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'account-exists-with-different-credential') {
+            // ...
+          } else if (e.code == 'invalid-credential') {
+            // ...
+          }
+        } catch (e) {
+          // ...
+        }
+      }
     }
+
+    return user;
   }
-  //////////////////////
-  //////////////////////
-  //////////////////////
-  ////////instagram//////
-  //////////////////////
-  //////////////////////
+
+  buttonLogin() async {
+    final email = _usernameControl.text.trim();
+    final password = _passwordControl.text.trim();
+
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection("users")
+        .where("email", isEqualTo: email)
+        .where("password", isEqualTo: password)
+        .get();
+
+    context
+        .read<AuthService>()
+        .login(snap.docs[0]['email'], snap.docs[0]['password']);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return BottomNavigation();
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,29 +333,20 @@ class _LoginState extends State<Login> {
               height: 50.0,
               padding: EdgeInsets.only(left: 30, right: 30),
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue[200],
-                  onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32.0),
-                  ),
-                ),
-                child: Text(
-                  "LOGIN",
-                  style: TextStyle(
-                    color: Colors.purple[900],
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) {
-                        return BottomNavigation();
-                      },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue[200],
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
                     ),
-                  );
-                },
-              ),
+                  ),
+                  child: Text(
+                    "LOGIN",
+                    style: TextStyle(
+                      color: Colors.purple[900],
+                    ),
+                  ),
+                  onPressed: buttonLogin),
             ),
             // SizedBox(height: 20.0),
             // Container(

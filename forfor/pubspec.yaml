@@ -50,6 +50,8 @@ dependencies:
   gender_picker: ^1.1.0
   image_picker: ^0.6.7+22
   gallery_saver: ^1.0.6
+  email_validator: ^2.0.1
+  provider: ^5.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,6 +82,7 @@ flutter:
     - assets/icon/wechatlogo.jpeg
     - assets/icon/instagramlogo.jpeg
     - assets/icon/email.png
+    - assets/icon/gender.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

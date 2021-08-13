@@ -8,6 +8,7 @@ import 'package:forfor/login/signup/signupDetail/userInfo.dart';
 import 'package:email_auth/email_auth.dart';
 import 'package:forfor/service/authService.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -104,13 +105,16 @@ class _SignUpState extends State<SignUp> {
         final email = _emailControl.text.trim();
         final password = _passwordControl.text.trim();
         context.read<AuthService>().signup(email, password).then((value) async {
-          User user = FirebaseAuth.instance.currentUser;
+          User? user = FirebaseAuth.instance.currentUser;
           await FirebaseFirestore.instance
               .collection("users")
-              .doc(user.uid)
-              .set({'uid': user.uid, 'email': email, 'password': password});
+              .doc(user?.uid)
+              .set({'uid': user?.uid, 'email': email, 'password': password});
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          setState(() {
+            prefs.setString("uid", user!.uid);
+          });
         });
-
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {

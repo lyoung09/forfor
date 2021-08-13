@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_list_pick/country_list_pick.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,10 +30,20 @@ class _UserInfomationState extends State<UserInfomation> {
   bool selectBirth = false;
 
   List<RadioModel> sampleData = [];
+  var userid;
   initState() {
     super.initState();
     sampleData.add(new RadioModel(false, '남'));
     sampleData.add(new RadioModel(false, '여'));
+
+    useridMethod();
+  }
+
+  useridMethod() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userid = prefs.getString("uid");
+    });
   }
 
   _pickDateDialog() {
@@ -143,11 +155,11 @@ class _UserInfomationState extends State<UserInfomation> {
   }
 
   _imgFromCamera() async {
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50);
+    ImagePicker imagePicker = ImagePicker();
+    final imageFile = await imagePicker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _image = image;
+      _image = imageFile!.path;
     });
     // showDialog(
     //     context: context,
@@ -168,11 +180,12 @@ class _UserInfomationState extends State<UserInfomation> {
   }
 
   _imgFromGallery() async {
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
+    ImagePicker imagePicker = ImagePicker();
+    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
     setState(() {
-      _image = image;
+      _image = imageFile!.path;
     });
+    print("hoit ${imageFile!.path}");
     // showSave();
     // showDialog(
     //     context: context,
@@ -192,12 +205,31 @@ class _UserInfomationState extends State<UserInfomation> {
     //         ));
   }
 
+  String urlProfileImageApi = "";
   void userInfomationSave() async {
-    print(_gender.toString());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    print(_usernameControl.text);
-    print(_country.toString());
-    print(_image.toString());
+    setState(() {
+      userid = prefs.getString("uid");
+    });
+
+    Reference ref = FirebaseStorage.instance.ref().child("profile/${userid}");
+    await ref.putFile(File(_image));
+
+    urlProfileImageApi = await ref.getDownloadURL().then((value) {
+      var downloadURL = "";
+      setState(() {
+        downloadURL = value;
+      });
+      return downloadURL;
+    });
+
+    await FirebaseFirestore.instance.collection("users").doc(userid).update({
+      "gender": _gender.toString(),
+      "country": _country.toString(),
+      "nickname": _usernameControl.text,
+      "url": urlProfileImageApi
+    });
   }
 
   @override
@@ -235,7 +267,7 @@ class _UserInfomationState extends State<UserInfomation> {
                       },
                       child: _image != null
                           ? Image.file(
-                              _image,
+                              File(_image),
                               height: 50,
                               width: 50,
                               fit: BoxFit.contain,

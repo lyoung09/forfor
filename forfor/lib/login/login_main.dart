@@ -8,7 +8,7 @@ import 'package:forfor/login/signup/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:forfor/service/authService.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hexcolor/hexcolor.dart';
+
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
@@ -84,9 +84,12 @@ class _LoginState extends State<Login> {
           .doc(token.accessToken)
           .set({
         'uid': token.accessToken,
-        'email': userKakao.kakaoAccount.email,
+        'email': userKakao.kakaoAccount?.email,
       });
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
+        prefs.setString("uid", token.accessToken);
+      });
       Navigator.pushNamed(context, '/userInfomation');
     } catch (e) {
       print("error on issuing access token: $e");
@@ -108,9 +111,12 @@ class _LoginState extends State<Login> {
             await auth.signInWithPopup(authProvider);
 
         user = userCredential.user;
-        await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
-          'uid': user.uid,
-          'email': user.email,
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user?.uid)
+            .set({
+          'uid': user?.uid,
+          'email': user?.email,
         });
 
         Navigator.pushNamed(context, '/userInfomation');
@@ -140,12 +146,15 @@ class _LoginState extends State<Login> {
 
           await FirebaseFirestore.instance
               .collection("users")
-              .doc(user.uid)
+              .doc(user?.uid)
               .set({
-            'uid': user.uid,
-            'email': user.email,
+            'uid': user?.uid,
+            'email': user?.email,
           });
-
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          setState(() {
+            prefs.setString("uid", user!.uid);
+          });
           Navigator.pushNamed(context, '/userInfomation');
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {

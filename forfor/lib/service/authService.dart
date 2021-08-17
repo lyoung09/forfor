@@ -14,6 +14,15 @@ class AuthService {
     }
   }
 
+  Future<String> kakaologin(String token) async {
+    try {
+      await _auth.signInWithCustomToken(token);
+      return "Login";
+    } catch (e) {
+      return "${e}";
+    }
+  }
+
   Future<String> signup(String email, String password) async {
     try {
       await _auth.createUserWithEmailAndPassword(

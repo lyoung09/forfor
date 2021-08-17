@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
+import 'package:forfor/login/signup/signupDetail/userInfo.dart';
 import 'package:forfor/login/signup/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:forfor/service/authService.dart';
@@ -74,7 +78,7 @@ class _LoginState extends State<Login> {
   _issueAccessToken(String authCode) async {
     try {
       var token = await AuthApi.instance.issueAccessToken(authCode);
-
+      FirebaseAuth firebaseAuth = FirebaseAuth.instance;
       AccessTokenStore.instance.toStore(token);
       final kakaotalUser.User userKakao =
           await kakaotalUser.UserApi.instance.me();
@@ -86,17 +90,34 @@ class _LoginState extends State<Login> {
         'uid': token.accessToken,
         'email': userKakao.kakaoAccount?.email,
       });
+
+      print(token.accessToken);
+      // HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+      //     'verifyToken',
+      //     options: HttpsCallableOptions(timeout: Duration(seconds: 5)));
+
+      // final HttpsCallableResult result = await callable.call(
+      //   <String, dynamic>{'token': token.accessToken},
+      // );
+
+      context.read<AuthService>().kakaologin(token.accessToken);
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         prefs.setString("uid", token.accessToken);
       });
-      Navigator.pushNamed(context, '/userInfomation');
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (BuildContext context) {
+            return UserInfomation();
+          },
+        ),
+      );
     } catch (e) {
       print("error on issuing access token: $e");
     }
   }
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<User?> signInwithGoogle() async {

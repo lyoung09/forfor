@@ -137,8 +137,8 @@ class _SignUpState extends State<SignUp> {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text("로그인 페이지"),
+        //automaticallyImplyLeading: false,
+        title: Text("회원가입 페이지"),
         actions: [],
       ),
       body: ListView(

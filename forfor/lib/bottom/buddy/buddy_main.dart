@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class BuddyMainScreen extends StatefulWidget {
@@ -8,8 +9,13 @@ class BuddyMainScreen extends StatefulWidget {
 }
 
 class _BuddyMainScreenState extends State<BuddyMainScreen> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   initState() {
     super.initState();
+    if (auth.currentUser != null) {
+      print(auth.currentUser?.uid);
+    }
   }
 
   Widget _category() {

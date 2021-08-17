@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/login/login_main.dart';
+import 'package:forfor/login/signup/signupDetail/hopeInfo.dart';
 import 'package:forfor/login/signup/signupDetail/userInfo.dart';
 import 'package:forfor/service/authService.dart';
 
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/bottomScreen': (context) => BottomNavigation(),
         '/login': (context) => Login(),
         '/userInfomation': (context) => UserInfomation(),
+        '/hopeInformation': (context) => HopeInfomation(),
       },
     );
   }

@@ -230,6 +230,9 @@ class _UserInfomationState extends State<UserInfomation> {
       "nickname": _usernameControl.text,
       "url": urlProfileImageApi
     });
+
+    Navigator.pushNamed(context, '/bottomScreen');
+    //Navigator.pushNamed(context, '/hopeInformation');
   }
 
   @override

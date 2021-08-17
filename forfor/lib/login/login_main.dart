@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
@@ -100,7 +98,7 @@ class _LoginState extends State<Login> {
       //   <String, dynamic>{'token': token.accessToken},
       // );
 
-      context.read<AuthService>().kakaologin(token.accessToken);
+      //context.read<AuthService>().kakaologin(token.accessToken);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {

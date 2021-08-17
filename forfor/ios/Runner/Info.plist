@@ -51,16 +51,18 @@
 				<string>com.googleusercontent.apps.767895469306-vni5ckdadtfmr17saliknduoikkd4mcp</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaobbc30e62de88b34dadbc0e199b220cc4</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>kakao030ba7c59137629e86e8721eb1a22fd6</string>
-		<string>kakaokompassauth</string>
-		<string>kakaolink</string>
-		<string>kakaonavi-sdk</string>
-	</array>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>

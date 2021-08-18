@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signup/signupDetail/userInfo.dart';
@@ -78,6 +81,38 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<UserCredential> signInWithKaKao() async {
+    final clientState = Uuid().v4();
+    final url = Uri.https('kauth.kakao.com', '/oauth/authorize', {
+      'response_type': 'code',
+      'client_id': "8ace085891ca87f1063d494cd71222bf",
+      'response_mode': 'form_post',
+      'redirect_uri': 'https://forforwtom.glitch.me/callbacks/kakao/token',
+      'scope': 'account_email profile',
+      'state': clientState,
+    });
+
+    final result = await FlutterWebAuth.authenticate(
+        url: url.toString(),
+        callbackUrlScheme: "webauthcallback"); //"applink"//"signinwithapple"
+    final body = Uri.parse(result).queryParameters;
+    print(body["code"]);
+
+    final tokenUrl = Uri.https('kauth.kakao.com', '/oauth/token', {
+      'grant_type': 'authorization_code',
+      'client_id': "8ace085891ca87f1063d494cd71222bf",
+      'redirect_uri': 'https://forforwtom.glitch.me/callbacks/kakao/token',
+      'code': body["code"],
+    });
+    var responseTokens = await http.post(tokenUrl);
+
+    Map<String, dynamic> bodys = json.decode(responseTokens.body);
+    var response = await http.post(
+        Uri.parse("https://sage-dorian-anise.glitch.me/callbacks/kakao/token"),
+        body: {"accessToken": bodys['access_token']});
+    return FirebaseAuth.instance.signInWithCustomToken(response.body);
+  }
+
   _issueAccessToken(String authCode) async {
     try {
       var token = await AuthApi.instance.issueAccessToken(authCode);
@@ -86,6 +121,7 @@ class _LoginState extends State<Login> {
       final kakaotalUser.User userKakao =
           await kakaotalUser.UserApi.instance.me();
 
+      signInWithKaKao();
       await FirebaseFirestore.instance
           .collection("users")
           .doc(token.accessToken)

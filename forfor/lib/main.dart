@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp();
   runApp(MyApp());
 }
@@ -83,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       Navigator.pushNamed(context, '/login');
     }
+    Navigator.pushNamed(context, '/login');
   }
 
   @override

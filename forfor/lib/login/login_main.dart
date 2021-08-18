@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signup/signupDetail/userInfo.dart';
@@ -12,7 +15,7 @@ import 'package:forfor/login/signup/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:forfor/service/authService.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
@@ -91,16 +94,14 @@ class _LoginState extends State<Login> {
         'email': userKakao.kakaoAccount?.email,
       });
 
-      print(token.accessToken);
-      // HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      //     'verifyToken',
-      //     options: HttpsCallableOptions(timeout: Duration(seconds: 5)));
+      // HttpsCallable callable =
+      //     FirebaseFunctions.instanceFor(region: "us-central1").httpsCallable(
+      //         'verifyToken',
+      //         options: HttpsCallableOptions(timeout: Duration(seconds: 5)));
 
-      // final HttpsCallableResult result = await callable.call(
-      //   <String, dynamic>{'token': token.accessToken},
-      // );
-
-      context.read<AuthService>().kakaologin(token.accessToken);
+      //callable.call(token.accessToken);
+      //print("result ${result.data}");
+      //firebaseAuth.signInWithCustomToken(token.accessToken);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
@@ -500,14 +501,14 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            SizedBox(height: 25.0),
+            SizedBox(height: 35.0),
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 child: Row(
                   children: <Widget>[
                     SizedBox(
-                      width: width * 0.2,
+                      width: width * 0.1,
                     ),
                     RawMaterialButton(
                       onPressed: signInwithGoogle,
@@ -519,7 +520,7 @@ class _LoginState extends State<Login> {
                         child: Icon(
                           FontAwesomeIcons.google,
                           // color: Colors.transparent,
-                          size: 35,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -537,8 +538,27 @@ class _LoginState extends State<Login> {
                         padding: EdgeInsets.all(17.5),
                         child: Image.asset(
                           "assets/icon/icon_kakao.png",
-                          height: 35.0,
-                          width: 35,
+                          height: 20.0,
+                          width: 20,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.1,
+                    ),
+                    RawMaterialButton(
+                      onPressed: _isKakaoTalkInstalled
+                          ? _loginWithTalk
+                          : _loginWithKakao,
+                      fillColor: Colors.yellow,
+                      shape: CircleBorder(),
+                      elevation: 4.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(17.5),
+                        child: Image.asset(
+                          "assets/icon/icon_kakao.png",
+                          height: 20.0,
+                          width: 20,
                         ),
                       ),
                     ),

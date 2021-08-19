@@ -59,6 +59,7 @@ dependencies:
   cloud_functions: ^3.0.0
   flutter_web_auth: ^0.3.0
   uuid: ^3.0.4
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -13,9 +13,16 @@ class _BuddyMainScreenState extends State<BuddyMainScreen> {
 
   initState() {
     super.initState();
+
     if (auth.currentUser != null) {
       print(auth.currentUser?.uid);
+    } else {
+      kakao();
     }
+  }
+
+  kakao() async {
+    print("kakao login");
   }
 
   Widget _category() {

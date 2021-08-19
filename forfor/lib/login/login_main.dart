@@ -83,12 +83,14 @@ class _LoginState extends State<Login> {
 
   Future<UserCredential> signInWithKaKao() async {
     final clientState = Uuid().v4();
+    print("abcd");
     final url = Uri.https('kauth.kakao.com', '/oauth/authorize', {
       'response_type': 'code',
       'client_id': "8ace085891ca87f1063d494cd71222bf",
       'response_mode': 'form_post',
-      'redirect_uri': 'https://forforwtom.glitch.me/callbacks/kakao/token',
-      'scope': 'account_email profile',
+      'redirect_uri':
+          'https://www.forforwtomkakao.glitch.me/callbacks/kakao/sign_in',
+      'scope': 'account_email',
       'state': clientState,
     });
 
@@ -101,17 +103,29 @@ class _LoginState extends State<Login> {
     final tokenUrl = Uri.https('kauth.kakao.com', '/oauth/token', {
       'grant_type': 'authorization_code',
       'client_id': "8ace085891ca87f1063d494cd71222bf",
-      'redirect_uri': 'https://forforwtom.glitch.me/callbacks/kakao/token',
+      'redirect_uri':
+          'https://www.forforwtomkakao.glitch.me/callbacks/kakao/sign_in',
       'code': body["code"],
     });
+    print("hi");
     var responseTokens = await http.post(tokenUrl);
-
+    print("jk");
     Map<String, dynamic> bodys = json.decode(responseTokens.body);
     var response = await http.post(
-        Uri.parse("https://sage-dorian-anise.glitch.me/callbacks/kakao/token"),
+        Uri.parse("https://forforwtomkakao.glitch.me/callbacks/kakao/token"),
         body: {"accessToken": bodys['access_token']});
     return FirebaseAuth.instance.signInWithCustomToken(response.body);
   }
+
+  // _performSignIn(BaseAuthAPI api) async {
+  //   try {
+  //     await FirebaseAuthProvider.instance.signInWith(api);
+  //   } on PlatformException catch (e) {
+  //     print("platform exception: $e");
+  //   } catch (e) {
+  //     print("other exceptions: $e");
+  //   }
+  // }
 
   _issueAccessToken(String authCode) async {
     try {
@@ -122,6 +136,7 @@ class _LoginState extends State<Login> {
           await kakaotalUser.UserApi.instance.me();
 
       signInWithKaKao();
+
       await FirebaseFirestore.instance
           .collection("users")
           .doc(token.accessToken)
@@ -129,7 +144,6 @@ class _LoginState extends State<Login> {
         'uid': token.accessToken,
         'email': userKakao.kakaoAccount?.email,
       });
-
       // HttpsCallable callable =
       //     FirebaseFunctions.instanceFor(region: "us-central1").httpsCallable(
       //         'verifyToken',
@@ -233,15 +247,13 @@ class _LoginState extends State<Login> {
     final email = _usernameControl.text.trim();
     final password = _passwordControl.text.trim();
 
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection("users")
         .where("email", isEqualTo: email)
         .where("password", isEqualTo: password)
         .get();
-
-    context
-        .read<AuthService>()
-        .login(snap.docs[0]['email'], snap.docs[0]['password']);
 
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -544,7 +556,7 @@ class _LoginState extends State<Login> {
                 child: Row(
                   children: <Widget>[
                     SizedBox(
-                      width: width * 0.1,
+                      width: width * 0.2,
                     ),
                     RawMaterialButton(
                       onPressed: signInwithGoogle,
@@ -556,7 +568,7 @@ class _LoginState extends State<Login> {
                         child: Icon(
                           FontAwesomeIcons.google,
                           // color: Colors.transparent,
-                          size: 20,
+                          size: 35,
                         ),
                       ),
                     ),
@@ -574,30 +586,30 @@ class _LoginState extends State<Login> {
                         padding: EdgeInsets.all(17.5),
                         child: Image.asset(
                           "assets/icon/icon_kakao.png",
-                          height: 20.0,
-                          width: 20,
+                          height: 35.0,
+                          width: 35,
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: width * 0.1,
-                    ),
-                    RawMaterialButton(
-                      onPressed: _isKakaoTalkInstalled
-                          ? _loginWithTalk
-                          : _loginWithKakao,
-                      fillColor: Colors.yellow,
-                      shape: CircleBorder(),
-                      elevation: 4.0,
-                      child: Padding(
-                        padding: EdgeInsets.all(17.5),
-                        child: Image.asset(
-                          "assets/icon/icon_kakao.png",
-                          height: 20.0,
-                          width: 20,
-                        ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: width * 0.1,
+                    // ),
+                    // RawMaterialButton(
+                    //   onPressed: _isKakaoTalkInstalled
+                    //       ? _loginWithTalk
+                    //       : _loginWithKakao,
+                    //   fillColor: Colors.yellow,
+                    //   shape: CircleBorder(),
+                    //   elevation: 4.0,
+                    //   child: Padding(
+                    //     padding: EdgeInsets.all(17.5),
+                    //     child: Image.asset(
+                    //       "assets/icon/icon_kakao.png",
+                    //       height: 20.0,
+                    //       width: 20,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

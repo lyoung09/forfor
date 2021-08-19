@@ -104,17 +104,19 @@ class _SignUpState extends State<SignUp> {
         print("success");
         final email = _emailControl.text.trim();
         final password = _passwordControl.text.trim();
-        context.read<AuthService>().signup(email, password).then((value) async {
-          User? user = FirebaseAuth.instance.currentUser;
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(user?.uid)
-              .set({'uid': user?.uid, 'email': email, 'password': password});
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          setState(() {
-            prefs.setString("uid", user!.uid);
-          });
+
+        User? user = FirebaseAuth.instance.currentUser;
+        await _auth.createUserWithEmailAndPassword(
+            email: email, password: password);
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user?.uid)
+            .set({'uid': user?.uid, 'email': email, 'password': password});
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        setState(() {
+          prefs.setString("uid", user!.uid);
         });
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:forfor/bottom/buddy/buddy_main.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -134,74 +135,62 @@ class _LoginState extends State<Login> {
       AccessTokenStore.instance.toStore(token);
       final kakaotalUser.User userKakao =
           await kakaotalUser.UserApi.instance.me();
+      List<String> providers = await firebaseAuth
+          .fetchSignInMethodsForEmail(userKakao.kakaoAccount?.email ?? "");
 
-      signInWithKaKao();
+      if (providers != null && providers.length > 0) {
+        print("already has providers: ${providers.toString()}");
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: userKakao.kakaoAccount?.email ?? "",
+                password: "kakaologinuser");
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return BottomNavigation();
+            },
+          ),
+        );
+      } else {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: userKakao.kakaoAccount?.email ?? "",
+                password: "kakaologinuser");
 
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(token.accessToken)
-          .set({
-        'uid': token.accessToken,
-        'email': userKakao.kakaoAccount?.email,
-      });
-      // HttpsCallable callable =
-      //     FirebaseFunctions.instanceFor(region: "us-central1").httpsCallable(
-      //         'verifyToken',
-      //         options: HttpsCallableOptions(timeout: Duration(seconds: 5)));
-
-      //callable.call(token.accessToken);
-      //print("result ${result.data}");
-      //firebaseAuth.signInWithCustomToken(token.accessToken);
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      setState(() {
-        prefs.setString("uid", token.accessToken);
-      });
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (BuildContext context) {
-            return UserInfomation();
-          },
-        ),
-      );
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(
+              userCredential.user?.uid,
+            )
+            .set({
+          'uid': userCredential.user?.uid,
+          'email': userKakao.kakaoAccount?.email,
+          'access': 'kakao'
+        });
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return UserInfomation();
+            },
+          ),
+        );
+      }
     } catch (e) {
       print("error on issuing access token: $e");
     }
   }
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
   Future<User?> signInwithGoogle() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
-    if (kIsWeb) {
-      GoogleAuthProvider authProvider = GoogleAuthProvider();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
 
+    final GoogleSignInAccount? googleSignInAccount =
+        await googleSignIn.signIn();
+
+    if (googleSignInAccount != null) {
       try {
-        final UserCredential userCredential =
-            await auth.signInWithPopup(authProvider);
-
-        user = userCredential.user;
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(user?.uid)
-            .set({
-          'uid': user?.uid,
-          'email': user?.email,
-        });
-
-        Navigator.pushNamed(context, '/userInfomation');
-      } catch (e) {
-        print(e);
-      }
-    } else {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-      if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
 
@@ -209,13 +198,11 @@ class _LoginState extends State<Login> {
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
+        UserCredential userCredential =
+            await auth.signInWithCredential(credential);
 
-        try {
-          final UserCredential userCredential =
-              await auth.signInWithCredential(credential);
-
-          user = userCredential.user;
-
+        user = userCredential.user;
+        if (userCredential.additionalUserInfo!.isNewUser) {
           await FirebaseFirestore.instance
               .collection("users")
               .doc(user?.uid)
@@ -223,20 +210,26 @@ class _LoginState extends State<Login> {
             'uid': user?.uid,
             'email': user?.email,
           });
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          setState(() {
-            prefs.setString("uid", user!.uid);
-          });
+
           Navigator.pushNamed(context, '/userInfomation');
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'account-exists-with-different-credential') {
-            // ...
-          } else if (e.code == 'invalid-credential') {
-            // ...
-          }
-        } catch (e) {
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) {
+                return BottomNavigation();
+              },
+            ),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        print("google error ${e}");
+        if (e.code == 'account-exists-with-different-credential') {
+          // ...
+        } else if (e.code == 'invalid-credential') {
           // ...
         }
+      } catch (e) {
+        // ...
       }
     }
 

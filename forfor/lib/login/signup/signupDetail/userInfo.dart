@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_list_pick/country_list_pick.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:forfor/service/authService.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,21 +31,15 @@ class _UserInfomationState extends State<UserInfomation> {
   bool selectCountry = false;
   bool selectBirth = false;
 
+  bool checkNickname = true;
+  bool nullCheck = true;
   List<RadioModel> sampleData = [];
+  AuthService auths = new AuthService();
   var userid;
   initState() {
     super.initState();
     sampleData.add(new RadioModel(false, '남'));
     sampleData.add(new RadioModel(false, '여'));
-
-    useridMethod();
-  }
-
-  useridMethod() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userid = prefs.getString("uid");
-    });
   }
 
   _pickDateDialog() {
@@ -70,7 +66,8 @@ class _UserInfomationState extends State<UserInfomation> {
                   selectBirth = true;
                   _birthYear = dateTime.year;
                 });
-                Navigator.pop(context);
+                FocusManager.instance.primaryFocus!.unfocus();
+                Navigator.of(context).pop();
 
                 // Do something with the dateTime selected.
                 // Remember that you need to use dateTime.year to get the year
@@ -132,6 +129,7 @@ class _UserInfomationState extends State<UserInfomation> {
                       title: new Text('앨범'),
                       onTap: () {
                         _imgFromGallery();
+                        FocusManager.instance.primaryFocus!.unfocus();
                         Navigator.of(context).pop();
                       }),
                   new ListTile(
@@ -144,6 +142,7 @@ class _UserInfomationState extends State<UserInfomation> {
                     title: new Text('카메라'),
                     onTap: () {
                       _imgFromCamera();
+                      FocusManager.instance.primaryFocus!.unfocus();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -206,33 +205,66 @@ class _UserInfomationState extends State<UserInfomation> {
   }
 
   String urlProfileImageApi = "";
+
+  bool checknull() {
+    if (_usernameControl.text.isEmpty ||
+        _gender.toString().isEmpty ||
+        _image == null ||
+        _country.toString().isEmpty) {
+      print("check");
+      return true;
+    }
+    return false;
+  }
+
   void userInfomationSave() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    FirebaseAuth auth = FirebaseAuth.instance;
+    print('_image ${_image}');
+    if (checknull()) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+                content: Text("Check one more time please."),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    child: Text('no empty'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ));
+    } else {
+      if (_usernameControl.text.length < 4) {
+        setState(() {
+          checkNickname = false;
+        });
+      }
 
-    setState(() {
-      userid = prefs.getString("uid");
-    });
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child("profile/${auth.currentUser?.uid}");
+      await ref.putFile(File(_image));
 
-    Reference ref = FirebaseStorage.instance.ref().child("profile/${userid}");
-    await ref.putFile(File(_image));
-
-    urlProfileImageApi = await ref.getDownloadURL().then((value) {
-      var downloadURL = "";
-      setState(() {
-        downloadURL = value;
+      urlProfileImageApi = await ref.getDownloadURL().then((value) {
+        var downloadURL = "";
+        setState(() {
+          downloadURL = value;
+        });
+        return downloadURL;
       });
-      return downloadURL;
-    });
 
-    await FirebaseFirestore.instance.collection("users").doc(userid).update({
-      "gender": _gender.toString(),
-      "country": _country.toString(),
-      "nickname": _usernameControl.text,
-      "url": urlProfileImageApi
-    });
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(auth.currentUser?.uid)
+          .update({
+        "gender": _gender.toString(),
+        "country": _country.toString(),
+        "nickname": _usernameControl.text,
+        "url": urlProfileImageApi
+      });
 
-    Navigator.pushNamed(context, '/bottomScreen');
-    //Navigator.pushNamed(context, '/hopeInformation');
+      Navigator.pushNamed(context, '/bottomScreen');
+      //Navigator.pushNamed(context, '/hopeInformation');
+    }
   }
 
   @override
@@ -255,6 +287,8 @@ class _UserInfomationState extends State<UserInfomation> {
           ),
         ),
         body: SingleChildScrollView(
+          physics:
+              ClampingScrollPhysics(parent: NeverScrollableScrollPhysics()),
           child: Container(
             width: width,
             height: height,
@@ -292,15 +326,14 @@ class _UserInfomationState extends State<UserInfomation> {
                     height: height * 0.1,
                     width: width * 0.75,
                     child: TextField(
+                      autofocus: false,
                       decoration: InputDecoration(
-                        // contentPadding: EdgeInsets.all(10.0),
-                        // border: OutlineInputBorder(
-                        //   borderRadius: BorderRadius.circular(5.0),
-                        //   borderSide: BorderSide(
-                        //     color: Colors.white,
-                        //   ),
-                        // ),
+                        errorBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black)),
 
+                        // contentPadding: EdgeInsets.all(10.0),
+
+                        errorText: checkNickname ? "" : "at least 3 characters",
                         // enabledBorder: OutlineInputBorder(
                         //   borderSide: BorderSide(
                         //     color: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/service/authService.dart';
 
 class BuddyMainScreen extends StatefulWidget {
   const BuddyMainScreen({Key? key}) : super(key: key);
@@ -11,13 +12,15 @@ class BuddyMainScreen extends StatefulWidget {
 class _BuddyMainScreenState extends State<BuddyMainScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
+  AuthService auths = new AuthService();
   initState() {
     super.initState();
+    var z = auths.userId();
+
+    print("authservice ${z}");
 
     if (auth.currentUser != null) {
       print(auth.currentUser?.uid);
-    } else {
-      kakao();
     }
   }
 

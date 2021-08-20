@@ -106,12 +106,19 @@ class _SignUpState extends State<SignUp> {
         final password = _passwordControl.text.trim();
 
         User? user = FirebaseAuth.instance.currentUser;
+
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+
         await FirebaseFirestore.instance
             .collection("users")
             .doc(user?.uid)
-            .set({'uid': user?.uid, 'email': email, 'password': password});
+            .set({
+          'uid': user?.uid,
+          'email': email,
+          'password': password,
+          'access': 'email'
+        });
         SharedPreferences prefs = await SharedPreferences.getInstance();
         setState(() {
           prefs.setString("uid", user!.uid);
@@ -276,7 +283,7 @@ class _SignUpState extends State<SignUp> {
                     "email authentication",
                     style: TextStyle(fontSize: 15, color: Colors.red),
                   )),
-          checkOtp == true
+          checkOtp == true && canSignUp == false
               ? Container(
                   height: height * 0.3,
                   width: width * 0.2,
@@ -348,7 +355,7 @@ class _SignUpState extends State<SignUp> {
           passwordRule == true
               ? Text("")
               : Container(
-                  padding: EdgeInsets.only(left: 15, right: 35),
+                  padding: EdgeInsets.only(left: 20, right: 35),
                   width: width * 0.8,
                   child: Text(
                     "check your password! (at least 6)",

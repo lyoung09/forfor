@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_select_item/multi_select_item.dart';
 
 class HopeInfomation extends StatefulWidget {
   const HopeInfomation({Key? key}) : super(key: key);
@@ -12,6 +13,9 @@ class HopeInfomation extends StatefulWidget {
 }
 
 class _HopeInfomationState extends State<HopeInfomation> {
+  // ignore: deprecated_member_use
+  List<int> categoryList = List<int>.filled(3, 0, growable: false);
+  MultiSelectController controller = new MultiSelectController();
   bool select1 = false;
   bool select2 = false;
   bool select3 = false;
@@ -25,6 +29,15 @@ class _HopeInfomationState extends State<HopeInfomation> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    controller.disableEditingWhenNoneSelected = true;
+    controller.set(categoryList.length);
+  }
+
+  void add() {
+    setState(() {
+      controller.set(categoryList.length);
+    });
   }
 
   categorySave(index) async {
@@ -52,7 +65,7 @@ class _HopeInfomationState extends State<HopeInfomation> {
       c = index;
       select3 = true;
       print('hoit6${c}');
-    } 
+    }
 
     setState(() {});
   }
@@ -109,37 +122,57 @@ class _HopeInfomationState extends State<HopeInfomation> {
                               height: 75,
                               child: Column(
                                 children: [
-                                  InkWell(
-                                    onTap: () => {
-                                      categorySave(snapshot.data!.docs[index]
-                                          ['categoryId'])
+                                  MultiSelectItem(
+                                    isSelecting: controller.isSelecting,
+                                    onSelected: () {
+                                      setState(() {
+                                        controller.toggle(index);
+                                        print(controller.selectedIndexes);
+
+                                        categorySave(snapshot.data!.docs[index]
+                                            ['categoryId']);
+                                        add();
+                                      });
                                     },
-                                    child: Container(
-                                      padding: EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 10,
-                                          left: 10,
-                                          right: 10),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(),
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(20),
-                                          )),
-                                      child: Column(
-                                        children: [
-                                          ClipRRect(
-                                            child: Image.network(
-                                              snapshot.data!.docs[index]
-                                                  ['categoryImage'],
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
+                                    child: InkWell(
+                                      onTap: () => {
+                                        categorySave(snapshot.data!.docs[index]
+                                            ['categoryId'])
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                            top: 10,
+                                            bottom: 10,
+                                            left: 10,
+                                            right: 10),
+                                        decoration: controller.isSelected(index)
+                                            ? BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.redAccent),
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(23),
+                                                ))
+                                            : BoxDecoration(
+                                                border: Border.all(),
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(20),
+                                                )),
+                                        child: Column(
+                                          children: [
+                                            ClipRRect(
+                                              child: Image.network(
+                                                snapshot.data!.docs[index]
+                                                    ['categoryImage'],
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                          ),
-                                          Text(snapshot
-                                              .data!.docs[index]['categoryName']
-                                              .toString()),
-                                        ],
+                                            Text(snapshot.data!
+                                                .docs[index]['categoryName']
+                                                .toString()),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

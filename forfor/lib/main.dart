@@ -81,9 +81,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_login == true) {
       Navigator.pushNamed(context, '/bottomScreen');
     } else {
-      Navigator.pushNamed(context, '/login');
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (BuildContext context) {
+            return HopeInfomation();
+          },
+        ),
+      );
+      // Navigator.pushNamed(context, '/login');
     }
-    Navigator.pushNamed(context, '/login');
   }
 
   @override

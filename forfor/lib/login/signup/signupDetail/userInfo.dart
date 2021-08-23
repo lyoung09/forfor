@@ -237,33 +237,33 @@ class _UserInfomationState extends State<UserInfomation> {
         setState(() {
           checkNickname = false;
         });
-      }
+      } else {
+        Reference ref = FirebaseStorage.instance
+            .ref()
+            .child("profile/${auth.currentUser?.uid}");
+        await ref.putFile(File(_image));
 
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child("profile/${auth.currentUser?.uid}");
-      await ref.putFile(File(_image));
-
-      urlProfileImageApi = await ref.getDownloadURL().then((value) {
-        var downloadURL = "";
-        setState(() {
-          downloadURL = value;
+        urlProfileImageApi = await ref.getDownloadURL().then((value) {
+          var downloadURL = "";
+          setState(() {
+            downloadURL = value;
+          });
+          return downloadURL;
         });
-        return downloadURL;
-      });
 
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(auth.currentUser?.uid)
-          .update({
-        "gender": _gender.toString(),
-        "country": _country.toString(),
-        "nickname": _usernameControl.text,
-        "url": urlProfileImageApi
-      });
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(auth.currentUser?.uid)
+            .update({
+          "gender": _gender.toString(),
+          "country": _country.toString(),
+          "nickname": _usernameControl.text,
+          "url": urlProfileImageApi
+        });
 
-      Navigator.pushNamed(context, '/bottomScreen');
-      //Navigator.pushNamed(context, '/hopeInformation');
+        Navigator.pushNamed(context, '/bottomScreen');
+        //Navigator.pushNamed(context, '/hopeInformation');
+      }
     }
   }
 
@@ -324,16 +324,14 @@ class _UserInfomationState extends State<UserInfomation> {
                 Padding(padding: EdgeInsets.only(top: height * 0.05)),
                 Container(
                     height: height * 0.1,
-                    width: width * 0.75,
+                    width: width * 0.8,
                     child: TextField(
                       autofocus: false,
                       decoration: InputDecoration(
-                        errorBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black)),
-
                         // contentPadding: EdgeInsets.all(10.0),
 
-                        errorText: checkNickname ? "" : "at least 3 characters",
+                        errorText:
+                            checkNickname ? null : "at least 3 characters",
                         // enabledBorder: OutlineInputBorder(
                         //   borderSide: BorderSide(
                         //     color: Colors.white,
@@ -400,7 +398,6 @@ class _UserInfomationState extends State<UserInfomation> {
                               isDownIcon: true,
                               showEnglishName: true,
                             ),
-                            // initialSelection: '+82',
                             onChanged: (CountryCode? code) {
                               print(code?.name);
                               setState(() {
@@ -419,7 +416,7 @@ class _UserInfomationState extends State<UserInfomation> {
                                     : _country,
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 15))
-                            : Text("country",
+                            : Text("Country",
                                 style: TextStyle(
                                     color: Colors.grey[400], fontSize: 15)),
                       ],

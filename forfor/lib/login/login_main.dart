@@ -144,6 +144,7 @@ class _LoginState extends State<Login> {
             .signInWithEmailAndPassword(
                 email: userKakao.kakaoAccount?.email ?? "",
                 password: "kakaologinuser");
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {

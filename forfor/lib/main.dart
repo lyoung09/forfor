@@ -72,23 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
-    bool _login = (prefs.getBool('login') ?? false);
 
-    if (_login == true) {
+    if (auth.currentUser != null) {
       Navigator.pushNamed(context, '/bottomScreen');
     } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (BuildContext context) {
-            return HopeInfomation();
-          },
-        ),
-      );
-      // Navigator.pushNamed(context, '/login');
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) {
+      //       return UserInfomation();
+      //     },
+      //   ),
+      // );
+      Navigator.pushNamed(context, '/login');
     }
   }
 

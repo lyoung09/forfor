@@ -60,6 +60,8 @@ dependencies:
   flutter_web_auth: ^0.3.0
   uuid: ^3.0.4
   multi_select_item: ^1.0.3
+  flutter_reaction_button: ^1.0.8
+  collapsible_sidebar: ^2.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

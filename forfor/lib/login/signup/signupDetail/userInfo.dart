@@ -314,7 +314,7 @@ class _UserInfomationState extends State<UserInfomation> {
           ),
         ),
         body: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           child: Container(
             width: width,
             height: height,
@@ -493,8 +493,8 @@ class _UserInfomationState extends State<UserInfomation> {
                                         EdgeInsets.only(right: width * 0.05)),
                                 selectCountry == true
                                     ? Text(
-                                        _country.length > 30
-                                            ? _country.substring(0, 30)
+                                        _country.length > 20
+                                            ? ' ${_country.substring(0, 20)}...'
                                             : _country,
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 15))
@@ -515,8 +515,8 @@ class _UserInfomationState extends State<UserInfomation> {
                                         EdgeInsets.only(right: width * 0.05)),
                                 selectKoreanHopeCountry == true
                                     ? Text(
-                                        _hopeCountry.length > 30
-                                            ? _hopeCountry.substring(0, 30)
+                                        _hopeCountry.length > 20
+                                            ? "${_hopeCountry.substring(0, 20)}..."
                                             : _hopeCountry,
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 15))

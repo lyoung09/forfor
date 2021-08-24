@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.11"
+  collapsible_sidebar:
+    dependency: "direct main"
+    description:
+      name: collapsible_sidebar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   collection:
     dependency: transitive
     description:
@@ -244,6 +251,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  flutter_reaction_button:
+    dependency: "direct main"
+    description:
+      name: flutter_reaction_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.8"
   flutter_signin_button:
     dependency: "direct main"
     description:

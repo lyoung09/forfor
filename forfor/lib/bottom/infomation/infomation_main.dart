@@ -12,16 +12,20 @@ class _InformationMainScreenState extends State<InformationMainScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        toolbarHeight: size.height * 0.06,
-        // backgroundColor: Colors.black,
-        automaticallyImplyLeading: false,
-        title: Text(
-          "정보 교환",
-          style: TextStyle(fontSize: 22),
+        appBar: AppBar(
+          centerTitle: true,
+          toolbarHeight: size.height * 0.06,
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          title: Text(
+            "정보 교환",
+            style: TextStyle(fontSize: 22),
+          ),
         ),
-      ),
-    );
+        body: SingleChildScrollView(
+          child: Column(
+            children: [],
+          ),
+        ));
   }
 }

@@ -30,6 +30,10 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          backgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+          visualDensity: VisualDensity.adaptivePlatformDensity),
       home: MyHomePage(),
       routes: {
         '/bottomScreen': (context) => BottomNavigation(),
@@ -82,13 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (auth.currentUser != null) {
       Navigator.pushNamed(context, '/bottomScreen');
     } else {
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (BuildContext context) {
-      //       return UserInfomation();
-      //     },
-      //   ),
-      // );
       Navigator.pushNamed(context, '/login');
     }
   }

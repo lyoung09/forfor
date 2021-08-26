@@ -230,6 +230,7 @@ class _UserInfomationState extends State<UserInfomation> {
     if (notKoreanSelected) {
       _hopeCountry = "Korea, Republic of South Korea";
     }
+
     if (checknull()) {
       showDialog(
           context: context,
@@ -313,268 +314,290 @@ class _UserInfomationState extends State<UserInfomation> {
             style: TextStyle(fontSize: 22),
           ),
         ),
-        body: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Container(
-            width: width,
-            height: height,
-            child: Column(
-              children: [
-                Padding(padding: EdgeInsets.only(top: height * 0.08)),
-                Container(
-                    height: height * 0.2,
-                    width: height * 0.2,
-                    child: GestureDetector(
-                      onTap: () {
-                        _showPicker(context);
-                      },
-                      child: _image != null
-                          ? Image.file(
-                              File(_image),
-                              height: 50,
-                              width: 50,
-                              fit: BoxFit.contain,
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(10),
+        body: ListView(
+          children: [
+            Container(
+              width: width,
+              height: height,
+              child: Column(
+                children: [
+                  Padding(padding: EdgeInsets.only(top: height * 0.08)),
+                  Container(
+                      height: height * 0.2,
+                      width: height * 0.2,
+                      child: GestureDetector(
+                        onTap: () {
+                          _showPicker(context);
+                        },
+                        child: _image != null
+                            ? Image.file(
+                                File(_image),
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit.contain,
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.grey[800],
+                                  size: 50,
+                                ),
                               ),
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey[800],
-                                size: 50,
-                              ),
-                            ),
-                    )),
-                Padding(padding: EdgeInsets.only(top: height * 0.05)),
-                Container(
-                    height: height * 0.1,
-                    width: width * 0.8,
-                    child: TextField(
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        // contentPadding: EdgeInsets.all(10.0),
+                      )),
+                  Padding(padding: EdgeInsets.only(top: height * 0.05)),
 
-                        errorText:
-                            checkNickname ? null : "at least 3 characters",
-                        // enabledBorder: OutlineInputBorder(
-                        //   borderSide: BorderSide(
-                        //     color: Colors.white,
-                        //   ),
-                        //   borderRadius: BorderRadius.circular(5.0),
-                        // ),
-                        hintText: "   nickname",
-                        // prefixIcon: Icon(
-                        //   Icons.mail_outline,
-                        //   color: Colors.black,
-                        // ),
-                        hintStyle: TextStyle(
-                          fontSize: 15.0,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      controller: _usernameControl,
-                      maxLines: 1,
-                    )),
+                  Container(
+                      height: height * 0.1,
+                      width: width * 0.8,
+                      child: TextField(
+                        autofocus: false,
+                        decoration: InputDecoration(
+                          // contentPadding: EdgeInsets.all(10.0),
 
-                // Padding(padding: EdgeInsets.only(top: height * 0.02)),
-                Container(
-                    // height: height * 0.1,
-                    width: width * 0.8,
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: SvgPicture.asset(
-                            "assets/svg/calender.svg",
-                            fit: BoxFit.fill,
-                            width: 25,
-                            height: 25,
+                          errorText:
+                              checkNickname ? null : "at least 3 characters",
+                          // enabledBorder: OutlineInputBorder(
+                          //   borderSide: BorderSide(
+                          //     color: Colors.white,
+                          //   ),
+                          //   borderRadius: BorderRadius.circular(5.0),
+                          // ),
+                          hintText: "   nickname",
+                          // prefixIcon: Icon(
+                          //   Icons.mail_outline,
+                          //   color: Colors.black,
+                          // ),
+                          hintStyle: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.grey[400],
                           ),
-                          onPressed: _pickDateDialog,
                         ),
-                        Padding(padding: EdgeInsets.only(right: width * 0.1)),
-                        selectBirth == true
-                            ? Text(_birthYear.toString(),
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 15))
-                            : Text("Age",
-                                style: TextStyle(
-                                    color: Colors.grey[400], fontSize: 15)),
-                      ],
-                    )),
-                Container(
-                  child: Divider(
-                    thickness: 1,
-                    color: Colors.grey[800],
+                        controller: _usernameControl,
+                        maxLines: 1,
+                      )),
+
+                  // Padding(padding: EdgeInsets.only(top: height * 0.02)),
+                  Container(
+                      // height: height * 0.1,
+                      width: width * 0.8,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              "assets/svg/calender.svg",
+                              fit: BoxFit.fill,
+                              width: 25,
+                              height: 25,
+                            ),
+                            onPressed: _pickDateDialog,
+                          ),
+                          Padding(padding: EdgeInsets.only(right: width * 0.1)),
+                          selectBirth == true
+                              ? Text(_birthYear.toString(),
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 15))
+                              : Text("Age",
+                                  style: TextStyle(
+                                      color: Colors.grey[400], fontSize: 15)),
+                        ],
+                      )),
+                  Container(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey[800],
+                    ),
+                    padding: EdgeInsets.only(
+                        left: width * 0.1, right: width * 0.1, bottom: 0.0),
                   ),
-                  padding: EdgeInsets.only(
-                      left: width * 0.1, right: width * 0.1, bottom: 0.0),
-                ),
-                Align(alignment: Alignment.center, child: Text("you are")),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .center, //Center Row contents horizontally,,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      alignment: Alignment.topCenter,
-                      margin: EdgeInsets.only(top: 20),
-                      child: ChoiceChip(
-                          label: Text("korean"),
-                          selected: koreanSelected,
+                  Align(
+                      alignment: Alignment.center,
+                      child: Text("You are", style: TextStyle(fontSize: 20))),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, //Center Row contents horizontally,,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        alignment: Alignment.topCenter,
+                        margin: EdgeInsets.only(top: 20),
+                        child: ChoiceChip(
+                            label: Text("korean"),
+                            selected: koreanSelected,
+                            onSelected: (bool value) {
+                              setState(() {
+                                koreanSelected = value;
+                                if (notKoreanSelected == true) {
+                                  koreanSelected = false;
+                                }
+                              });
+
+                              //Do whatever you want when the chip is selected
+                            },
+                            backgroundColor: Colors.yellow[100]),
+                      ),
+                      SizedBox(
+                        width: width * 0.1,
+                      ),
+                      Container(
+                        alignment: Alignment.topCenter,
+                        margin: EdgeInsets.only(top: 20),
+                        child: ChoiceChip(
+                          label: Text("not korean"),
+                          selected: notKoreanSelected,
                           onSelected: (bool value) {
+                            notKoreanSelected = value;
                             setState(() {
-                              koreanSelected = value;
-                              if (notKoreanSelected == true) {
-                                koreanSelected = false;
+                              notKoreanSelected = value;
+                              if (koreanSelected == true) {
+                                notKoreanSelected = false;
                               }
                             });
-
-                            //Do whatever you want when the chip is selected
                           },
-                          backgroundColor: Colors.yellow[100]),
-                    ),
-                    SizedBox(
-                      width: width * 0.1,
-                    ),
-                    Container(
-                      alignment: Alignment.topCenter,
-                      margin: EdgeInsets.only(top: 20),
-                      child: ChoiceChip(
-                        label: Text("not korean"),
-                        selected: notKoreanSelected,
-                        onSelected: (bool value) {
-                          notKoreanSelected = value;
-                          setState(() {
-                            notKoreanSelected = value;
-                            if (koreanSelected == true) {
-                              notKoreanSelected = false;
-                            }
-                          });
-                        },
-                        backgroundColor: Colors.yellow[100],
+                          backgroundColor: Colors.yellow[100],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                notKoreanSelected == false && koreanSelected == false
-                    ? Container(
-                        // height: height * 0.1,
-                        width: width * 0.8,
-                        height: 0,
-                        child: Text(""))
-                    : notKoreanSelected == true
-                        ? Container(
-                            // height: height * 0.1,
-                            width: width * 0.8,
-                            child: Row(
-                              children: [
-                                CountryListPick(
-                                    theme: CountryTheme(
-                                      isShowFlag: true,
-                                      isShowTitle: false,
-                                      isShowCode: false,
-                                      isDownIcon: true,
-                                      showEnglishName: true,
-                                    ),
-                                    onChanged: (CountryCode? code) {
-                                      print(code?.name);
-                                      setState(() {
-                                        selectCountry = true;
-                                        _country = code?.name;
-                                      });
-                                    },
-                                    useUiOverlay: true,
-                                    // Whether the country list should be wrapped in a SafeArea
-                                    useSafeArea: false),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.only(right: width * 0.05)),
-                                selectCountry == true
-                                    ? Text(
-                                        _country.length > 20
-                                            ? ' ${_country.substring(0, 20)}...'
-                                            : _country,
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 15))
-                                    : Text("your country",
-                                        style: TextStyle(
-                                            color: Colors.grey[400],
-                                            fontSize: 15)),
-                              ],
-                            ))
-                        : Container(
-                            // height: height * 0.1,
-                            width: width * 0.8,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                    padding:
-                                        EdgeInsets.only(right: width * 0.05)),
-                                selectKoreanHopeCountry == true
-                                    ? Text(
-                                        _hopeCountry.length > 20
-                                            ? "${_hopeCountry.substring(0, 20)}..."
-                                            : _hopeCountry,
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 15))
-                                    : Text("희망 국가",
-                                        style: TextStyle(
-                                            color: Colors.grey[400],
-                                            fontSize: 15)),
-                                CountryListPick(
-                                    theme: CountryTheme(
-                                      isShowFlag: true,
-                                      isShowTitle: false,
-                                      isShowCode: false,
-                                      isDownIcon: true,
-                                      showEnglishName: true,
-                                    ),
-                                    onChanged: (CountryCode? code) {
-                                      print(code?.name);
-                                      setState(() {
-                                        selectKoreanHopeCountry = true;
-                                        _hopeCountry = code?.name;
-                                      });
-                                    },
-                                    useUiOverlay: true,
-                                    // Whether the country list should be wrapped in a SafeArea
-                                    useSafeArea: false),
-                              ],
-                            )),
-
-                Container(
-                  child: Divider(
-                    thickness: 1,
-                    color: Colors.grey[800],
+                    ],
                   ),
-                  padding: EdgeInsets.only(
-                      left: width * 0.1, right: width * 0.1, bottom: 0.0),
-                ),
-                Row(
-                  children: [
-                    Padding(padding: EdgeInsets.only(left: width * 0.06)),
-                    Container(
-                      width: width * 0.2,
-                      child: Image.asset(
-                        "assets/icon/gender.png",
-                        height: 35.0,
-                        width: 35,
-                      ),
+                  notKoreanSelected == false && koreanSelected == false
+                      ? Container(
+                          // height: height * 0.1,
+                          width: width * 0.8,
+                          height: 0,
+                          child: Text(""))
+                      : notKoreanSelected == true
+                          ? Container(
+                              // height: height * 0.1,
+                              width: width * 0.8,
+                              child: Row(
+                                children: [
+                                  CountryListPick(
+                                      theme: CountryTheme(
+                                        isShowFlag: true,
+                                        isShowTitle: false,
+                                        isShowCode: false,
+                                        isDownIcon: true,
+                                        showEnglishName: true,
+                                      ),
+                                      onChanged: (CountryCode? code) {
+                                        print(code?.name);
+                                        setState(() {
+                                          selectCountry = true;
+                                          _country = code?.name;
+                                        });
+                                      },
+                                      useUiOverlay: true,
+                                      // Whether the country list should be wrapped in a SafeArea
+                                      useSafeArea: false),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.only(right: width * 0.05)),
+                                  selectCountry == true
+                                      ? Text(
+                                          _country.length > 20
+                                              ? ' ${_country.substring(0, 20)}...'
+                                              : _country,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15))
+                                      : Text("your country",
+                                          style: TextStyle(
+                                              color: Colors.grey[400],
+                                              fontSize: 15)),
+                                ],
+                              ))
+                          : Container(
+                              // height: height * 0.1,
+                              width: width * 0.8,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.only(right: width * 0.05)),
+                                  selectKoreanHopeCountry == true
+                                      ? Text(
+                                          _hopeCountry.length > 20
+                                              ? "${_hopeCountry.substring(0, 20)}..."
+                                              : _hopeCountry,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15))
+                                      : Text("희망 국가",
+                                          style: TextStyle(
+                                              color: Colors.grey[400],
+                                              fontSize: 15)),
+                                  CountryListPick(
+                                      theme: CountryTheme(
+                                        isShowFlag: true,
+                                        isShowTitle: false,
+                                        isShowCode: false,
+                                        isDownIcon: true,
+                                        showEnglishName: true,
+                                      ),
+                                      onChanged: (CountryCode? code) {
+                                        print(code?.name);
+                                        setState(() {
+                                          selectKoreanHopeCountry = true;
+                                          _hopeCountry = code?.name;
+                                        });
+                                      },
+                                      useUiOverlay: true,
+                                      // Whether the country list should be wrapped in a SafeArea
+                                      useSafeArea: false),
+                                ],
+                              )),
+
+                  Container(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey[800],
                     ),
-                    Padding(padding: EdgeInsets.only(left: width * 0.08)),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.1,
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      alignment: Alignment.center,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: sampleData.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (_gender == sampleData[index].buttonText) {
-                            sampleData[index].isSelected = true;
+                    padding: EdgeInsets.only(
+                        left: width * 0.1, right: width * 0.1, bottom: 0.0),
+                  ),
+
+                  Row(
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: width * 0.06)),
+                      Container(
+                        width: width * 0.2,
+                        child: Image.asset(
+                          "assets/icon/gender.png",
+                          height: 35.0,
+                          width: 35,
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(left: width * 0.08)),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        alignment: Alignment.center,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: sampleData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (_gender == sampleData[index].buttonText) {
+                              sampleData[index].isSelected = true;
+                              return new InkWell(
+                                //highlightColor: Colors.red,
+                                splashColor: Colors.blueAccent,
+                                onTap: () {
+                                  setState(() {
+                                    sampleData.forEach((element) =>
+                                        element.isSelected = false);
+                                    sampleData[index].isSelected = true;
+                                    print(sampleData[index].buttonText);
+                                    _gender = sampleData[index].buttonText;
+                                  });
+                                },
+                                child: new RadioItem(sampleData[index]),
+                              );
+                            }
                             return new InkWell(
                               //highlightColor: Colors.red,
                               splashColor: Colors.blueAccent,
@@ -589,59 +612,45 @@ class _UserInfomationState extends State<UserInfomation> {
                               },
                               child: new RadioItem(sampleData[index]),
                             );
-                          }
-                          return new InkWell(
-                            //highlightColor: Colors.red,
-                            splashColor: Colors.blueAccent,
-                            onTap: () {
-                              setState(() {
-                                sampleData.forEach(
-                                    (element) => element.isSelected = false);
-                                sampleData[index].isSelected = true;
-                                print(sampleData[index].buttonText);
-                                _gender = sampleData[index].buttonText;
-                              });
-                            },
-                            child: new RadioItem(sampleData[index]),
-                          );
-                        },
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: height * 0.06),
-                Container(
-                  height: 50.0,
-                  margin: EdgeInsets.all(10),
-                  child: RaisedButton(
-                    onPressed: userInfomationSave,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(80.0)),
-                    padding: EdgeInsets.all(0.0),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xff374ABE), Color(0xff64B6FF)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
+                    ],
+                  ),
+                  SizedBox(height: height * 0.06),
+                  Container(
+                    height: 50.0,
+                    margin: EdgeInsets.all(10),
+                    child: RaisedButton(
+                      onPressed: userInfomationSave,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(80.0)),
+                      padding: EdgeInsets.all(0.0),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xff374ABE), Color(0xff64B6FF)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(30.0)),
+                        child: Container(
+                          constraints:
+                              BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Continue",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
-                          borderRadius: BorderRadius.circular(30.0)),
-                      child: Container(
-                        constraints:
-                            BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Continue",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 15),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

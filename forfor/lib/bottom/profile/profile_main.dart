@@ -92,6 +92,11 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
         .update({"url": urlProfileImageApi});
   }
 
+  deleteUser() async {
+    auth.currentUser!.delete();
+    Navigator.pushNamed(context, "/login");
+  }
+
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.camera);
@@ -158,6 +163,16 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
           "프로필",
           style: TextStyle(fontSize: 22),
         ),
+        actions: [
+          InkWell(
+            onTap: deleteUser,
+            child: Container(
+              child: Text("로그아웃"),
+              padding: EdgeInsets.only(
+                  left: width * 0.1, right: width * 0.1, bottom: 0.0),
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
           future:
@@ -205,7 +220,6 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
                                   Icons.camera_alt,
                                   size: 20,
                                 ),
-                           
                               ),
                             ),
                           )
@@ -245,6 +259,7 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
                     padding: EdgeInsets.only(
                         left: width * 0.1, right: width * 0.1, bottom: 0.0),
                   ),
+                  Padding(padding: EdgeInsets.only(top: 25)),
                 ],
               ),
             );

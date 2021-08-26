@@ -62,6 +62,7 @@ dependencies:
   multi_select_item: ^1.0.3
   flutter_reaction_button: ^1.0.8
   collapsible_sidebar: ^2.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -20,7 +20,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
         automaticallyImplyLeading: false,
         title: Text(
           "채팅",
-          style: TextStyle(fontSize: 22),
+          style: TextStyle(fontSize: 22, color: Colors.black),
         ),
       ),
     );

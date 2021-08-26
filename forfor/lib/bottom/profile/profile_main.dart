@@ -94,7 +94,7 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
 
   deleteUser() async {
     auth.currentUser!.delete();
-    Navigator.pushNamed(context, "/login");
+    Navigator.pushNamed(context, '/login');
   }
 
   _imgFromCamera() async {
@@ -167,7 +167,10 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
           InkWell(
             onTap: deleteUser,
             child: Container(
-              child: Text("로그아웃"),
+              child: Text(
+                "로그아웃",
+                style: TextStyle(color: Colors.black),
+              ),
               padding: EdgeInsets.only(
                   left: width * 0.1, right: width * 0.1, bottom: 0.0),
             ),

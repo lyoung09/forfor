@@ -19,6 +19,7 @@ class _InformationMainScreenState extends State<InformationMainScreen>
   late TabController tabController;
   initState() {
     super.initState();
+
     userInformation();
 
     tabController = new TabController(length: 3, vsync: this);
@@ -111,11 +112,15 @@ class _InformationMainScreenState extends State<InformationMainScreen>
   int? selectedIndex;
   Widget _categoryList(data) {
     return FutureBuilder(
-      future: categoryRef.where("categoryId", whereIn: [
-        data["category1"],
-        data["category2"],
-        data["category3"]
-      ]).get(),
+      future: categoryRef
+          .where("categoryId", whereIn: [
+            data["category1"],
+            data["category2"],
+            data["category3"],
+            data["category"],
+          ])
+          .orderBy("category")
+          .get(),
       builder:
           (BuildContext context, AsyncSnapshot<QuerySnapshot> categoryData) {
         if (!categoryData.hasData) {

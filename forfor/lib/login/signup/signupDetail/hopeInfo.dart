@@ -38,7 +38,12 @@ class _HopeInfomationState extends State<HopeInfomation> {
           .update({
         "category1": checking.keys.elementAt(0),
         "category2": checking.keys.elementAt(1),
-        "category3": checking.keys.elementAt(2)
+        "category3": checking.keys.elementAt(2),
+        "category": FieldValue.arrayUnion([
+          checking.keys.elementAt(0),
+          checking.keys.elementAt(1),
+          checking.keys.elementAt(2)
+        ])
       });
 
       Navigator.pushNamed(context, '/bottomScreen');

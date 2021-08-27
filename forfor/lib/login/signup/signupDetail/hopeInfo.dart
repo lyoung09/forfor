@@ -36,9 +36,6 @@ class _HopeInfomationState extends State<HopeInfomation> {
           .collection('users')
           .doc(auth.currentUser?.uid)
           .update({
-        "category1": checking.keys.elementAt(0),
-        "category2": checking.keys.elementAt(1),
-        "category3": checking.keys.elementAt(2),
         "category": FieldValue.arrayUnion([
           checking.keys.elementAt(0),
           checking.keys.elementAt(1),

@@ -112,15 +112,7 @@ class _InformationMainScreenState extends State<InformationMainScreen>
   int? selectedIndex;
   Widget _categoryList(data) {
     return FutureBuilder(
-      future: categoryRef
-          .where("categoryId", whereIn: [
-            data["category1"],
-            data["category2"],
-            data["category3"],
-            data["category"],
-          ])
-          .orderBy("category")
-          .get(),
+      future: categoryRef.where("categoryId", whereIn: data["category"]).get(),
       builder:
           (BuildContext context, AsyncSnapshot<QuerySnapshot> categoryData) {
         if (!categoryData.hasData) {
@@ -128,7 +120,7 @@ class _InformationMainScreenState extends State<InformationMainScreen>
         }
 
         //if (selectedIndex == null) selectedIndex = data["category1"];
-        selectedIndex ??= data["category1"];
+
         return SizedBox(
           height: 100,
           child: ListView.builder(
@@ -136,6 +128,8 @@ class _InformationMainScreenState extends State<InformationMainScreen>
               shrinkWrap: true,
               itemCount: categoryData.data!.docs.length,
               itemBuilder: (context, position) {
+                selectedIndex ??= categoryData.data!.docs[0]["categoryId"];
+
                 return InkWell(
                   onTap: () {
                     setState(() {

@@ -63,6 +63,9 @@ dependencies:
   flutter_reaction_button: ^1.0.8
   collapsible_sidebar: ^2.0.1
   validators: ^3.0.0
+  url_launcher: ^6.0.9
+  http:
+  zefyrka: ^1.0.10
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -310,6 +310,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.3.8"
+  google_fonts:
+    dependency: "direct main"
+    description:
+      name: google_fonts
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -422,13 +436,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  notus_format:
-    dependency: transitive
-    description:
-      name: notus_format
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   package_info:
     dependency: "direct main"
     description:
@@ -457,10 +464,24 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.1"
+  path_provider:
+    dependency: transitive
+    description:
+      name: path_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   path_provider_linux:
     dependency: transitive
     description:
       name: path_provider_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  path_provider_macos:
+    dependency: transitive
+    description:
+      name: path_provider_macos
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
@@ -520,13 +541,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0"
-  quill_format:
-    dependency: transitive
-    description:
-      name: quill_format
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   quiver:
     dependency: transitive
     description:
@@ -714,13 +728,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.2"
-  zefyrka:
-    dependency: "direct main"
-    description:
-      name: zefyrka
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.10"
 sdks:
   dart: ">=2.13.0 <3.0.0"
   flutter: ">=2.0.0"

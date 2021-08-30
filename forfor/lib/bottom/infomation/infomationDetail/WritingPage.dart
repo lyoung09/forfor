@@ -63,65 +63,57 @@ class _WritingPageState extends State<WritingPage> {
             padding: const EdgeInsets.all(8.0),
             child: Stack(
               children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.9,
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      textAlign: TextAlign.left,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      autofocus: true,
-                      decoration: new InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.transparent,
-                          ),
-                        ),
-                        hintText: "자유롭게 적어주세요~",
-                        isDense: true,
-                        // border: new OutlineInputBorder(
-                        //   borderRadius: const BorderRadius.all(
-                        //     const Radius.circular(0.0),
-                        //   ),
-                        //   borderSide: new BorderSide(
-                        //     color: Colors.black,
-                        //     width: 1.5,
-                        //   ),
-                        // ),
+                TextFormField(
+                  cursorColor: Colors.black,
+                  textAlign: TextAlign.left,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  autofocus: true,
+                  decoration: new InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
                       ),
-                      onChanged: (e) {
-                        setState(() {
-                          numLines = '\n'.allMatches(e).length + 1;
-                          print(numLines);
-                        });
-                      },
-                      validator: (value) {
-                        if (value?.isEmpty == true || value!.length < 10) {
-                          return '10자 이상은 써주셔야되요ㅠㅠ';
-                        }
-                        return null;
-                      },
-                    )),
-                Positioned.fill(
-                    child: Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
+                    ),
+                    hintText: "자유롭게 적어주세요~",
+                    isDense: true,
+                    // border: new OutlineInputBorder(
+                    //   borderRadius: const BorderRadius.all(
+                    //     const Radius.circular(0.0),
+                    //   ),
+                    //   borderSide: new BorderSide(
+                    //     color: Colors.black,
+                    //     width: 1.5,
+                    //   ),
+                    // ),
+                  ),
+                  onChanged: (e) {
+                    setState(() {
+                      numLines = '\n'.allMatches(e).length + 1;
+                      print(numLines);
+                    });
+                  },
+                  validator: (value) {
+                    if (value?.isEmpty == true || value!.length < 10) {
+                      return '10자 이상은 써주셔야되요ㅠㅠ';
+                    }
+                    return null;
+                  },
+                ),
+                _image == null
+                    ? Container(
+                        height: 0,
+                        width: 0,
+                      )
+                    : Container(
                         width: 150,
                         height: 150,
                         alignment: Alignment.center,
-                        child: _image == null
-                            ? null
-                            : Image.file(
-                                File(_image),
-                                scale: 1,
-                              ),
+                        child: Image.file(
+                          File(_image),
+                          scale: 1,
+                        ),
                       ),
-                    ],
-                  ),
-                ))
               ],
             ),
           ),

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/bottom/infomation/infomationDetail/WritingPage.dart';
+import 'package:forfor/bottom/infomation/infomation_main.dart';
 import 'package:forfor/login/login_main.dart';
 import 'package:forfor/login/signup/signupDetail/hopeInfo.dart';
 import 'package:forfor/login/signup/signupDetail/userInfo.dart';
@@ -12,6 +14,7 @@ import 'package:forfor/service/authService.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'bottom/infomation/informationWidget/writingForm.dart';
+import 'bottom/infomation/timeline.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -87,14 +90,14 @@ class _MyHomePageState extends State<MyHomePage> {
     bool _seen = (prefs.getBool('seen') ?? false);
 
     if (auth.currentUser != null) {
-      //Navigator.pushNamed(context, '/bottomScreen');
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (BuildContext context) {
-            return WritingPage();
-          },
-        ),
-      );
+      Navigator.pushNamed(context, '/bottomScreen');
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) {
+      //       return TimeLine();
+      //     },
+      //   ),
+      // );
     } else {
       Navigator.pushNamed(context, '/login');
     }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:forfor/bottom/buddy/buddy_main.dart';
 import 'package:forfor/bottom/chat/chat_main.dart';
 import 'package:forfor/bottom/infomation/infomation_main.dart';
+import 'package:forfor/bottom/infomation/timeline.dart';
+import 'package:forfor/bottom/profile/my_profile.dart';
 import 'package:forfor/bottom/profile/profile_main.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -17,8 +19,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _widgetOptions = <Widget>[
     BuddyMainScreen(),
     ChatMainScreen(),
-    InformationMainScreen(),
-    ProfileMainScreen(),
+    TimeLine(),
+    MyProfile(),
   ];
 
   @override

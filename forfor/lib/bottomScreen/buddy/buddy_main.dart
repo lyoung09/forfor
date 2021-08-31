@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:forfor/adapter/buddylistAdapter.dart';
 import 'package:forfor/data/dummy.dart';
 import 'package:forfor/model/people.dart';
-import 'package:forfor/service/authService.dart';
 import 'package:forfor/widget/my_colors.dart';
 
 class BuddyMainScreen extends StatefulWidget {
@@ -16,12 +15,8 @@ class BuddyMainScreen extends StatefulWidget {
 class _BuddyMainScreenState extends State<BuddyMainScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  AuthService auths = new AuthService();
   initState() {
     super.initState();
-    var z = auths.userId();
-
-    print("authservice ${z}");
 
     if (auth.currentUser != null) {
       print(auth.currentUser?.uid);

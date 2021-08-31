@@ -7,9 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:forfor/login/login_main.dart';
-import 'package:forfor/login/signup/signupDetail/hopeInfo.dart';
-import 'package:forfor/login/signup/signupDetail/userInfo.dart';
-import 'package:forfor/service/authService.dart';
+import 'package:forfor/login/signupD/hopeInfo.dart';
+import 'package:forfor/login/signupD/userInfo.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 

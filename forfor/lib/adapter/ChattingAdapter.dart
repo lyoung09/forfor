@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/bottomScreen/model/message.dart';
+import 'package:forfor/model/message.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';

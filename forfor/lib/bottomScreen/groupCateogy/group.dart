@@ -43,98 +43,157 @@ class SideSheetBasicRouteState extends State<SideSheetBasicRoute> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.grey[100],
-          brightness: Brightness.dark,
-          titleSpacing: 0,
-          iconTheme: IconThemeData(color: MyColors.grey_60),
-          //leading: IconButton(icon: Icon(Icons.search), onPressed: () {}),
-          title: TextField(
-              controller: _filter,
-              decoration: new InputDecoration(hintText: 'Search...')),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.filter_alt),
-                onPressed: () {
-                  Scaffold.of(_scaffoldCtx).openEndDrawer();
-                }),
-          ]),
+      // appBar: AppBar(
+      //     backgroundColor: Colors.grey[100],
+      //     brightness: Brightness.dark,
+      //     titleSpacing: 0,
+      //     iconTheme: IconThemeData(color: MyColors.grey_60),
+      //     //leading: IconButton(icon: Icon(Icons.search), onPressed: () {}),
+      //     title: TextField(
+      //         controller: _filter,
+      //         decoration: new InputDecoration(hintText: 'Search...')),
+      //     actions: <Widget>[
+      //       IconButton(
+      //           icon: Icon(Icons.filter_alt),
+      //           onPressed: () {
+      //             Scaffold.of(_scaffoldCtx).openEndDrawer();
+      //           }),
+      //     ]),
       body: Builder(builder: (BuildContext context) {
         _scaffoldCtx = context;
-        return Container(
-          margin: const EdgeInsets.all(20),
-          child: ListView.separated(
-              scrollDirection: Axis.vertical,
-              physics: BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              itemBuilder: (builder, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/dummy/image_4.jpg',
-                        height: 140,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+        return SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Padding(padding: EdgeInsets.only(top: 20)),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                      icon: Icon(Icons.filter_alt),
+                      iconSize: 32,
+                      onPressed: () {
+                        Scaffold.of(_scaffoldCtx).openEndDrawer();
+                      }),
+                ),
+                PreferredSize(
+                  preferredSize: Size.fromHeight(25),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                    alignment: Alignment.bottomCenter,
+                    constraints: BoxConstraints.expand(height: 80),
+                    child: Card(
+                      color: Colors.grey[100],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      elevation: 1,
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                              icon: Icon(Icons.search, color: Colors.grey[600]),
+                              onPressed: () {
+                                _filter.clear();
+                                setState(() {});
+                              }),
+                          Expanded(
+                            child: TextField(
+                              maxLines: 1,
+                              controller: _filter,
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 18),
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Search Locations',
+                                hintStyle: TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    itemBuilder: (builder, index) {
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              "Phasellus a Turpis id Nisi",
-                              style: TextStyle(
-                                  fontSize: 24, color: Colors.grey[800]),
+                            Image.asset(
+                              'assets/dummy/image_4.jpg',
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             ),
-                            Container(height: 10),
                             Container(
-                              child: Text(MyStrings.middle_lorem_ipsum,
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.grey[700])),
-                            )
+                              padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Phasellus a Turpis id Nisi",
+                                    style: TextStyle(
+                                        fontSize: 24, color: Colors.grey[800]),
+                                  ),
+                                  Container(height: 10),
+                                  Container(
+                                    child: Text(MyStrings.middle_lorem_ipsum,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.grey[700])),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                      primary: Colors.transparent),
+                                  child: Text(
+                                    "SHARE",
+                                    style: TextStyle(color: MyColors.accent),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                      primary: Colors.transparent),
+                                  child: Text(
+                                    "EXPLORE",
+                                    style: TextStyle(color: MyColors.accent),
+                                  ),
+                                  onPressed: () {},
+                                )
+                              ],
+                            ),
+                            Container(height: 5)
                           ],
                         ),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          TextButton(
-                            style: TextButton.styleFrom(
-                                primary: Colors.transparent),
-                            child: Text(
-                              "SHARE",
-                              style: TextStyle(color: MyColors.accent),
-                            ),
-                            onPressed: () {},
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                                primary: Colors.transparent),
-                            child: Text(
-                              "EXPLORE",
-                              style: TextStyle(color: MyColors.accent),
-                            ),
-                            onPressed: () {},
-                          )
-                        ],
-                      ),
-                      Container(height: 5)
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (builder, index) {
-                return Divider(
-                  height: 10,
-                  thickness: 0,
-                );
-              },
-              itemCount: 20),
+                      );
+                    },
+                    separatorBuilder: (builder, index) {
+                      return Divider(
+                        height: 10,
+                        thickness: 0,
+                      );
+                    },
+                    itemCount: 20),
+              ],
+            ),
+          ),
         );
       }),
       endDrawer: Container(

@@ -13,10 +13,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
-import 'package:forfor/login/signup/signupDetail/userInfo.dart';
-import 'package:forfor/login/signup/sigup_main.dart';
+import 'package:forfor/login/signupD/userInfo.dart';
+import 'package:forfor/login/sigup_main.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:forfor/service/authService.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/auth.dart';
@@ -181,14 +180,15 @@ class _LoginState extends State<Login> {
   }
 
   Future<User?> signInwithGoogle() async {
+    print("hihi");
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
-
+    print("zz");
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();
-
+    print("aaa");
     if (googleSignInAccount != null) {
       try {
         final GoogleSignInAuthentication googleSignInAuthentication =
@@ -198,6 +198,7 @@ class _LoginState extends State<Login> {
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
+        print("bbb");
         UserCredential userCredential =
             await auth.signInWithCredential(credential);
 
@@ -213,6 +214,7 @@ class _LoginState extends State<Login> {
 
           Navigator.pushNamed(context, '/userInfomation');
         } else {
+          print("vv");
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (BuildContext context) {

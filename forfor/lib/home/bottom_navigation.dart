@@ -18,8 +18,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   //tabbar에 따라 움직이는 screen list
   List<Widget> _widgetOptions = <Widget>[
-    GroupCategoryMain(),
-    //SideSheetBasicRoute(),
+    //GroupCategoryMain(),
+    SideSheetBasicRoute(),
     ChatMainScreen(),
     BuddyMainScreen(),
     TimeLine(),

@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:forfor/service/authService.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,7 +35,6 @@ class _UserInfomationState extends State<UserInfomation> {
   bool checkNickname = true;
   bool nullCheck = true;
   List<RadioModel> sampleData = [];
-  AuthService auths = new AuthService();
   var userid;
   initState() {
     super.initState();

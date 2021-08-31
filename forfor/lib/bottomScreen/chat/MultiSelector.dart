@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/bottom/model/inbox.dart';
+import 'package:forfor/model/inbox.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';

@@ -30,8 +30,8 @@ class _MyProfileState extends State<MyProfile> {
               onPressed: () {},
             ), // overflow menu
           ]),
-      body: SingleChildScrollView(
-        child: Container(
+      body: ListView(children: [
+        Container(
           child: Column(
             children: <Widget>[
               Container(height: 35),
@@ -157,7 +157,7 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("Vip",
+                        Text("Your group",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
@@ -175,7 +175,7 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("talk to you",
+                        Text("QnA",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
@@ -193,7 +193,25 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("Payments",
+                        Text("You Like",
+                            style: MyText.medium(context).copyWith(
+                                color: MyColors.grey_80,
+                                fontWeight: FontWeight.w300)),
+                        Spacer(),
+                        Icon(Icons.credit_card, color: MyColors.grey_60),
+                        Container(width: 10)
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(height: 0),
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                    child: Row(
+                      children: <Widget>[
+                        Text("VIP",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
@@ -209,7 +227,7 @@ class _MyProfileState extends State<MyProfile> {
             ],
           ),
         ),
-      ),
+      ]),
     );
   }
 }

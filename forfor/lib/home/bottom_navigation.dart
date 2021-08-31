@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/bottom/buddy/buddy_main.dart';
-import 'package:forfor/bottom/chat/chat_main.dart';
-import 'package:forfor/bottom/infomation/infomation_main.dart';
-import 'package:forfor/bottom/infomation/timeline.dart';
-import 'package:forfor/bottom/profile/my_profile.dart';
-import 'package:forfor/bottom/profile/profile_main.dart';
+
 import 'package:flutter_svg/svg.dart';
+import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
+import 'package:forfor/bottomScreen/chat/chat_main.dart';
+import 'package:forfor/bottomScreen/groupCateogy/gCategory.dart';
+import 'package:forfor/bottomScreen/groupCateogy/group.dart';
+import 'package:forfor/bottomScreen/infomation/timeline.dart';
+import 'package:forfor/bottomScreen/profile/my_profile.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override
@@ -17,8 +18,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   //tabbar에 따라 움직이는 screen list
   List<Widget> _widgetOptions = <Widget>[
-    BuddyMainScreen(),
+    GroupCategoryMain(),
+    //SideSheetBasicRoute(),
     ChatMainScreen(),
+    BuddyMainScreen(),
     TimeLine(),
     MyProfile(),
   ];
@@ -52,12 +55,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
             items: [
               BottomNavigationBarItem(
                   icon: SvgPicture.asset(
-                    "assets/svg/friendBottom.svg",
+                    "assets/svg/meeting.svg",
                     fit: BoxFit.fill,
                     width: size.width * 0.25,
                     height: size.height * 0.04,
                   ),
-                  label: "친구"),
+                  label: "그룹"),
               BottomNavigationBarItem(
                   icon: SvgPicture.asset(
                     "assets/svg/chattingBottom.svg",
@@ -68,12 +71,20 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   label: "채팅"),
               BottomNavigationBarItem(
                   icon: SvgPicture.asset(
+                    "assets/svg/friendBottom.svg",
+                    fit: BoxFit.fill,
+                    width: size.width * 0.25,
+                    height: size.height * 0.04,
+                  ),
+                  label: "친구"),
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset(
                     "assets/svg/infomationBottom.svg",
                     fit: BoxFit.fill,
                     width: size.width * 0.25,
                     height: size.height * 0.04,
                   ),
-                  label: "정보"),
+                  label: "QnA"),
               BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   "assets/svg/profileBottom.svg",

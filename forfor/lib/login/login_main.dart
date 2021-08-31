@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:forfor/bottom/buddy/buddy_main.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:flutter/cupertino.dart';

@@ -93,17 +93,32 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
                               style: TextStyle(
                                   fontSize: 20, color: Colors.grey[800]),
                             ),
-                            Spacer(flex: 1),
-                            Transform.rotate(
-                              angle: animation1.value * math.pi / 180,
-                              child: IconButton(
-                                icon: Icon(Icons.expand_more),
-                                onPressed: () {
-                                  togglePanel1();
-                                },
+                            Container(
+                              decoration:
+                                  BoxDecoration(color: Colors.grey[100]),
+                              child: Transform.rotate(
+                                angle: animation1.value * math.pi / 180,
+                                child: IconButton(
+                                  icon: Icon(Icons.expand_more),
+                                  onPressed: () {
+                                    togglePanel1();
+                                  },
+                                ),
                               ),
                             ),
+                            Spacer(flex: 1),
                             Container(width: 5, height: 0),
+                            IconButton(
+                              icon: Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Colors.black),
+                              onPressed: writingPage,
+                            ),
                           ],
                         ),
                       ),
@@ -347,20 +362,7 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
                             ),
                     ],
                   ),
-                  preferredSize: Size.fromHeight(50)),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  ),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.black),
-                  onPressed: writingPage,
-                ),
-              ],
+                  preferredSize: Size.fromHeight(0)),
             ),
             SliverFillRemaining(
                 child: SingleChildScrollView(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/bottom/model/inbox.dart';
+import 'package:forfor/model/inbox.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
 import 'MultiSelector.dart';
+import '../../data/dummy.dart';
 
 class ChatMainScreen extends StatefulWidget {
   const ChatMainScreen({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   }
   @override
   void initState() {
-    //items = Dummy.getInboxData();
+    items = Dummy.getInboxData();
     super.initState();
   }
 

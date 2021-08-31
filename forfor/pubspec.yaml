@@ -67,6 +67,7 @@ dependencies:
   http:
   google_fonts: ^2.1.0
   get: ^4.3.6
+  flutter_slider_drawer: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -91,6 +92,7 @@ flutter:
     - assets/svg/camera.svg   
     - assets/svg/infomationBottom.svg   
     - assets/svg/profileBottom.svg   
+    - assets/svg/meeting.svg
     - assets/icon/icon_kakao.png
     - assets/icon/googlelogo.jpg
     - assets/icon/wechatlogo.png
@@ -98,6 +100,7 @@ flutter:
     - assets/icon/instagramlogo.jpeg
     - assets/icon/email.png
     - assets/icon/gender.png
+    - assets/dummy/image_4.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

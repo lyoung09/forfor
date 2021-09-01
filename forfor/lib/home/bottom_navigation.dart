@@ -5,7 +5,6 @@ import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
 import 'package:forfor/bottomScreen/chat/chat_main.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/infomation/timeline.dart';
-import 'package:forfor/bottomScreen/infomation/timeline2.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 
 class BottomNavigation extends StatefulWidget {

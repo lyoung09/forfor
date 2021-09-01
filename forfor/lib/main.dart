@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 
 import 'package:forfor/login/login_main.dart';
 import 'package:forfor/login/signupD/hopeInfo.dart';
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Navigator.of(context).push(
       //   MaterialPageRoute(
       //     builder: (BuildContext context) {
-      //       return TimeLine();
+      //       return UserProfile();
       //     },
       //   ),
       // );

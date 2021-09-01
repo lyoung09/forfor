@@ -82,7 +82,8 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
               Padding(padding: EdgeInsets.only(top: 50)),
               Row(children: [
                 Padding(padding: EdgeInsets.only(left: 10)),
-                Container(
+                Expanded(
+                    child: Container(
                   decoration: BoxDecoration(
                       color: Colors.grey[100],
                       border: Border.all(width: 0.5),
@@ -100,8 +101,8 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
                       hintStyle: TextStyle(fontSize: 16.0),
                     ),
                   ),
-                ),
-                Spacer(),
+                )),
+                Padding(padding: EdgeInsets.only(left: 10)),
                 IconButton(
                   icon: Icon(
                     Icons.alarm,

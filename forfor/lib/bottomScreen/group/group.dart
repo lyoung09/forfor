@@ -7,6 +7,7 @@ import 'package:forfor/widget/my_text.dart';
 import 'dart:math' as math;
 
 import 'addGroup.dart';
+import 'group_click.dart';
 
 class Group extends StatefulWidget {
   const Group({Key? key}) : super(key: key);
@@ -65,6 +66,16 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
+  groupScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return GroupScreen();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,9 +115,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                   child: IconButton(
                                     icon: Icon(Icons.expand_more),
                                     onPressed: () {
-                                      print("11");
                                       togglePanel1();
-                                      print("22");
                                     },
                                   ),
                                 ),
@@ -491,7 +500,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                           style:
                                               TextStyle(color: MyColors.accent),
                                         ),
-                                        onPressed: () {},
+                                        onPressed: groupScreen,
                                       )
                                     ],
                                   ),

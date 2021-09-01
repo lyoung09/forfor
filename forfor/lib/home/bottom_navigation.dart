@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
 import 'package:forfor/bottomScreen/chat/chat_main.dart';
-import 'package:forfor/bottomScreen/groupCateogy/gCategory.dart';
-import 'package:forfor/bottomScreen/groupCateogy/group.dart';
+import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/infomation/timeline.dart';
+import 'package:forfor/bottomScreen/infomation/timeline2.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -19,7 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   //tabbar에 따라 움직이는 screen list
   List<Widget> _widgetOptions = <Widget>[
     //GroupCategoryMain(),
-    SideSheetBasicRoute(),
+    Group(),
     ChatMainScreen(),
     BuddyMainScreen(),
     TimeLine(),

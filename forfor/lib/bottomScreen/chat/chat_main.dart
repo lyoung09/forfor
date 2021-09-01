@@ -18,6 +18,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   var modeSelection = false.obs;
   var refreshList = false.obs;
   var selectionCount = 0.obs;
+  final TextEditingController _filter = new TextEditingController();
 
   void onItemClick(int index, Inbox obj) {
     //  MyToast.show(obj.name!, context, duration: MyToast.LENGTH_SHORT);
@@ -42,24 +43,14 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
 
     return new Obx(() => Scaffold(
           appBar: AppBar(
+              toolbarHeight: 120,
+              automaticallyImplyLeading: false,
               backgroundColor:
-                  modeSelection.value ? Colors.blueGrey[600] : Colors.red[600],
+                  //modeSelection.value ? Colors.blueGrey[600] : Colors.red[600],
+                  Colors.grey[400],
               brightness: Brightness.dark,
               titleSpacing: 0,
               iconTheme: IconThemeData(color: Colors.white),
-              title: Text(
-                  modeSelection.value
-                      ? selectionCount.value.toString()
-                      : "Inbox",
-                  style: MyText.title(context)!.copyWith(color: Colors.white)),
-              leading: IconButton(
-                icon: Icon(modeSelection.value ? Icons.arrow_back : Icons.menu),
-                onPressed: () {
-                  modeSelection.value
-                      ? adapter.clearSelection()
-                      : Navigator.pop(context);
-                },
-              ),
               actions: modeSelection.value
                   ? <Widget>[
                       IconButton(
@@ -77,13 +68,6 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                       IconButton(
                         icon: Icon(Icons.search),
                         onPressed: () {},
-                      ),
-                      PopupMenuButton<String>(
-                        onSelected: (String value) {},
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                              value: "Settings", child: Text("Settings")),
-                        ],
                       )
                     ]),
           body: adapter.getView(),

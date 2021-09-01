@@ -8,14 +8,14 @@ import 'dart:math' as math;
 
 import 'infomationDetail/WritingPage.dart';
 
-class TimeLine extends StatefulWidget {
-  const TimeLine({Key? key}) : super(key: key);
+class TimeLine2 extends StatefulWidget {
+  const TimeLine2({Key? key}) : super(key: key);
 
   @override
-  _TimeLineState createState() => _TimeLineState();
+  _TimeLine2State createState() => _TimeLine2State();
 }
 
-class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
+class _TimeLine2State extends State<TimeLine2> with TickerProviderStateMixin {
   bool isSwitched1 = true;
   bool expand1 = false;
   late AnimationController controller1;

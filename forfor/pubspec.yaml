@@ -68,6 +68,7 @@ dependencies:
   google_fonts: ^2.1.0
   get: ^4.3.6
   flutter_slider_drawer: ^2.0.0
+  custom_radio_grouped_button: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

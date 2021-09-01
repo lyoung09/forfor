@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/profile/settings.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
@@ -27,7 +28,15 @@ class _MyProfileState extends State<MyProfile> {
                 Icons.settings,
                 color: Colors.black,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return SettingFlatRoute();
+                    },
+                  ),
+                );
+              },
             ), // overflow menu
           ]),
       body: ListView(children: [
@@ -175,7 +184,7 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("QnA",
+                        Text("Your inviting",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
@@ -193,7 +202,7 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("You Like",
+                        Text("QnA",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),

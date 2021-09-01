@@ -14,7 +14,7 @@ class BuddyMainScreen extends StatefulWidget {
 
 class _BuddyMainScreenState extends State<BuddyMainScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
-
+  bool _selectC = false;
   initState() {
     super.initState();
 
@@ -43,104 +43,165 @@ class _BuddyMainScreenState extends State<BuddyMainScreen> {
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(padding: EdgeInsets.only(top: 50)),
+          Container(
+              padding: EdgeInsets.only(left: 10),
+              alignment: Alignment.topLeft,
+              child: Text("친구찾기",
+                  style: TextStyle(color: Colors.black, fontSize: 25))),
+          Padding(padding: EdgeInsets.only(top: 20)),
+          Container(
+            child: Divider(
+              color: Colors.black,
+              thickness: 1.1,
+            ),
+          ),
           SingleChildScrollView(
             child: tabbar(),
             scrollDirection: Axis.horizontal,
           ),
           Padding(padding: EdgeInsets.only(top: 20)),
+          _selectC == true
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: categorySelect(),
+                  ),
+                  scrollDirection: Axis.horizontal,
+                )
+              : Container(
+                  width: 0,
+                  height: 0,
+                ),
           BuddyListAdapter(items, onItemClick).getView(),
         ],
       ),
     ));
   }
 
-  Widget tabbar() {
+  Widget categorySelect() {
     return Row(
       children: [
-        Container(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              primary: MyColors.accent,
-              elevation: 1),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text("HOME",
-                style: TextStyle(color: Colors.white, fontSize: 14)),
-          ),
-          onPressed: () {
-            //delayShowingContent();
-          },
-        ),
-        Container(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              primary: MyColors.accent,
-              elevation: 1),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text("TOP ARTISTS",
-                style: TextStyle(color: Colors.white, fontSize: 14)),
-          ),
-          onPressed: () {
-            //delayShowingContent();
-          },
-        ),
-        Container(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              primary: MyColors.accent,
-              elevation: 1),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text("TOP ALBUMS",
-                style: TextStyle(color: Colors.white, fontSize: 14)),
-          ),
-          onPressed: () {
-            //delayShowingContent();
-          },
-        ),
-        Container(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              primary: MyColors.accent,
-              elevation: 1),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text("NEW RELEASES",
-                style: TextStyle(color: Colors.white, fontSize: 14)),
-          ),
-          onPressed: () {
-            //delayShowingContent();
-          },
-        ),
-        Container(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              primary: MyColors.accent,
-              elevation: 1),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text("TOP SONGS",
-                style: TextStyle(color: Colors.white, fontSize: 14)),
-          ),
-          onPressed: () {
-            //delayShowingContent();
-          },
-        ),
-        Container(width: 10),
+        Container(
+            padding: EdgeInsets.all(3),
+            decoration: BoxDecoration(border: Border.all(width: 0.5)),
+            child: Text(
+              "그룹",
+              style: TextStyle(color: Colors.black, fontSize: 20),
+            )),
+        Padding(padding: EdgeInsets.only(right: 10)),
+        Container(
+            decoration: BoxDecoration(border: Border.all(width: 3)),
+            child: Text(
+              "주변",
+              style: TextStyle(color: Colors.black, fontSize: 20),
+            )),
+        Padding(padding: EdgeInsets.only(right: 10)),
+        Container(
+            decoration: BoxDecoration(border: Border.all(width: 3)),
+            child: Text(
+              "성별",
+              style: TextStyle(color: Colors.black, fontSize: 20),
+            )),
+        Padding(padding: EdgeInsets.only(right: 10)),
+        Container(
+            child: Text(
+          "추천",
+          style: TextStyle(color: Colors.black, fontSize: 20),
+        )),
+        Padding(padding: EdgeInsets.only(right: 10)),
       ],
     );
+  }
+
+  Widget tabbar() {
+    return Row(children: [
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text("foood",
+              style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+          setState(() {
+            _selectC = true;
+          });
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text("living",
+              style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text("language",
+              style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text("TOP ALBUMS",
+              style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text("TOP ALBUMS",
+              style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+    ]);
   }
 }

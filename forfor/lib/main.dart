@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forfor/bottomScreen/group/group.dart';
+import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 
 import 'package:forfor/login/login_main.dart';
@@ -13,7 +15,9 @@ import 'package:forfor/login/signupD/userInfo.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'bottomScreen/buddy/invitePeopleScreen.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
+import 'bottomScreen/infomation/sayScreen.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Navigator.of(context).push(
       //   MaterialPageRoute(
       //     builder: (BuildContext context) {
-      //       return UserProfile();
+      //       return SayScreen();
       //     },
       //   ),
       // );

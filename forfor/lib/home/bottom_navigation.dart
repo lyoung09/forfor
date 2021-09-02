@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
+import 'package:forfor/bottomScreen/buddy/invitePeopleScreen.dart';
 import 'package:forfor/bottomScreen/chat/chat_main.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
+import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
 import 'package:forfor/bottomScreen/infomation/timeline.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 
@@ -20,8 +22,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
     //GroupCategoryMain(),
     Group(),
     ChatMainScreen(),
-    BuddyMainScreen(),
-    TimeLine(),
+    InvitePersonScreen(),
+    SayScreen(),
     MyProfile(),
   ];
 

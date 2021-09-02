@@ -1,4 +1,6 @@
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
@@ -8,14 +10,14 @@ import 'dart:math' as math;
 
 import 'infomationDetail/WritingPage.dart';
 
-class TimeLine extends StatefulWidget {
-  const TimeLine({Key? key}) : super(key: key);
+class SayScreen extends StatefulWidget {
+  const SayScreen({Key? key}) : super(key: key);
 
   @override
-  _TimeLineState createState() => _TimeLineState();
+  _SayScreenState createState() => _SayScreenState();
 }
 
-class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
+class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   bool isSwitched1 = true;
   bool expand1 = false;
   late AnimationController controller1;
@@ -58,7 +60,7 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return WritingPage();
+          return SayWriting();
         },
       ),
     );
@@ -81,28 +83,12 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
             children: <Widget>[
               Padding(padding: EdgeInsets.only(top: 50)),
               Row(children: [
-                Padding(padding: EdgeInsets.only(left: 10)),
-                Expanded(
-                    child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      border: Border.all(width: 0.5),
-                      borderRadius: BorderRadius.circular(20)),
-                  width: 280,
-                  child: TextField(
-                    maxLines: 1,
-                    controller: _filter,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 18),
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      prefixIcon: Icon(Icons.search),
-                      hintText: 'Search QnA',
-                      hintStyle: TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                )),
-                Padding(padding: EdgeInsets.only(left: 10)),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: Text("Say",
+                      style: TextStyle(color: Colors.black, fontSize: 30)),
+                ),
+                Spacer(),
                 IconButton(
                   icon: Icon(
                     Icons.notifications_none,
@@ -121,97 +107,62 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
                 thickness: 1,
                 color: Colors.grey[800],
               )),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(1)),
-                elevation: 2,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              CircleImage(
-                                imageProvider:
-                                    AssetImage(Img.get('photo_female_1.jpg')),
-                                size: 40,
-                              ),
-                              Container(width: 15),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text("Emma Richmond",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                          color: Colors.grey[800])),
-                                  Container(height: 2),
-                                  Row(
-                                    children: <Widget>[
-                                      Text("in",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[500])),
-                                      Container(width: 3),
-                                      Text("Hwy, Carthage",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.lightBlue[400],
-                                              fontWeight: FontWeight.bold))
-                                    ],
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    CircleImage(
+                                      imageProvider: AssetImage(
+                                          'assets/image/photo_female_1.jpg'),
+                                      size: 60,
+                                    ),
+                                    Container(height: 2),
+                                  ],
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    padding: BubbleEdges.all(30),
+                                    alignment: Alignment.topLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                            "What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the "),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: CircleImage(
+                                                imageProvider: AssetImage(
+                                                    'assets/image/photo_female_1.jpg'),
+                                                size: 30,
+                                              )),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              )
-                            ],
-                          ),
-                          Container(height: 10),
-                          Container(
-                            child: Text(MyStrings.middle_lorem_ipsum,
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.grey[500])),
-                          ),
-                        ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(height: 10),
-                    Divider(color: Colors.grey[300], height: 0),
-                    Container(
-                      height: 50,
-                      child: Row(
-                        children: <Widget>[
-                          Container(width: 5),
-                          IconButton(
-                            icon: Icon(Icons.thumb_up,
-                                color: Colors.green[200], size: 25),
-                            onPressed: () {},
-                          ),
-                          Text("12 likes",
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                          IconButton(
-                            icon: Icon(Icons.chat_bubble,
-                                color: Colors.lightBlue[400], size: 25),
-                            onPressed: () {},
-                          ),
-                          Text("4 comments",
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                          Spacer(),
-                          Text("3h ago",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.grey[500])),
-                          Container(width: 15),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  )),
               Container(height: 2),
               Card(
                 shape: RoundedRectangleBorder(

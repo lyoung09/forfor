@@ -20,6 +20,8 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
   var selectionCount = 0.obs;
   final TextEditingController _filter = new TextEditingController();
 
+  bool transform = false;
+
   void onItemClick(int index, Inbox obj) {
     //  MyToast.show(obj.name!, context, duration: MyToast.LENGTH_SHORT);
   }
@@ -29,6 +31,13 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
     super.initState();
   }
 
+  static const List<String> names = [
+    "Sandra",
+    "Charlie",
+    "Johnson",
+    "Trevor",
+    "Smith",
+  ];
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -41,87 +50,76 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
       selectionCount.value = count;
     });
 
-    // return new Obx(() => Scaffold(
-    //       appBar: AppBar(
-    //           toolbarHeight: 60,
-    //           automaticallyImplyLeading: false,
-    //           backgroundColor:
-    //               //modeSelection.value ? Colors.blueGrey[600] : Colors.red[600],
-    //               Colors.grey[400],
-    //           brightness: Brightness.dark,
-    //           titleSpacing: 0,
-    //           iconTheme: IconThemeData(color: Colors.white),
-    //           actions: modeSelection.value
-    //               ? <Widget>[
-    //                   IconButton(
-    //                     icon: Icon(Icons.delete),
-    //                     onPressed: () {
-    //                       setState(() {
-    //                         items.removeWhere((e) => e.selected.value == true);
-    //                         adapter.clearSelection();
-    //                         refreshList.value = !refreshList.value;
-    //                       });
-    //                     },
-    //                   )
-    //                 ]
-    //               : <Widget>[
-    //                   IconButton(
-    //                     icon: Icon(Icons.search),
-    //                     onPressed: () {},
-    //                   )
-    //                 ]),
-    //       body: adapter.getView(),
-    //     ));
-    return Scaffold(
-      body: DefaultTabController(
-        length: 2,
-        child: NestedScrollView(
-          headerSliverBuilder: (context, value) {
-            return [
-              SliverAppBar(
-                backgroundColor: Colors.grey[800],
-                automaticallyImplyLeading: false,
-                title: Text('AppBar'),
-                actions: modeSelection.value
-                    ? <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              items
-                                  .removeWhere((e) => e.selected.value == true);
-                              adapter.clearSelection();
-                              refreshList.value = !refreshList.value;
-                            });
-                          },
-                        )
-                      ]
-                    : <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.search),
-                          onPressed: () {},
-                        )
-                      ],
-                centerTitle: true,
-                pinned: true,
-                floating: true,
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.call), text: 'group'),
-                    Tab(icon: Icon(Icons.message), text: 'each'),
-                  ],
+    return new Obx(() => Scaffold(
+          appBar: AppBar(
+              title: Text("채팅", style: TextStyle(fontSize: 30)),
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.search,
                 ),
+                onPressed: () {},
+                color: Colors.black,
               ),
-            ];
-          },
-          body: TabBarView(
-            children: [
-              adapter.getView(),
-              adapter.getView(),
-            ],
-          ),
-        ),
-      ),
-    );
+              toolbarHeight: 60,
+              automaticallyImplyLeading: false,
+              backgroundColor:
+                  //modeSelection.value ? Colors.blueGrey[600] : Colors.red[600],
+                  Colors.grey[400],
+              brightness: Brightness.dark,
+              titleSpacing: 0,
+              iconTheme: IconThemeData(color: Colors.white),
+              actions: modeSelection.value
+                  ? <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            items.removeWhere((e) => e.selected.value == true);
+                            adapter.clearSelection();
+                            refreshList.value = !refreshList.value;
+                          });
+                        },
+                      )
+                    ]
+                  : <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: new Icon(Icons.photo),
+                                      title: new Text('즐겨찾기'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: new Icon(Icons.music_note),
+                                      title: new Text('개인'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: new Icon(Icons.videocam),
+                                      title: new Text('내국인'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        },
+                      )
+                    ]),
+          body: adapter.getView(),
+        ));
   }
 }

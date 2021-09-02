@@ -76,6 +76,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
+  String _value = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,20 +125,40 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                               Container(width: 5, height: 0),
                               IconButton(
                                 icon: Icon(
-                                  Icons.add,
+                                  Icons.add_circle_outline_outlined,
                                   color: Colors.black,
                                 ),
                                 onPressed: addGroup,
+                                iconSize: 20,
                               ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                    icon: Icon(Icons.filter_alt),
-                                    iconSize: 32,
-                                    onPressed: () {
-                                      Scaffold.of(_scaffoldCtx).openEndDrawer();
-                                    }),
-                              ),
+                              PopupMenuButton(
+                                  iconSize: 20,
+                                  color: Colors.white,
+                                  elevation: 20,
+                                  enabled: true,
+                                  onSelected: (String value) {
+                                    setState(() {
+                                      _value = value;
+                                    });
+                                  },
+                                  itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          child: Text("최신"),
+                                          value: "최신",
+                                        ),
+                                        PopupMenuItem(
+                                          child: Text("인기"),
+                                          value: "인기",
+                                        ),
+                                        PopupMenuItem(
+                                          child: Text("오픈"),
+                                          value: "오픈",
+                                        ),
+                                        PopupMenuItem(
+                                          child: Text("적은"),
+                                          value: "적은",
+                                        ),
+                                      ]),
                             ],
                           ),
                         ),
@@ -426,7 +447,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: 'Search Locations',
+                                      hintText: '${_value}',
                                       hintStyle: TextStyle(fontSize: 16.0),
                                     ),
                                   ),
@@ -522,133 +543,133 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
               )
             ]);
       }),
-      endDrawer: Container(
-        width: 200,
-        child: Drawer(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: 40, horizontal: 5),
-            child: Container(
-              color: Colors.grey[100],
-              padding: const EdgeInsets.only(top: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Icon(Icons.exit_to_app))),
-                  // SizedBox(
-                  //   height: 30,
-                  // ),
-                  // CircleAvatar(
-                  //   radius: 65,
-                  //   backgroundColor: Colors.grey,
-                  //   child: CircleAvatar(
-                  //     radius: 60,
-                  //     backgroundImage: AssetImage('assets/images/user_profile.jpg'),
-                  //   ),
-                  // ),
-                  Row(
-                    children: [
-                      IconButton(onPressed: () {}, icon: Icon(Icons.home)),
-                      Text("category1")
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Wrap(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
+      // endDrawer: Container(
+      //   width: 200,
+      //   child: Drawer(
+      //     child: SingleChildScrollView(
+      //       padding: EdgeInsets.symmetric(vertical: 40, horizontal: 5),
+      //       child: Container(
+      //         color: Colors.grey[100],
+      //         padding: const EdgeInsets.only(top: 30),
+      //         child: Column(
+      //           crossAxisAlignment: CrossAxisAlignment.center,
+      //           children: <Widget>[
+      //             Align(
+      //                 alignment: Alignment.topLeft,
+      //                 child: IconButton(
+      //                     onPressed: () {
+      //                       Navigator.of(context).pop();
+      //                     },
+      //                     icon: Icon(Icons.exit_to_app))),
+      //             // SizedBox(
+      //             //   height: 30,
+      //             // ),
+      //             // CircleAvatar(
+      //             //   radius: 65,
+      //             //   backgroundColor: Colors.grey,
+      //             //   child: CircleAvatar(
+      //             //     radius: 60,
+      //             //     backgroundImage: AssetImage('assets/images/user_profile.jpg'),
+      //             //   ),
+      //             // ),
+      //             Row(
+      //               children: [
+      //                 IconButton(onPressed: () {}, icon: Icon(Icons.home)),
+      //                 Text("category1")
+      //               ],
+      //             ),
+      //             SizedBox(
+      //               height: 20,
+      //             ),
+      //             Wrap(
+      //               children: [
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //                 Container(
+      //                   padding: EdgeInsets.all(8),
+      //                   child: Icon(
+      //                     Icons.ac_unit,
+      //                     size: 40,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //             SizedBox(
+      //               height: 20,
+      //             ),
 
-                  Container(
-                    child: Divider(
-                      thickness: 2.5,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  //sliderItem('Category2', Icons.notifications_active),
+      //             Container(
+      //               child: Divider(
+      //                 thickness: 2.5,
+      //                 color: Colors.black,
+      //               ),
+      //             ),
+      //             SizedBox(
+      //               height: 20,
+      //             ),
+      //             //sliderItem('Category2', Icons.notifications_active),
 
-                  //sliderItem('fileter\nLike,posting', Icons.arrow_back_ios)
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      //             //sliderItem('fileter\nLike,posting', Icons.arrow_back_ios)
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

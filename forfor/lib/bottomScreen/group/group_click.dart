@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:navigation_rail/navigation_rail.dart';
+
+import 'groupPage/groupFriend.dart';
+import 'groupPage/groupHome.dart';
+import 'groupPage/groupPosting.dart';
 
 class GroupScreen extends StatefulWidget {
   const GroupScreen({Key? key}) : super(key: key);
@@ -12,15 +17,17 @@ class GroupScreen extends StatefulWidget {
 class _GroupScreenState extends State<GroupScreen> {
   int _selectedIndex = 0;
 
-  Widget firstScreen() {
-    return Column(
-      children: [
-        Text("hoit"),
-        Text("hoit"),
-        Text("hoit"),
-        Text("hoit"),
-      ],
-    );
+  Widget _selectd() {
+    if (_selectedIndex == 0)
+      return GroupHome();
+    else if (_selectedIndex == 1)
+      return GroupPosting();
+    else if (_selectedIndex == 2)
+      return GroupFriend();
+    else if (_selectedIndex == 3)
+      return GroupChatting();
+    else
+      return GroupHome();
   }
 
   @override
@@ -58,19 +65,25 @@ class _GroupScreenState extends State<GroupScreen> {
                 padding: EdgeInsets.only(top: 40),
                 icon: Icon(Icons.favorite_border),
                 selectedIcon: Icon(Icons.favorite),
-                label: Text('First'),
+                label: Text('홈'),
+              ),
+              NavigationRailDestination(
+                padding: EdgeInsets.only(top: 40),
+                icon: Icon(Icons.favorite_border),
+                selectedIcon: Icon(Icons.favorite),
+                label: Text('포스팅'),
               ),
               NavigationRailDestination(
                 padding: EdgeInsets.only(top: 15),
-                icon: Icon(Icons.bookmark_border),
-                selectedIcon: Icon(Icons.book),
-                label: Text('Second'),
+                icon: Icon(Icons.person_outline),
+                selectedIcon: Icon(Icons.person_outline),
+                label: Text('친구'),
               ),
               NavigationRailDestination(
                 padding: EdgeInsets.only(top: 15),
-                icon: Icon(Icons.star_border),
-                selectedIcon: Icon(Icons.star),
-                label: Text('그룹채팅'),
+                icon: Icon(Icons.chat_bubble_outline),
+                selectedIcon: Icon(Icons.chat_bubble_outline),
+                label: Text('그룹 채팅'),
               ),
               NavigationRailDestination(
                 padding: EdgeInsets.only(top: 15),
@@ -86,7 +99,7 @@ class _GroupScreenState extends State<GroupScreen> {
                     );
                   },
                 ),
-                selectedIcon: Icon(Icons.chat_bubble_outline_outlined),
+                selectedIcon: Icon(Icons.arrow_back_ios_sharp),
                 label: Text('exit'),
               )
             ],
@@ -94,13 +107,7 @@ class _GroupScreenState extends State<GroupScreen> {
           VerticalDivider(thickness: 1, width: 1),
           // This is the main content.
           Expanded(
-            child: Column(
-              children: [
-                if (_selectedIndex == 0) Text("tk"),
-                if (_selectedIndex == 1) firstScreen(),
-                if (_selectedIndex == 2) Text("2"),
-              ],
-            ),
+            child: _selectd(),
           )
         ],
       ),

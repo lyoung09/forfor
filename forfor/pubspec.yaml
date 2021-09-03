@@ -49,7 +49,6 @@ dependencies:
   gallery_saver: ^0.0.5
 
   email_validator: ^2.0.1
-  provider: ^5.0.0
   navigation_rail: ^1.5.0
   firebase_auth: ^3.0.0
   google_sign_in: ^4.5.9
@@ -71,6 +70,9 @@ dependencies:
   custom_radio_grouped_button: ^2.0.0
   intrinsic_grid_view: ^0.0.2
   bubble: ^1.2.1
+  hidden_drawer_menu: ^3.0.0
+
+  slide_drawer: ^1.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

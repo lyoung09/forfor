@@ -22,7 +22,6 @@ import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
 
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //login screen  <kakao wechat google instagram line>
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forfor/model/scientist.dart';
+import 'package:forfor/widget/custom_dialog.dart';
 import 'package:intrinsic_grid_view/intrinsic_grid_view.dart';
 
 class InvitePersonScreen extends StatefulWidget {
@@ -75,73 +76,92 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   Widget _buildGridView(ScientistModel scientist) {
     double radius = 5.0;
 
-    return Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(radius))),
-        elevation: 30,
-        shadowColor: Colors.grey[100],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 5, bottom: 8),
-                  child: ClipOval(
-                    child: Image.network(
-                      "${scientist.image}",
-                      fit: BoxFit.cover,
-                      width: 50,
-                      height: 50,
+    return InkWell(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CustomDialogBox(
+                title: "Custom Dialog Demo",
+                descriptions:
+                    "Hii all this is a custom dialog in flutter and  you will be use in your flutter applications",
+                img: Image.network('${scientist.image}'),
+                text: "Yes",
+              );
+            });
+      },
+      child: Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(radius))),
+          elevation: 30,
+          shadowColor: Colors.grey[100],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 8.0, left: 5, bottom: 8),
+                    child: ClipOval(
+                      child: Image.network(
+                        "${scientist.image}",
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 50,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      right: 4, left: 15, bottom: 8, top: 8),
-                  child: Text(
-                    scientist.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 4, left: 15, bottom: 8, top: 8),
+                    child: Text(
+                      scientist.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 4, left: 8, bottom: 8),
-              child: Text(
-                scientist.desc,
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            Divider(color: Colors.black, height: 1),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 5, // to apply margin in the main axis of the wrap
-                runSpacing: 5,
-                children: <Widget>[
-                  Chip(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    label: Text('Elizabeth'),
-                  ),
-                  Chip(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    label: Text('Evans C'),
-                  ),
-                  Chip(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    label: Text('Anderson Thomas'),
                   ),
                 ],
               ),
-            ),
-          ],
-        ));
+              Padding(
+                padding: const EdgeInsets.only(right: 4, left: 8, bottom: 8),
+                child: Text(
+                  scientist.desc,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              Divider(color: Colors.black, height: 1),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  spacing: 5, // to apply margin in the main axis of the wrap
+                  runSpacing: 5,
+                  children: <Widget>[
+                    Chip(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text('Elizabeth'),
+                      avatar: CircleAvatar(
+                          backgroundImage:
+                              AssetImage('assets/icon/gender.png')),
+                    ),
+                    Chip(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text('Evans C'),
+                    ),
+                    Chip(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text('Anderson Thomas'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
+    );
   }
 
   @override

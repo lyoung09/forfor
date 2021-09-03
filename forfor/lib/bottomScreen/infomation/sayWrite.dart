@@ -1,4 +1,5 @@
 import 'package:bubble/bubble.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/widget/my_text.dart';
 
@@ -38,82 +39,61 @@ class _SayWritingState extends State<SayWriting> {
             Padding(padding: EdgeInsets.only(top: 50)),
             Container(
               alignment: Alignment.centerRight,
-              padding: EdgeInsets.only(right: 30),
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: Bubble(
-                showNip: true,
-                padding: BubbleEdges.all(60),
-                alignment: Alignment.centerRight,
-                nip: BubbleNip.rightCenter,
-                nipHeight: 50,
-                nipWidth: 50,
-                margin: const BubbleEdges.all(4),
-                child: TextField(
-                  keyboardType: TextInputType.multiline,
-                  cursorColor: Colors.amber[500],
-                  decoration: InputDecoration(
-                    hintText: 'Message',
-                    hintStyle:
-                        MyText.body1(context)!.copyWith(color: Colors.white),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(0),
-                      borderSide:
-                          BorderSide(color: Colors.transparent, width: 2),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(0),
-                      borderSide: BorderSide(color: Colors.white, width: 1),
-                    ),
-                  ),
-                ),
+              padding: EdgeInsets.only(left: 10, right: 10),
+              width: MediaQuery.of(context).size.width,
+              child: CupertinoTextField(
+                cursorColor: Colors.black,
+                textAlign: TextAlign.left,
+                maxLines: 10,
+                keyboardType: TextInputType.multiline,
+                autofocus: true,
               ),
             ),
             Padding(padding: EdgeInsets.only(top: 20)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 80,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
-                    size: 50,
-                  ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                Padding(padding: EdgeInsets.only(right: 10)),
-                Container(
-                  width: 80,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
-                    size: 50,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      onPressed: () {},
+                      iconSize: 32,
+                    ),
+                    Padding(padding: EdgeInsets.only(right: 5)),
+                    Text("camera",
+                        style: TextStyle(color: Colors.black, fontSize: 20))
+                  ],
                 ),
-                Padding(padding: EdgeInsets.only(right: 10)),
-                Container(
-                  width: 80,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
-                    size: 50,
-                  ),
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(top: 10)),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-              ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      iconSize: 32,
+                      icon: Icon(Icons.voicemail),
+                      onPressed: () {},
+                    ),
+                    Padding(padding: EdgeInsets.only(right: 5)),
+                    Text("voice",
+                        style: TextStyle(color: Colors.black, fontSize: 20))
+                  ],
+                ),
+              ),
             ),
           ],
         ),

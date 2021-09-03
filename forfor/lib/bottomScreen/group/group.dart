@@ -5,7 +5,7 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'dart:math' as math;
-
+import 'widget/groupList.dart';
 import 'addGroup.dart';
 import 'group_click.dart';
 
@@ -66,12 +66,211 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
-  groupScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return GroupScreen();
-        },
+  Widget selectCategory() {
+    return SizeTransition(
+      sizeFactor: animation1View,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        color: Colors.white,
+        elevation: 2,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: Container(
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab1",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.lightGreen[500],
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          togglePanel1();
+                        },
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "FRIENDS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab2",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.yellow[600],
+                        child: Icon(
+                          Icons.people,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "GROUPS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab3",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.purple[400],
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "NEARBY",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab4",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.blue[400],
+                        child: Icon(
+                          Icons.near_me,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "MOMENT",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              Container(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab5",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.indigo[300],
+                        child: Icon(
+                          Icons.crop_original,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "ALBUMS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab6",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.green[500],
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "LIKES",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab7",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.lightGreen[400],
+                        child: Icon(
+                          Icons.subject,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "ARTICLES",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab8",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.orange[300],
+                        child: Icon(
+                          Icons.textsms,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "REVIEWS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -163,248 +362,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                           ),
                         ),
                         expand1 == true
-                            ? SizeTransition(
-                                sizeFactor: animation1View,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4)),
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 30, horizontal: 5),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: <Widget>[
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab1",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.lightGreen[500],
-                                                  child: Icon(
-                                                    Icons.person,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {
-                                                    togglePanel1();
-                                                  },
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "FRIENDS",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab2",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.yellow[600],
-                                                  child: Icon(
-                                                    Icons.people,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "GROUPS",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab3",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.purple[400],
-                                                  child: Icon(
-                                                    Icons.location_on,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "NEARBY",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab4",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.blue[400],
-                                                  child: Icon(
-                                                    Icons.near_me,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "MOMENT",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Container(height: 15),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: <Widget>[
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab5",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.indigo[300],
-                                                  child: Icon(
-                                                    Icons.crop_original,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "ALBUMS",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab6",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.green[500],
-                                                  child: Icon(
-                                                    Icons.favorite,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "LIKES",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab7",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.lightGreen[400],
-                                                  child: Icon(
-                                                    Icons.subject,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "ARTICLES",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                FloatingActionButton(
-                                                  heroTag: "fab8",
-                                                  elevation: 0,
-                                                  mini: true,
-                                                  backgroundColor:
-                                                      Colors.orange[300],
-                                                  child: Icon(
-                                                    Icons.textsms,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                                Container(height: 5),
-                                                Text(
-                                                  "REVIEWS",
-                                                  style:
-                                                      MyText.caption(context)!
-                                                          .copyWith(
-                                                              color: MyColors
-                                                                  .grey_40),
-                                                  textAlign: TextAlign.center,
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
+                            ? selectCategory()
                             : Container(
                                 height: 0,
                               ),
@@ -464,71 +422,72 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           itemBuilder: (builder, index) {
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Image.asset(
-                                    'assets/dummy/image_4.jpg',
-                                    height: 140,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Phasellus a Turpis id Nisi",
-                                          style: TextStyle(
-                                              fontSize: 24,
-                                              color: Colors.grey[800]),
-                                        ),
-                                        Container(height: 10),
-                                        Container(
-                                          child: Text(
-                                              MyStrings.middle_lorem_ipsum,
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.grey[700])),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                            primary: Colors.transparent),
-                                        child: Text(
-                                          "SHARE",
-                                          style:
-                                              TextStyle(color: MyColors.accent),
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                            primary: Colors.transparent),
-                                        child: Text(
-                                          "EXPLORE",
-                                          style:
-                                              TextStyle(color: MyColors.accent),
-                                        ),
-                                        onPressed: groupScreen,
-                                      )
-                                    ],
-                                  ),
-                                  Container(height: 5)
-                                ],
-                              ),
-                            );
+                            return GroupList();
+                            // Card(
+                            //   shape: RoundedRectangleBorder(
+                            //     borderRadius: BorderRadius.circular(4),
+                            //   ),
+                            //   clipBehavior: Clip.antiAliasWithSaveLayer,
+                            //   child: Column(
+                            //     crossAxisAlignment: CrossAxisAlignment.start,
+                            //     children: <Widget>[
+                            //       Image.asset(
+                            //         'assets/dummy/image_4.jpg',
+                            //         height: 140,
+                            //         width: double.infinity,
+                            //         fit: BoxFit.cover,
+                            //       ),
+                            //       Container(
+                            //         padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                            //         child: Column(
+                            //           crossAxisAlignment:
+                            //               CrossAxisAlignment.start,
+                            //           children: <Widget>[
+                            //             Text(
+                            //               "Phasellus a Turpis id Nisi",
+                            //               style: TextStyle(
+                            //                   fontSize: 24,
+                            //                   color: Colors.grey[800]),
+                            //             ),
+                            //             Container(height: 10),
+                            //             Container(
+                            //               child: Text(
+                            //                   MyStrings.middle_lorem_ipsum,
+                            //                   style: TextStyle(
+                            //                       fontSize: 15,
+                            //                       color: Colors.grey[700])),
+                            //             )
+                            //           ],
+                            //         ),
+                            //       ),
+                            //       Row(
+                            //         children: <Widget>[
+                            //           TextButton(
+                            //             style: TextButton.styleFrom(
+                            //                 primary: Colors.transparent),
+                            //             child: Text(
+                            //               "SHARE",
+                            //               style:
+                            //                   TextStyle(color: MyColors.accent),
+                            //             ),
+                            //             onPressed: () {},
+                            //           ),
+                            //           TextButton(
+                            //             style: TextButton.styleFrom(
+                            //                 primary: Colors.transparent),
+                            //             child: Text(
+                            //               "EXPLORE",
+                            //               style:
+                            //                   TextStyle(color: MyColors.accent),
+                            //             ),
+                            //             onPressed: groupScreen,
+                            //           )
+                            //         ],
+                            //       ),
+                            //       Container(height: 5)
+                            //     ],
+                            //   ),
+                            // );
                           },
                           separatorBuilder: (builder, index) {
                             return Divider(

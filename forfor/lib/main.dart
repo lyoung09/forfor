@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
+import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 
 import 'package:forfor/login/login_main.dart';
@@ -16,11 +17,13 @@ import 'package:forfor/login/signupD/userInfo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bottomScreen/buddy/invitePeopleScreen.dart';
+import 'bottomScreen/group/groupPage/groupHome.dart';
+import 'bottomScreen/group/group_click.dart';
+import 'bottomScreen/group/groupclick.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
 import 'bottomScreen/infomation/sayScreen.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,20 +57,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final user = context.watch<User>();
-
-    // ignore: unnecessary_null_comparison
-    if (user != null) {
-      return BottomNavigation();
-    } else {
-      return Login();
-    }
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -92,18 +81,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     bool _seen = (prefs.getBool('seen') ?? false);
 
-    if (auth.currentUser != null) {
-      Navigator.pushNamed(context, '/bottomScreen');
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (BuildContext context) {
-      //       return SayScreen();
-      //     },
-      //   ),
-      // );
-    } else {
-      Navigator.pushNamed(context, '/login');
-    }
+    // if (auth.currentUser != null) {
+    //   Navigator.pushNamed(context, '/bottomScreen');
+    // } else {
+    //   Navigator.pushNamed(context, '/login');
+    // }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return GroupScreen();
+        },
+      ),
+    );
   }
 
   @override

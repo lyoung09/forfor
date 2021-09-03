@@ -127,6 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  curved_animation_controller:
+    dependency: transitive
+    description:
+      name: curved_animation_controller
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0+1"
   custom_radio_grouped_button:
     dependency: "direct main"
     description:
@@ -366,6 +373,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.2"
+  hidden_drawer_menu:
+    dependency: "direct main"
+    description:
+      name: hidden_drawer_menu
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   http:
     dependency: "direct main"
     description:
@@ -464,13 +478,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   package_info:
     dependency: "direct main"
     description:
@@ -569,13 +576,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.3"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.0"
   quiver:
     dependency: transitive
     description:
@@ -630,6 +630,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  slide_drawer:
+    dependency: "direct main"
+    description:
+      name: slide_drawer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   source_span:
     dependency: transitive
     description:

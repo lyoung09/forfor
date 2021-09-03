@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
+
+import 'groupPosting.dart';
 
 class GroupHome extends StatefulWidget {
   const GroupHome({Key? key}) : super(key: key);
@@ -8,8 +11,7 @@ class GroupHome extends StatefulWidget {
 }
 
 class _GroupHomeState extends State<GroupHome> {
-  @override
-  Widget build(BuildContext context) {
+  Widget groupHome() {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -23,6 +25,13 @@ class _GroupHomeState extends State<GroupHome> {
           Text("1"),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: groupHome(),
     );
   }
 }

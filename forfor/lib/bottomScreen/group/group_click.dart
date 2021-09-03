@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/home/bottom_navigation.dart';
@@ -16,6 +18,17 @@ class GroupScreen extends StatefulWidget {
 
 class _GroupScreenState extends State<GroupScreen> {
   int _selectedIndex = 0;
+  bool close = false;
+  late BuildContext _scaffoldCtx;
+
+  initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      Timer(Duration(milliseconds: 500), () {
+        Scaffold.of(_scaffoldCtx).openDrawer();
+      });
+    });
+    super.initState();
+  }
 
   Widget _selectd() {
     if (_selectedIndex == 0)
@@ -33,83 +46,120 @@ class _GroupScreenState extends State<GroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: <Widget>[
-          NavigationRail(
-            groupAlignment: 1.0,
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            leading: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 50,
-                ),
-                Center(
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundImage: AssetImage("assets/images/man2.jpg"),
-                  ),
-                ),
-                SizedBox(
-                  height: 70,
-                ),
-              ],
-            ),
-            labelType: NavigationRailLabelType.selected,
-            destinations: [
-              NavigationRailDestination(
-                padding: EdgeInsets.only(top: 40),
-                icon: Icon(Icons.favorite_border),
-                selectedIcon: Icon(Icons.favorite),
-                label: Text('홈'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(30.0),
+        child: AppBar(
+          leading: IconButton(
+              icon: Icon(Icons.reorder),
+              iconSize: 30,
+              color: Colors.black,
+              onPressed: () {
+                Scaffold.of(_scaffoldCtx).openDrawer();
+              }),
+        ),
+      ),
+      body: Builder(builder: (BuildContext context) {
+        _scaffoldCtx = context;
+        return Row(
+          children: <Widget>[
+        
+            Expanded(
+              child: _selectd(),
+            )
+          ],
+        );
+      }),
+      drawer: Container(
+        width: 120,
+        padding: EdgeInsets.only(left: 20, top: 40),
+        child: Drawer(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+              SizedBox(
+                height: 20,
               ),
-              NavigationRailDestination(
-                padding: EdgeInsets.only(top: 40),
-                icon: Icon(Icons.favorite_border),
-                selectedIcon: Icon(Icons.favorite),
-                label: Text('포스팅'),
-              ),
-              NavigationRailDestination(
-                padding: EdgeInsets.only(top: 15),
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person_outline),
-                label: Text('친구'),
-              ),
-              NavigationRailDestination(
-                padding: EdgeInsets.only(top: 15),
-                icon: Icon(Icons.chat_bubble_outline),
-                selectedIcon: Icon(Icons.chat_bubble_outline),
-                label: Text('그룹 채팅'),
-              ),
-              NavigationRailDestination(
-                padding: EdgeInsets.only(top: 15),
-                icon: IconButton(
-                  icon: Icon(Icons.arrow_back_ios_sharp),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return BottomNavigation();
-                        },
-                      ),
-                    );
-                  },
+              Center(
+                child: CircleAvatar(
+                  radius: 22,
+                  backgroundImage: AssetImage("assets/images/man2.jpg"),
                 ),
-                selectedIcon: Icon(Icons.arrow_back_ios_sharp),
-                label: Text('exit'),
-              )
-            ],
-          ),
-          VerticalDivider(thickness: 1, width: 1),
-          // This is the main content.
-          Expanded(
-            child: _selectd(),
-          )
-        ],
+              ),
+              SizedBox(
+                height: 70,
+              ),
+              InkWell(
+                child: Row(
+                  children: <Widget>[
+                    Text("Home", style: TextStyle(fontSize: 25)),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 0;
+                  });
+                },
+              ),
+              Divider(
+                thickness: 2,
+                color: Colors.grey[500],
+              ),
+              InkWell(
+                child: Row(
+                  children: <Widget>[
+                    Text("Posting", style: TextStyle(fontSize: 25)),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 1;
+                  });
+                },
+              ),
+              Divider(
+                thickness: 2,
+                color: Colors.grey[500],
+              ),
+              InkWell(
+                child: Row(
+                  children: <Widget>[
+                    Text("friend", style: TextStyle(fontSize: 25)),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 2;
+                  });
+                },
+              ),
+              Divider(
+                thickness: 2,
+                color: Colors.grey[500],
+              ),
+              InkWell(
+                child: Row(
+                  children: <Widget>[
+                    Text("group chatting"),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 3;
+                  });
+                },
+              ),
+              Spacer(),
+              InkWell(
+                child: Row(
+                  children: <Widget>[
+                    Text("group chatting"),
+                  ],
+                ),
+                onTap: () {
+                  //Navigator.of(context).pop;
+                },
+              ),
+            ])),
       ),
     );
   }

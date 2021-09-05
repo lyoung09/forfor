@@ -62,7 +62,6 @@ class _GroupScreenState extends State<GroupScreen> {
         _scaffoldCtx = context;
         return Row(
           children: <Widget>[
-        
             Expanded(
               child: _selectd(),
             )
@@ -70,8 +69,9 @@ class _GroupScreenState extends State<GroupScreen> {
         );
       }),
       drawer: Container(
+        alignment: Alignment.topLeft,
         width: 120,
-        padding: EdgeInsets.only(left: 20, top: 40),
+        padding: EdgeInsets.only(left: 3, top: 40, bottom: 40),
         child: Drawer(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

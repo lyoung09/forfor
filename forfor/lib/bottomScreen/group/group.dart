@@ -275,6 +275,206 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
+  Widget stackCategory() {
+    return ListView(
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      children: [
+        Container(
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab1",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.lightGreen[500],
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          togglePanel1();
+                        },
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "FRIENDS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab2",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.yellow[600],
+                        child: Icon(
+                          Icons.people,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "GROUPS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab3",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.purple[400],
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "NEARBY",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab4",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.blue[400],
+                        child: Icon(
+                          Icons.near_me,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "MOMENT",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab5",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.indigo[300],
+                        child: Icon(
+                          Icons.crop_original,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "ALBUMS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab6",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.green[500],
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "LIKES",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab7",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.lightGreen[400],
+                        child: Icon(
+                          Icons.subject,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "ARTICLES",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "fab8",
+                        elevation: 0,
+                        mini: true,
+                        backgroundColor: Colors.orange[300],
+                        child: Icon(
+                          Icons.textsms,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {},
+                      ),
+                      Container(height: 5),
+                      Text(
+                        "REVIEWS",
+                        style: MyText.caption(context)!
+                            .copyWith(color: MyColors.grey_40),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   String _value = "";
   @override
   Widget build(BuildContext context) {
@@ -374,6 +574,10 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      Container(
+                          padding: EdgeInsets.only(bottom: 15),
+                          height: 150,
+                          child: stackCategory()),
                       PreferredSize(
                         preferredSize: Size.fromHeight(25),
                         child: Container(

@@ -190,7 +190,7 @@ class _TimeLineState extends State<TimeLine> with TickerProviderStateMixin {
                                 color: Colors.green[200], size: 25),
                             onPressed: () {},
                           ),
-                          Text("12 likes",
+                          Text("100 likes",
                               style: TextStyle(
                                   fontSize: 14, color: Colors.grey[500])),
                           IconButton(

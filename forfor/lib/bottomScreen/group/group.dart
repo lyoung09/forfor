@@ -521,6 +521,14 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                 ),
                               ),
                               Spacer(flex: 1),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.notifications_none,
+                                  color: Colors.black,
+                                ),
+                                onPressed: addGroup,
+                                iconSize: 20,
+                              ),
                               Container(width: 5, height: 0),
                               IconButton(
                                 icon: Icon(

@@ -73,6 +73,92 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     ];
   }
 
+  Widget tabbar() {
+    return Row(children: [
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child:
+              Text("new", style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+          setState(() {});
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child:
+              Text("카테고리", style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child:
+              Text("주변", style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child:
+              Text("성별", style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+      Container(width: 10),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            primary: Colors.white,
+            elevation: 1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child:
+              Text("호잇", style: TextStyle(color: Colors.black, fontSize: 14)),
+        ),
+        onPressed: () {
+          //delayShowingContent();
+        },
+      ),
+    ]);
+  }
+
   Widget _buildGridView(ScientistModel scientist) {
     double radius = 5.0;
 
@@ -141,10 +227,10 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                   spacing: 5, // to apply margin in the main axis of the wrap
                   runSpacing: 5,
                   children: <Widget>[
-                    Chip(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      label: Text('Elizabeth'),
-                      avatar: CircleAvatar(
+                    Container(
+                      width: 35,
+                      height: 35,
+                      child: CircleAvatar(
                           backgroundImage:
                               AssetImage('assets/icon/gender.png')),
                     ),
@@ -197,53 +283,9 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
             Divider(color: Colors.black, height: 1),
             Container(
               height: 50,
-              child: ListView(
+              child: SingleChildScrollView(
+                child: tabbar(),
                 scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _index = 1;
-                      });
-                    },
-                    child: Container(
-                        alignment: Alignment.center,
-                        height: height * 0.1,
-                        width: width * 0.2,
-                        child: Text("K-pop")),
-                  ),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                  Container(
-                      alignment: Alignment.center,
-                      height: height * 0.1,
-                      width: width * 0.2,
-                      child: Text("K-pop")),
-                ],
               ),
             ),
 

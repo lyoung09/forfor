@@ -124,7 +124,7 @@ class _AddGroupState extends State<AddGroup> {
           actions: [
             IconButton(
               icon: Icon(
-                Icons.save,
+                Icons.add_circle_outline_outlined,
                 color: Colors.black,
               ),
               onPressed: () {},

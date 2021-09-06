@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
 
 import '../group_click.dart';
 
@@ -40,7 +42,7 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return GroupScreen();
+          return HiddenMe();
         },
       ),
     );
@@ -60,11 +62,14 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Image.asset(
-                    "assets/image/photo_female_1.jpg",
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  Hero(
+                    tag: 'groupImage',
+                    child: Image.asset(
+                      "assets/image/photo_female_1.jpg",
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Container(
                     padding: EdgeInsets.all(15),

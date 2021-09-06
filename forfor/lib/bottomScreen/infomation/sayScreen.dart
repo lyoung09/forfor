@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
@@ -140,18 +142,36 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     margin: const BubbleEdges.all(4),
                                     child: Column(
                                       children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
                                         Text(
                                             "What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the "),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: CircleImage(
-                                                imageProvider: AssetImage(
-                                                    'assets/image/photo_female_1.jpg'),
-                                                size: 30,
-                                              )),
-                                        )
                                       ],
                                     ),
                                   ),

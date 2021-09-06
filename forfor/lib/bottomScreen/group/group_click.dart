@@ -30,18 +30,18 @@ class _GroupScreenState extends State<GroupScreen> {
     super.initState();
   }
 
-  Widget _selectd() {
-    if (_selectedIndex == 0)
-      return GroupHome();
-    else if (_selectedIndex == 1)
-      return GroupPosting();
-    else if (_selectedIndex == 2)
-      return GroupFriend();
-    else if (_selectedIndex == 3)
-      return GroupChatting();
-    else
-      return GroupHome();
-  }
+  // Widget _selectd() {
+  //   if (_selectedIndex == 0)
+  //     return GroupHome();
+  //   else if (_selectedIndex == 1)
+  //     return GroupPosting();
+  //   else if (_selectedIndex == 2)
+  //     return GroupFriend();
+  //   else if (_selectedIndex == 3)
+  //     return GroupChatting();
+  //   else
+  //     return GroupHome();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,8 @@ class _GroupScreenState extends State<GroupScreen> {
         return Row(
           children: <Widget>[
             Expanded(
-              child: _selectd(),
+              //child: _selectd(),
+              child: Text("d"),
             )
           ],
         );

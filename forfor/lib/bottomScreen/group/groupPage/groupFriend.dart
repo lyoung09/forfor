@@ -31,7 +31,7 @@ class _GroupFriendState extends State<GroupFriend> {
   void onItemClick(int index, People obj) {
     // MyToast.show(obj.name!, context, duration: MyToast.LENGTH_SHORT);
   }
-
+  bool filter = false;
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -44,29 +44,55 @@ class _GroupFriendState extends State<GroupFriend> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(padding: EdgeInsets.only(top: 50)),
-          Row(
-            children: [
-              Container(
-                  padding: EdgeInsets.only(left: 10),
-                  alignment: Alignment.topLeft,
-                  child: Text("친구",
-                      style: TextStyle(color: Colors.black, fontSize: 25))),
-              Padding(padding: EdgeInsets.only(top: 20)),
-              Spacer(),
-              Icon(Icons.search),
-            ],
-          ),
           Container(
             child: Divider(
               color: Colors.black,
               thickness: 1.1,
             ),
+            padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
           ),
-          SingleChildScrollView(
-            child: tabbar(),
-            scrollDirection: Axis.horizontal,
+          Row(
+            children: [
+              Padding(padding: EdgeInsets.only(left: 20)),
+              Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black38),
+                      borderRadius: BorderRadius.circular(35)),
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {},
+                  )),
+              Padding(padding: EdgeInsets.only(top: 20)),
+              Spacer(),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black38),
+                    borderRadius: BorderRadius.circular(35)),
+                child: IconButton(
+                  icon: Icon(Icons.filter_1_rounded),
+                  onPressed: () {
+                    setState(() {
+                      filter = !filter;
+                    });
+                  },
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(right: 20))
+            ],
           ),
+          filter == true
+              ? Align(
+                  alignment: Alignment.center,
+                  child: SingleChildScrollView(
+                    child: tabbar(),
+                    scrollDirection: Axis.horizontal,
+                  ),
+                )
+              : Container(
+                  width: 0,
+                  height: 0,
+                ),
           Padding(padding: EdgeInsets.only(top: 20)),
           BuddyListAdapter(items, onItemClick).getView(),
         ],
@@ -77,68 +103,51 @@ class _GroupFriendState extends State<GroupFriend> {
   Widget tabbar() {
     return Row(children: [
       Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.white,
-            elevation: 1),
+      InkWell(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("new", style: TextStyle(color: Colors.black, fontSize: 14)),
+              Text("참여자", style: TextStyle(color: Colors.black, fontSize: 22)),
         ),
-        onPressed: () {
+        onTap: () {
           //delayShowingContent();
           setState(() {});
         },
       ),
       Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.white,
-            elevation: 1),
+      InkWell(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("주변", style: TextStyle(color: Colors.black, fontSize: 14)),
+              Text("주변", style: TextStyle(color: Colors.black, fontSize: 22)),
         ),
-        onPressed: () {
+        onTap: () {
           //delayShowingContent();
+          setState(() {});
         },
       ),
       Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.white,
-            elevation: 1),
+      InkWell(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("성별", style: TextStyle(color: Colors.black, fontSize: 14)),
+              Text("성별", style: TextStyle(color: Colors.black, fontSize: 22)),
         ),
-        onPressed: () {
+        onTap: () {
           //delayShowingContent();
+          setState(() {});
         },
       ),
       Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.white,
-            elevation: 1),
+      InkWell(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("온라인", style: TextStyle(color: Colors.black, fontSize: 14)),
+              Text("new", style: TextStyle(color: Colors.black, fontSize: 22)),
         ),
-        onPressed: () {
+        onTap: () {
           //delayShowingContent();
+          setState(() {});
         },
       ),
       Container(width: 10),

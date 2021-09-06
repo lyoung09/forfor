@@ -14,6 +14,29 @@ import 'package:slide_drawer/slide_drawer.dart';
 class HiddenMenuSelect extends StatelessWidget {
   const HiddenMenuSelect({Key? key}) : super(key: key);
 
+  Widget appbarIcon(position) {
+    switch (position) {
+      case 0:
+        return Text("");
+
+      case 1:
+        return IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit));
+
+      case 2:
+        return Row(
+          children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit)),
+          ],
+        );
+
+      case 3:
+        return IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit));
+      default:
+        return Text("");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,14 +64,18 @@ class HiddenMenuSelect extends StatelessWidget {
           return Scaffold(
             //backgroundColor: backgroundColorContent,
             appBar: AppBar(
+              backgroundColor: Colors.transparent,
               leading: IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
+                  color: Colors.black,
+                  icon: Icon(Icons.close),
                   onPressed: () {
                     Navigator.of(context).pop();
                   }),
               actions: [
                 Spacer(),
+                appbarIcon(position),
                 IconButton(
+                    color: Colors.black,
                     icon: Icon(Icons.menu),
                     onPressed: () {
                       controller.toggle();
@@ -57,69 +84,6 @@ class HiddenMenuSelect extends StatelessWidget {
             ),
             body: screenCurrent,
           );
-        },
-      ),
-    );
-  }
-}
-
-class HiddenMe extends StatefulWidget {
-  const HiddenMe({Key? key}) : super(key: key);
-
-  @override
-  _HiddenMeState createState() => _HiddenMeState();
-}
-
-class _HiddenMeState extends State<HiddenMe> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SimpleHiddenDrawer(
-        typeOpen: TypeOpen.FROM_RIGHT,
-        menu: Menu(),
-        screenSelectedBuilder: (position, controller) {
-          Widget screenCurrent = GroupHome(title: "home");
-
-          switch (position) {
-            case 0:
-              screenCurrent = GroupHome(title: "home");
-              break;
-            case 1:
-              screenCurrent = GroupPosting();
-              break;
-            case 2:
-              screenCurrent = GroupFriend();
-              break;
-            case 3:
-              screenCurrent = GroupChatting();
-              break;
-          }
-
-          return Scaffold(
-              //backgroundColor: backgroundColorContent,
-
-              appBar: AppBar(
-                leading: IconButton(
-                    icon: Icon(Icons.arrow_back_ios),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
-                actions: [
-                  Spacer(),
-                  IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () {
-                        controller.toggle();
-                      }),
-                ],
-              ),
-              body: screenCurrent);
         },
       ),
     );
@@ -154,70 +118,96 @@ class _MenuState extends State<Menu> {
       color: Colors.grey[400],
       padding: const EdgeInsets.all(8.0),
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.setSelectedMenuPosition(0);
-                },
-                child: Row(
-                  children: [
-                    Spacer(),
-                    Icon(Icons.home),
-                    Padding(padding: EdgeInsets.only(right: 10)),
-                    Text("Home"),
-                  ],
+        child: Container(
+          color: Colors.white70,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Divider(
+                color: Colors.black,
+                thickness: 1.8,
+              ),
+              Container(
+                child: TextButton(
+                  onPressed: () {
+                    controller.setSelectedMenuPosition(0);
+                  },
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Icon(
+                        Icons.home,
+                        color: Colors.black,
+                      ),
+                      Padding(padding: EdgeInsets.only(right: 10)),
+                      Text("Home", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.setSelectedMenuPosition(1);
-                },
-                child: Row(
-                  children: [
-                    Spacer(),
-                    Icon(Icons.home),
-                    Padding(padding: EdgeInsets.only(right: 10)),
-                    Text("timeline"),
-                  ],
+              Divider(
+                color: Colors.black,
+                thickness: 1.5,
+              ),
+              Container(
+                child: TextButton(
+                  onPressed: () {
+                    controller.setSelectedMenuPosition(1);
+                  },
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Icon(Icons.home, color: Colors.black),
+                      Padding(padding: EdgeInsets.only(right: 10)),
+                      Text("timeline", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.setSelectedMenuPosition(2);
-                },
-                child: Row(
-                  children: [
-                    Spacer(),
-                    Icon(Icons.home),
-                    Padding(padding: EdgeInsets.only(right: 10)),
-                    Text("friend"),
-                  ],
+              Divider(
+                color: Colors.black,
+                thickness: 1.5,
+              ),
+              Container(
+                child: TextButton(
+                  onPressed: () {
+                    controller.setSelectedMenuPosition(2);
+                  },
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Icon(Icons.home, color: Colors.black),
+                      Padding(padding: EdgeInsets.only(right: 10)),
+                      Text("friend", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.setSelectedMenuPosition(3);
-                },
-                child: Row(
-                  children: [
-                    Spacer(),
-                    Icon(Icons.home),
-                    Padding(padding: EdgeInsets.only(right: 10)),
-                    Text("groupchat"),
-                  ],
+              Divider(
+                color: Colors.black,
+                thickness: 1.5,
+              ),
+              Container(
+                child: TextButton(
+                  onPressed: () {
+                    controller.setSelectedMenuPosition(3);
+                  },
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Icon(Icons.home, color: Colors.black),
+                      Padding(padding: EdgeInsets.only(right: 10)),
+                      Text("groupchat", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              Divider(
+                color: Colors.black,
+                thickness: 1.8,
+              ),
+            ],
+          ),
         ),
       ),
     );

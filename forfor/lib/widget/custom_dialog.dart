@@ -67,24 +67,45 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               Row(
                 children: [
                   Spacer(),
-                  IconButton(
-                      onPressed: () {}, icon: Icon(Icons.ac_unit, size: 25)),
+                  Column(
+                    children: [
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.ac_unit, size: 25)),
+                      Text("buddy", style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
                   Spacer(),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return InviteGroupDialog(text: widget.title);
-                            },
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.ac_unit,
-                        size: 25,
-                      )),
+                  Column(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return InviteGroupDialog(
+                                    text: "Yes",
+                                  );
+                                });
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (BuildContext context) {
+                            //       return InviteGroupDialog(text: widget.title);
+                            //     },
+                            //   ),
+                            // );
+                          },
+                          icon: Icon(
+                            Icons.ac_unit,
+                            size: 25,
+                          )),
+                      Text(
+                        "inviting",
+                        style: TextStyle(fontSize: 20),
+                      )
+                    ],
+                  ),
                   Spacer(),
                 ],
               )

@@ -75,7 +75,6 @@ class _GroupPostingState extends State<GroupPosting>
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
       child: Column(
         children: <Widget>[

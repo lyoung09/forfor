@@ -39,9 +39,12 @@ class _GroupWritingState extends State<GroupWriting> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_sharp),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           color: Colors.black,
         ),
         //title: Text(),

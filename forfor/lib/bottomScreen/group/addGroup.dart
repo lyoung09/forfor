@@ -121,6 +121,13 @@ class _AddGroupState extends State<AddGroup> {
           automaticallyImplyLeading: false,
           backgroundColor: Colors.grey[400],
           title: Text("그룹 만들기", style: TextStyle(color: Colors.black)),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new_rounded),
+              iconSize: 30,
+              color: Colors.black,
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
           actions: [
             IconButton(
               icon: Icon(

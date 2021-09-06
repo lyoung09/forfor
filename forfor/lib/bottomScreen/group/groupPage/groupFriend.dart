@@ -107,7 +107,7 @@ class _GroupFriendState extends State<GroupFriend> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("참여자", style: TextStyle(color: Colors.black, fontSize: 22)),
+              Text("참여자", style: TextStyle(color: Colors.black, fontSize: 14)),
         ),
         onTap: () {
           //delayShowingContent();
@@ -119,7 +119,7 @@ class _GroupFriendState extends State<GroupFriend> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("주변", style: TextStyle(color: Colors.black, fontSize: 22)),
+              Text("주변", style: TextStyle(color: Colors.black, fontSize: 14)),
         ),
         onTap: () {
           //delayShowingContent();
@@ -131,7 +131,7 @@ class _GroupFriendState extends State<GroupFriend> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("성별", style: TextStyle(color: Colors.black, fontSize: 22)),
+              Text("성별", style: TextStyle(color: Colors.black, fontSize: 14)),
         ),
         onTap: () {
           //delayShowingContent();
@@ -143,7 +143,7 @@ class _GroupFriendState extends State<GroupFriend> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child:
-              Text("new", style: TextStyle(color: Colors.black, fontSize: 22)),
+              Text("new", style: TextStyle(color: Colors.black, fontSize: 14)),
         ),
         onTap: () {
           //delayShowingContent();

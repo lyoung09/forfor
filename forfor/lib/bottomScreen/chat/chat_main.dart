@@ -73,6 +73,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                   ? <Widget>[
                       IconButton(
                         icon: Icon(Icons.delete),
+                        color: Colors.black,
                         onPressed: () {
                           setState(() {
                             items.removeWhere((e) => e.selected.value == true);
@@ -85,6 +86,7 @@ class _ChatMainScreenState extends State<ChatMainScreen> {
                   : <Widget>[
                       IconButton(
                         icon: Icon(Icons.settings),
+                        color: Colors.black,
                         onPressed: () {
                           showModalBottomSheet(
                               context: context,

@@ -4,6 +4,7 @@ import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:get/get.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({Key? key}) : super(key: key);

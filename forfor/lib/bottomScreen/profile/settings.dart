@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:get/get.dart';
 
 class SettingFlatRoute extends StatefulWidget {
   SettingFlatRoute();
@@ -19,18 +20,30 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
 
     return new Scaffold(
       backgroundColor: Colors.white,
-      appBar:
-          PreferredSize(child: Container(), preferredSize: Size.fromHeight(0)),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_sharp),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: [
+          Spacer(),
+          Container(
+            padding: EdgeInsets.only(right: 10),
+            child: Text("Settings",
+                style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              child: Text("Settings",
-                  style: MyText.headline(context)!.copyWith(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            ),
             InkWell(
               onTap: () {},
               child: Container(

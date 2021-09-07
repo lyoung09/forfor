@@ -52,7 +52,7 @@ class _GroupFriendState extends State<GroupFriend> {
         ],
         leading: IconButton(
             color: Colors.black,
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.arrow_back_ios_new),
             onPressed: () {
               widget.controller.toggle();
             }),

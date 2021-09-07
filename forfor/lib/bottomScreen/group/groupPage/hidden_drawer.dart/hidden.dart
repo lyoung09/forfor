@@ -43,7 +43,6 @@ class _HeyState extends State<Hey> {
   void dispose() {
     super.dispose();
     _controller.dispose();
-    
   }
 
   @override
@@ -103,7 +102,6 @@ class HiddenMenuSelect extends StatelessWidget {
     late SimpleHiddenDrawerController _controller;
     return WillPopScope(
       onWillPop: () {
-        _controller.toggle();
         return Future(() => false);
       },
       child: MaterialApp(

@@ -80,7 +80,7 @@ class _GroupPostingState extends State<GroupPosting>
         backgroundColor: Colors.grey[400],
         leading: IconButton(
             color: Colors.black,
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.arrow_back_ios_new),
             onPressed: () {
               widget.controller.toggle();
             }),

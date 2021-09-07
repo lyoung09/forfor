@@ -3,6 +3,7 @@ import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:forfor/widget/stacked_widget.dart';
 import 'package:forfor/widget/star_rating.dart';
 import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 
@@ -20,16 +21,103 @@ class _GroupHomeState extends State<GroupHome> {
   int page = 0;
   static const int MAX = 3;
 
+  final urlImages = [
+    'https://images.unsplash.com/photo-1554151228-14d9def656e4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=633&q=80',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+    // 'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
+  ];
+
+  Widget buildExpandedBox({
+    required List<Widget> children,
+    required Color color,
+  }) =>
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: children,
+        ),
+      );
+
+  Widget buildStackedImages({
+    TextDirection direction = TextDirection.ltr,
+  }) {
+    final double size = 60;
+    final double xShift = 25;
+
+    final items = urlImages.map((urlImage) => buildImage(urlImage)).toList();
+
+    return StackedWidgets(
+      direction: direction,
+      items: items,
+      size: size,
+      xShift: xShift,
+    );
+  }
+
+  Widget buildImage(String urlImage) {
+    final double borderSize = 5;
+
+    return ClipOval(
+      child: Container(
+        padding: EdgeInsets.all(borderSize),
+        color: Colors.white,
+        child: ClipOval(
+          child: Image.network(
+            urlImage,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _ListView(urlImages) {
+    return Container(
+        height: 120,
+        child: Row(
+          children: [
+            ClipOval(
+              child: Image.network(
+                "${urlImages}",
+                fit: BoxFit.cover,
+                width: 50,
+                height: 50,
+              ),
+            ),
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.grey[400],
         leading: IconButton(
             color: Colors.black,
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.arrow_back_ios_new),
             onPressed: () {
               widget.controller.toggle();
             }),
@@ -129,6 +217,90 @@ class _GroupHomeState extends State<GroupHome> {
                   ],
                 ),
               ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+            ),
+            Container(
+                height: 170,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border:
+                                    Border.all(width: 1, color: Colors.white),
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Text("participants",
+                                style: MyText.headline(context)!
+                                    .copyWith(color: Colors.grey[900])),
+                          ),
+                        ),
+                        Spacer(),
+                        Container(
+                          height: 45,
+                          padding: EdgeInsets.only(right: 10),
+                          child: IconButton(
+                              icon: Icon(
+                                Icons.add_circle_outlined,
+                                size: 30,
+                              ),
+                              onPressed: () {}),
+                        )
+                      ],
+                    ),
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Container(
+                        width: double.infinity,
+                        height: 100,
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 60,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        buildExpandedBox(
+                                            children: [buildStackedImages()],
+                                            color: Colors.white)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+
+                            // buildExpandedBox(
+                            //   color: Colors.black,
+                            //   children: [
+                            //     buildStackedImages(),
+                            //     const SizedBox(height: 16),
+                            //     buildStackedImages(direction: TextDirection.rtl),
+                            //   ],
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
             ),
             Card(
               shape: RoundedRectangleBorder(

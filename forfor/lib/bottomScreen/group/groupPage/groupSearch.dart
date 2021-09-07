@@ -56,7 +56,10 @@ class GroupSearchState extends State<GroupSearch> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: MyColors.grey_90),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+          ),
           onPressed: () {
             widget.controller.toggle();
           },

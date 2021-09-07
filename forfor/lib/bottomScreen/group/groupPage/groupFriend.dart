@@ -4,9 +4,12 @@ import 'package:forfor/adapter/buddylistAdapter.dart';
 import 'package:forfor/data/dummy.dart';
 import 'package:forfor/model/people.dart';
 import 'package:forfor/widget/my_colors.dart';
+import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 
 class GroupFriend extends StatefulWidget {
-  const GroupFriend({Key? key}) : super(key: key);
+  final SimpleHiddenDrawerController controller;
+
+  const GroupFriend({Key? key, required this.controller}) : super(key: key);
 
   @override
   _GroupFriendState createState() => _GroupFriendState();
@@ -40,62 +43,41 @@ class _GroupFriendState extends State<GroupFriend> {
     items.addAll(Dummy.getPeopleData());
     items.addAll(Dummy.getPeopleData());
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            child: Divider(
-              color: Colors.black,
-              thickness: 1.1,
-            ),
-            padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
-          ),
-          Row(
-            children: [
-              Padding(padding: EdgeInsets.only(left: 20)),
-              Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black38),
-                      borderRadius: BorderRadius.circular(35)),
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {},
-                  )),
-              Padding(padding: EdgeInsets.only(top: 20)),
-              Spacer(),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black38),
-                    borderRadius: BorderRadius.circular(35)),
-                child: IconButton(
-                  icon: Icon(Icons.filter_1_rounded),
-                  onPressed: () {
-                    setState(() {
-                      filter = !filter;
-                    });
-                  },
-                ),
-              ),
-              Padding(padding: EdgeInsets.only(right: 20))
-            ],
-          ),
-          filter == true
-              ? Align(
-                  alignment: Alignment.center,
-                  child: SingleChildScrollView(
-                    child: tabbar(),
-                    scrollDirection: Axis.horizontal,
-                  ),
-                )
-              : Container(
-                  width: 0,
-                  height: 0,
-                ),
-          Padding(padding: EdgeInsets.only(top: 20)),
-          BuddyListAdapter(items, onItemClick).getView(),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[400],
+        actions: [
+          IconButton(
+              color: Colors.black, icon: Icon(Icons.search), onPressed: () {})
         ],
+        leading: IconButton(
+            color: Colors.black,
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              widget.controller.toggle();
+            }),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Divider(
+                color: Colors.black,
+                thickness: 1.1,
+              ),
+              padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                child: tabbar(),
+                scrollDirection: Axis.horizontal,
+              ),
+            ),
+            BuddyListAdapter(items, onItemClick).getView(),
+          ],
+        ),
       ),
     );
   }

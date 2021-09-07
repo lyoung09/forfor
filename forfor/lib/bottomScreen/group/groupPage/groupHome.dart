@@ -4,12 +4,13 @@ import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:forfor/widget/star_rating.dart';
+import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 
 import 'groupPosting.dart';
 
 class GroupHome extends StatefulWidget {
-  final String title;
-  const GroupHome({Key? key, required this.title}) : super(key: key);
+  final SimpleHiddenDrawerController controller;
+  const GroupHome({Key? key, required this.controller}) : super(key: key);
 
   @override
   _GroupHomeState createState() => _GroupHomeState();
@@ -22,8 +23,23 @@ class _GroupHomeState extends State<GroupHome> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.grey[400],
+        leading: IconButton(
+            color: Colors.black,
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              widget.controller.toggle();
+            }),
+        actions: [
+          Icon(
+            Icons.ac_unit,
+            color: Colors.black,
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -43,11 +59,12 @@ class _GroupHomeState extends State<GroupHome> {
                     children: <Widget>[
                       PageView(
                         children: <Widget>[
-                          Hero(
-                              tag: 'grupImage',
-                              child: Image.asset(
-                                  'assets/image/photo_female_1.jpg',
-                                  fit: BoxFit.cover)),
+                          // Hero(
+                          //     tag: 'grupImage',
+                          //     child:
+                          Image.asset('assets/image/photo_female_1.jpg',
+                              fit: BoxFit.cover),
+                          //),
                           Image.asset(Img.get('image_shop_10.jpg'),
                               fit: BoxFit.cover),
                           Image.asset(Img.get('image_shop_11.jpg'),

@@ -5,6 +5,7 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'dart:math' as math;
+import 'addGroupStepper.dart';
 import 'widget/groupList.dart';
 import 'addGroup.dart';
 import 'group_click.dart';
@@ -60,7 +61,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return AddGroup();
+          return StepperGroupAdd();
         },
       ),
     );
@@ -638,7 +639,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                           },
                           separatorBuilder: (builder, index) {
                             return Divider(
-                              height: 10,
+                              height: 1,
                               thickness: 0,
                             );
                           },

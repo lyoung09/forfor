@@ -107,6 +107,9 @@ flutter:
     - assets/icon/gender.png
     - assets/icon/invite.png
     - assets/icon/buddy.png
+    - assets/icon/group.png
+    - assets/icon/userSetting.png
+    - assets/icon/teamwork.png
     - assets/dummy/image_4.jpg
     - assets/dummy/language.png
     - assets/dummy/passport.png

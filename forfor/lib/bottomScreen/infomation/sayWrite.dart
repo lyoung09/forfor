@@ -54,6 +54,7 @@ class _SayWritingState extends State<SayWriting> {
     return Scaffold(
       appBar: AppBar(
           brightness: Brightness.dark,
+          backgroundColor: Colors.grey[400],
           title: Text("Question",
               style: TextStyle(color: Colors.grey[900], fontSize: 25)),
           centerTitle: true,

@@ -56,12 +56,31 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
         child: Column(
           children: <Widget>[
             Card(
+              elevation: 3,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6)),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Row(
+                    children: [
+                      Spacer(),
+                      Container(
+                        padding: EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.black)),
+                        child: Text(
+                          "120명",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.more_vert, size: 15),
+                      ),
+                    ],
+                  ),
                   Hero(
                     tag: 'groupImage',
                     child: Image.asset(
@@ -85,22 +104,10 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                             RotationTransition(
                               turns: animation,
                               child: IconButton(
-                                icon: Icon(Icons.expand_less),
+                                icon: Icon(Icons.expand_more),
                                 onPressed: () {
                                   togglePanel();
                                 },
-                              ),
-                            ),
-                            Spacer(),
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.black)),
-                              child: Text(
-                                "120명",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 20),
                               ),
                             ),
                           ],
@@ -108,7 +115,7 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                         SizeTransition(
                           sizeFactor: animationView,
                           child: Container(
-                              height: 100,
+                              height: 130,
                               child: Column(
                                 children: <Widget>[
                                   Expanded(
@@ -124,7 +131,7 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: Container(
-                                      padding: EdgeInsets.all(8),
+                                      padding: EdgeInsets.all(3),
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
@@ -148,11 +155,9 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  Container(height: 5)
                 ],
               ),
             ),
-            Container(height: 10),
           ],
         ));
   }

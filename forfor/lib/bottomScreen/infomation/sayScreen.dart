@@ -136,8 +136,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   showNip: true,
                                   padding: BubbleEdges.all(22),
                                   alignment: Alignment.centerLeft,
-                                  borderColor: Colors.grey[400],
-                                  borderWidth: 1.1,
+                                  borderColor: Colors.black,
+                                  borderWidth: 1.3,
                                   nip: BubbleNip.leftCenter,
                                   margin: const BubbleEdges.all(4),
                                   child: Column(
@@ -282,8 +282,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     padding: BubbleEdges.all(22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     margin: const BubbleEdges.all(4),
                                     child: Column(
                                       children: [
@@ -359,8 +359,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     child: Column(
                                       children: [
                                         Wrap(
@@ -435,8 +435,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     child: Column(
                                       children: [
                                         Wrap(
@@ -511,8 +511,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     child: Column(
                                       children: [
                                         Wrap(
@@ -586,8 +586,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     padding: BubbleEdges.all(22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     margin: const BubbleEdges.all(4),
                                     child: Column(
                                       children: [
@@ -658,389 +658,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Container(width: 5),
                                 Expanded(
                                   child: Bubble(
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
                                     padding: BubbleEdges.all(22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
@@ -1116,8 +736,388 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   child: Bubble(
                                     showNip: true,
                                     padding: BubbleEdges.all(22),
-                                    borderColor: Colors.grey[400],
-                                    borderWidth: 1.1,
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    padding: BubbleEdges.all(22),
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    padding: BubbleEdges.all(22),
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    padding: BubbleEdges.all(22),
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    padding: BubbleEdges.all(22),
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    padding: BubbleEdges.all(22),
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),

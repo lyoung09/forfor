@@ -105,7 +105,12 @@ flutter:
     - assets/icon/instagramlogo.jpeg
     - assets/icon/email.png
     - assets/icon/gender.png
+    - assets/icon/invite.png
+    - assets/icon/buddy.png
     - assets/dummy/image_4.jpg
+    - assets/dummy/language.png
+    - assets/dummy/passport.png
+    - assets/dummy/friends.png
     - assets/image/photo_female_1.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

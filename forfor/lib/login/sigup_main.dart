@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signupD/userInfo.dart';
 import 'package:email_auth/email_auth.dart';
+import 'package:forfor/widget/custom_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
@@ -69,18 +70,11 @@ class _SignUpState extends State<SignUp> {
   }
 
   void checkDialog() {
+    FocusScope.of(context).requestFocus(new FocusNode());
     setState(() {
       canSignUp = true;
     });
-    showDialog(
-        context: context,
-        builder: (_) => CupertinoAlertDialog(
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text('Check!'),
-                ),
-              ],
-            ));
+    showDialog(context: context, builder: (_) => CustomCongratDialog());
   }
 
   void signUpLoginButton() async {
@@ -110,9 +104,9 @@ class _SignUpState extends State<SignUp> {
 
         await FirebaseFirestore.instance
             .collection("users")
-            .doc(user?.uid)
+            .doc(_auth.currentUser?.uid)
             .set({
-          'uid': user?.uid,
+          'uid': _auth.currentUser?.uid,
           'email': email,
           'password': password,
           'access': 'email'
@@ -268,7 +262,13 @@ class _SignUpState extends State<SignUp> {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: ElevatedButton(
-                    onPressed: () => sendOtp(), child: Text("OTP")),
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        primary: Colors.blue,
+                        elevation: 1),
+                    onPressed: () => sendOtp(),
+                    child: Text("OTP", style: TextStyle(color: Colors.black))),
               ),
             ],
           ),
@@ -281,27 +281,75 @@ class _SignUpState extends State<SignUp> {
                     "email authentication",
                     style: TextStyle(fontSize: 15, color: Colors.red),
                   )),
+          Padding(padding: EdgeInsets.only(top: 8)),
           checkOtp == true && canSignUp == false
-              ? Container(
-                  height: height * 0.3,
-                  width: width * 0.2,
-                  child: CupertinoAlertDialog(
-                    title: Text("OTP NUMBER"),
-                    content: TextField(
-                      controller: _otpControl,
+              ? Row(
+                  children: [
+                    Container(
+                      width: width * 0.8,
+                      padding: EdgeInsets.only(left: 15, right: 5),
+                      child: Card(
+                        elevation: 0.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                              bottom:
+                                  BorderSide(width: 1.0, color: Colors.black),
+                            ),
+                          ),
+                          child: TextFormField(
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(10.0),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+
+                              // prefixIcon: Icon(
+                              //   Icons.mail_outline,
+                              //   color: Colors.black,
+                              // ),
+                              hintStyle: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                            maxLines: 1,
+                            controller: _otpControl,
+                          ),
+                        ),
+                      ),
                     ),
-                    actions: <Widget>[
-                      CupertinoDialogAction(
-                          child: Text('확인'),
-                          onPressed: () {
-                            verifyOTP();
-                            verifyOtp == true ? checkDialog() : dialog();
-                          }),
-                    ],
-                  ),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            primary: Colors.blue,
+                            elevation: 1),
+                        onPressed: () {
+                          verifyOTP();
+                          verifyOtp == true ? checkDialog() : dialog();
+                        },
+                        child: Text("Check",
+                            style: TextStyle(color: Colors.black)))
+                  ],
                 )
               : SizedBox(height: 20.0),
-
+          Padding(padding: EdgeInsets.only(top: 20)),
           Container(
             padding: EdgeInsets.only(left: 15, right: 35),
             width: width * 0.8,

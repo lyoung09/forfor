@@ -13,11 +13,17 @@ import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/login/login_main.dart';
 import 'package:forfor/login/signupD/hopeInfo.dart';
 import 'package:forfor/login/signupD/userInfo.dart';
+import 'package:forfor/login/sigup_main.dart';
+import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bottomScreen/buddy/invitePeopleScreen.dart';
+import 'bottomScreen/group/addGroupStepper.dart';
+import 'bottomScreen/group/groupPage/groupFriend.dart';
 import 'bottomScreen/group/groupPage/groupHome.dart';
+import 'bottomScreen/group/groupPage/groupPosting.dart';
+import 'bottomScreen/group/groupPage/groupSearch.dart';
 import 'bottomScreen/group/group_click.dart';
 import 'bottomScreen/group/groupclick.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
@@ -47,6 +53,43 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity),
       home: MyHomePage(),
       routes: {
+        '/groupPage': (context) {
+          return SimpleHiddenDrawer(
+            menu: Menu(),
+            screenSelectedBuilder: (position, controller) {
+              Widget screenCurrent = GroupHome(controller: controller);
+              switch (position) {
+                case 0:
+                  screenCurrent =
+                      GroupHome(controller: controller, key: JosKeys.groupHome);
+                  break;
+                case 1:
+                  screenCurrent = GroupPosting(
+                      controller: controller, key: JosKeys.groupPost);
+                  break;
+                case 2:
+                  screenCurrent = GroupChatting(
+                      controller: controller, key: JosKeys.groupChat);
+                  break;
+                case 3:
+                  screenCurrent = GroupFriend(
+                      controller: controller, key: JosKeys.groupFriend);
+                  break;
+                case 4:
+                  screenCurrent = GroupSearch(
+                      controller: controller, key: JosKeys.groupSear);
+                  break;
+                case 5:
+                  screenCurrent = GroupFriend(controller: controller);
+                  break;
+              }
+
+              return Scaffold(
+                body: screenCurrent,
+              );
+            },
+          );
+        },
         '/bottomScreen': (context) => BottomNavigation(),
         '/login': (context) => Login(),
         '/userInfomation': (context) => UserInfomation(),
@@ -89,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return HopeInfomation();
+    //       return StepperGroupAdd();
     //     },
     //   ),
     // );

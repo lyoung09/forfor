@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'img.dart';
+import 'my_colors.dart';
 import 'my_strings.dart';
 import 'my_text.dart';
 
@@ -67,44 +68,43 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               Row(
                 children: [
                   Spacer(),
-                  Column(
-                    children: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.ac_unit, size: 25)),
-                      Text("buddy", style: TextStyle(fontSize: 20)),
-                    ],
-                  ),
+                  InkWell(
+                      onTap: () {},
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/icon/buddy.png',
+                            width: 35,
+                            height: 30,
+                          ),
+                          Text("buddy", style: TextStyle(fontSize: 20)),
+                        ],
+                      )),
                   Spacer(),
-                  Column(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return InviteGroupDialog(
-                                    text: "Yes",
-                                  );
-                                });
-                            // Navigator.of(context).push(
-                            //   MaterialPageRoute(
-                            //     builder: (BuildContext context) {
-                            //       return InviteGroupDialog(text: widget.title);
-                            //     },
-                            //   ),
-                            // );
-                          },
-                          icon: Icon(
-                            Icons.ac_unit,
-                            size: 25,
-                          )),
-                      Text(
-                        "inviting",
-                        style: TextStyle(fontSize: 20),
-                      )
-                    ],
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InviteGroupDialog(
+                              text: "Yes",
+                            );
+                          });
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/icon/invite.png',
+                          width: 35,
+                          height: 30,
+                        ),
+                        Text(
+                          "inviting",
+                          style: TextStyle(fontSize: 20),
+                        )
+                      ],
+                    ),
                   ),
                   Spacer(),
                 ],
@@ -433,6 +433,68 @@ class _InviteGroupDialogState extends State<InviteGroupDialog>
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomCongratDialog extends StatefulWidget {
+  CustomCongratDialog({Key? key}) : super(key: key);
+
+  @override
+  CustomCongratDialogState createState() => new CustomCongratDialogState();
+}
+
+class CustomCongratDialogState extends State<CustomCongratDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: 160,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          color: Colors.white,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Wrap(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(15),
+                width: double.infinity,
+                child: Column(
+                  children: <Widget>[
+                    Text("인증 완료!",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 23,
+                        )),
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  width: double.infinity,
+                  color: Colors.blueAccent[50],
+                  child: Column(
+                    children: <Widget>[
+                      Text("확인",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

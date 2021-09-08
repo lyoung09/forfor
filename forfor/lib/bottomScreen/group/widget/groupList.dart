@@ -92,10 +92,16 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                               ),
                             ),
                             Spacer(),
-                            Text(
-                              "120명",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 20),
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.black)),
+                              child: Text(
+                                "120명",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 20),
+                              ),
                             ),
                           ],
                         ),
@@ -117,12 +123,22 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                                   ),
                                   Align(
                                     alignment: Alignment.bottomRight,
-                                    child: InkWell(
-                                      onTap: groupScreen,
-                                      child: Text(
-                                        "참여하기",
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 20),
+                                    child: Container(
+                                      padding: EdgeInsets.all(8),
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            primary: Colors.white,
+                                            elevation: 2),
+                                        onPressed: groupScreen,
+                                        child: Text(
+                                          "참여하기",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20),
+                                        ),
                                       ),
                                     ),
                                   )

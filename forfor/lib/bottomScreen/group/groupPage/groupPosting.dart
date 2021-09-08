@@ -72,6 +72,99 @@ class _GroupPostingState extends State<GroupPosting>
     "Angular",
     "Node js",
   ];
+
+  Widget customTab() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+                side: BorderSide(
+                  width: 1,
+                  color: (Colors.grey[400])!,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {},
+          child: Text("All", style: TextStyle(color: Colors.black)),
+        ),
+        Padding(padding: EdgeInsets.only(right: 15)),
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+                side: BorderSide(
+                  width: 1,
+                  color: (Colors.grey[400])!,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {},
+          child: Text("1H", style: TextStyle(color: Colors.black)),
+        ),
+        Padding(padding: EdgeInsets.only(right: 15)),
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+                side: BorderSide(
+                  width: 1,
+                  color: (Colors.grey[400])!,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {},
+          child: Text("1D", style: TextStyle(color: Colors.black)),
+        ),
+        Padding(padding: EdgeInsets.only(right: 15)),
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+                side: BorderSide(
+                  width: 1,
+                  color: (Colors.grey[400])!,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {},
+          child: Text("1W", style: TextStyle(color: Colors.black)),
+        ),
+        Padding(padding: EdgeInsets.only(right: 15)),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -97,41 +190,9 @@ class _GroupPostingState extends State<GroupPosting>
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
         child: Column(
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(top: 50)),
-            // Row(children: [
-            //   Padding(padding: EdgeInsets.only(left: 10)),
-            //   Expanded(
-            //       child: Container(
-            //     decoration: BoxDecoration(
-            //         color: Colors.grey[100],
-            //         border: Border.all(width: 0.5),
-            //         borderRadius: BorderRadius.circular(20)),
-            //     width: 280,
-            //     child: TextField(
-            //       maxLines: 1,
-            //       controller: _filter,
-            //       style: TextStyle(color: Colors.grey[600], fontSize: 18),
-            //       keyboardType: TextInputType.text,
-            //       decoration: InputDecoration(
-            //         border: InputBorder.none,
-            //         prefixIcon: Icon(Icons.search),
-            //         hintText: 'Search QnA',
-            //         hintStyle: TextStyle(fontSize: 16.0),
-            //       ),
-            //     ),
-            //   )),
-            //   Padding(padding: EdgeInsets.only(left: 10)),
-            //   // IconButton(
-            //   //   icon: Icon(
-            //   //     Icons.notifications_none,
-            //   //     color: Colors.black,
-            //   //   ),
-            //   //   iconSize: 30,
-            //   //   onPressed: () {},
-            //   // ),
-            //   IconButton(
-            //       icon: Icon(Icons.edit), iconSize: 30, onPressed: writingPage),
-            // ]),
+            Padding(padding: EdgeInsets.only(top: 20)),
+            customTab(),
+            Padding(padding: EdgeInsets.only(top: 20)),
             Container(
                 child: Divider(
               thickness: 1,

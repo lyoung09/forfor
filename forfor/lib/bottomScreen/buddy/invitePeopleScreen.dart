@@ -73,6 +73,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     ];
   }
 
+  bool click = true;
   Widget tabbar() {
     return Row(children: [
       Container(width: 10),
@@ -90,22 +91,6 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
         onPressed: () {
           //delayShowingContent();
           setState(() {});
-        },
-      ),
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("카테고리", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          //delayShowingContent();
         },
       ),
       Container(width: 10),
@@ -150,12 +135,69 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 15),
           child:
-              Text("호잇", style: TextStyle(color: Colors.black, fontSize: 14)),
+              Text("내국인", style: TextStyle(color: Colors.black, fontSize: 14)),
         ),
         onPressed: () {
           //delayShowingContent();
         },
       ),
+    ]);
+  }
+
+  Widget category() {
+    return Row(children: [
+      Container(width: 10),
+      InkWell(
+        onTap: () {
+          setState(() {
+            click = !click;
+          });
+        },
+        child: Container(
+          child: Container(
+            decoration: click == true
+                ? BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: Colors.black, width: 1.8)))
+                : BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 0)),
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: click == true
+                ? Text("friends",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold))
+                : Text("friends",
+                    style: TextStyle(color: Colors.grey[900], fontSize: 18)),
+          ),
+        ),
+      ),
+      Container(width: 10),
+      InkWell(
+        onTap: () {
+          click = !click;
+        },
+        child: Container(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text("language",
+                style: TextStyle(color: Colors.grey[900], fontSize: 18)),
+          ),
+        ),
+      ),
+      Container(width: 10),
+      InkWell(
+        onTap: () {},
+        child: Container(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text("journey",
+                style: TextStyle(color: Colors.grey[900], fontSize: 18)),
+          ),
+        ),
+      ),
+      Container(width: 10),
     ]);
   }
 
@@ -168,7 +210,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
             context: context,
             builder: (BuildContext context) {
               return CustomDialogBox(
-                title: "Custom Dialog Demo",
+                title: "${scientist.name}",
                 descriptions:
                     "Hii all this is a custom dialog in flutter and  you will be use in your flutter applications",
                 img: Image.network('${scientist.image}'),
@@ -184,32 +226,57 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
                     padding:
-                        const EdgeInsets.only(top: 8.0, left: 5, bottom: 8),
+                        const EdgeInsets.only(top: 8.0, left: 8, bottom: 2),
                     child: ClipOval(
                       child: Image.network(
                         "${scientist.image}",
                         fit: BoxFit.cover,
-                        width: 50,
-                        height: 50,
+                        width: 60,
+                        height: 60,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        right: 4, left: 15, bottom: 8, top: 8),
-                    child: Text(
-                      scientist.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                        child: Text(
+                          "국기",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                        child: Text(
+                          "0.1km",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    right: 4, left: 15, bottom: 8, top: 8),
+                child: Text(
+                  scientist.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 4, left: 8, bottom: 8),
@@ -220,31 +287,42 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                   ),
                 ),
               ),
-              Divider(color: Colors.black, height: 1),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Wrap(
-                  spacing: 5, // to apply margin in the main axis of the wrap
-                  runSpacing: 5,
-                  children: <Widget>[
-                    Container(
-                      width: 35,
-                      height: 35,
-                      child: CircleAvatar(
-                          backgroundImage:
-                              AssetImage('assets/icon/gender.png')),
-                    ),
-                    Chip(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      label: Text('Evans C'),
-                    ),
-                    Chip(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      label: Text('Anderson Thomas'),
-                    ),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Wrap(
+              //     spacing: 5, // to apply margin in the main axis of the wrap
+              //     runSpacing: 8,
+              //     children: <Widget>[
+              //       CircleAvatar(
+              //         radius: 22,
+              //         backgroundColor: Colors.black,
+              //         child: CircleAvatar(
+              //             radius: 21,
+              //             backgroundColor: Colors.white,
+              //             backgroundImage:
+              //                 AssetImage('assets/dummy/passport.png')),
+              //       ),
+              //       CircleAvatar(
+              //         radius: 22,
+              //         backgroundColor: Colors.black,
+              //         child: CircleAvatar(
+              //             radius: 21,
+              //             backgroundColor: Colors.white,
+              //             backgroundImage:
+              //                 AssetImage('assets/dummy/friends.png')),
+              //       ),
+              //       CircleAvatar(
+              //         radius: 22,
+              //         backgroundColor: Colors.black,
+              //         child: CircleAvatar(
+              //             radius: 21,
+              //             backgroundColor: Colors.white,
+              //             backgroundImage:
+              //                 AssetImage('assets/dummy/language.png')),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           )),
     );
@@ -279,15 +357,27 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                     )),
               ],
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
+            Padding(padding: EdgeInsets.only(top: 15)),
             Divider(color: Colors.black, height: 1),
             Container(
               height: 50,
               child: SingleChildScrollView(
-                child: tabbar(),
+                child: category(),
                 scrollDirection: Axis.horizontal,
               ),
             ),
+            Padding(padding: EdgeInsets.only(top: 15)),
+            click == true
+                ? Container(
+                    height: 50,
+                    child: SingleChildScrollView(
+                      child: tabbar(),
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  )
+                : Container(
+                    height: 0,
+                  ),
 
             IntrinsicGridView.vertical(
                 padding:

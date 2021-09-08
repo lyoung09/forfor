@@ -17,178 +17,111 @@ class _SayWritingState extends State<SayWriting> {
     super.initState();
   }
 
-  Widget bottomModal() {
-    return SingleChildScrollView(
+  Widget bottom() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
       child: Container(
-        height: 260,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: new Icon(Icons.photo),
-              title: new Text('Photo'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.music_note),
-              title: new Text('Music'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.videocam),
-              title: new Text('Video'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.share),
-              title: new Text('Share'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget bottomSheet() {
-    return SingleChildScrollView(
-      child: Container(
+        decoration: BoxDecoration(color: Colors.grey[50]),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: new Icon(Icons.photo),
-              title: new Text('Photo'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+          children: [
+            Padding(padding: EdgeInsets.only(right: 30)),
+            Container(
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.camera_alt_outlined,
+                    size: 25,
+                  )),
             ),
-            ListTile(
-              leading: new Icon(Icons.music_note),
-              title: new Text('Music'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.videocam),
-              title: new Text('Video'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.share),
-              title: new Text('Share'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
+
+            //IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit)),
           ],
         ),
       ),
     );
   }
 
-  bool modalCheck = false;
   @override
   Widget build(BuildContext context) {
+    TextStyle textStyle =
+        TextStyle(color: Colors.black, height: 1.4, fontSize: 16);
+    TextStyle labelStyle = TextStyle(color: Colors.white);
+    UnderlineInputBorder lineStyle1 = UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.white, width: 1));
+    UnderlineInputBorder lineStyle2 = UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.amber[500]!, width: 2));
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[100],
-        leading: IconButton(
-          icon: Icon(Icons.clear),
-          color: Colors.black,
-          iconSize: 30,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text("say", style: TextStyle(color: Colors.black, fontSize: 35)),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            color: Colors.black,
-            iconSize: 30,
-            icon: Icon(Icons.send),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(padding: EdgeInsets.only(top: 50)),
-            Container(
-              alignment: Alignment.centerRight,
-              padding: EdgeInsets.only(left: 10, right: 10),
-              width: MediaQuery.of(context).size.width,
-              child: CupertinoTextField(
-                cursorColor: Colors.black,
-                textAlign: TextAlign.left,
-                maxLines: 30,
-                keyboardType: TextInputType.multiline,
-                autofocus: false,
-              ),
+          brightness: Brightness.dark,
+          title: Text("Question",
+              style: TextStyle(color: Colors.grey[900], fontSize: 25)),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_outlined,
+              size: 25,
+              color: Colors.grey[900],
             ),
-            // Padding(padding: EdgeInsets.only(top: 20)),
-            // Container(
-            //   width: MediaQuery.of(context).size.width,
-            //   child: Card(
-            //     elevation: 3,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(10.0),
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         IconButton(
-            //           icon: Icon(Icons.camera_alt),
-            //           onPressed: () {},
-            //           iconSize: 32,
-            //         ),
-            //         Padding(padding: EdgeInsets.only(right: 5)),
-            //         Text("camera",
-            //             style: TextStyle(color: Colors.black, fontSize: 20))
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            // Padding(padding: EdgeInsets.only(top: 10)),
-            // Container(
-            //   width: MediaQuery.of(context).size.width,
-            //   child: Card(
-            //     elevation: 3,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(10.0),
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         IconButton(
-            //           iconSize: 32,
-            //           icon: Icon(Icons.voicemail),
-            //           onPressed: () {},
-            //         ),
-            //         Padding(padding: EdgeInsets.only(right: 5)),
-            //         Text("voice",
-            //             style: TextStyle(color: Colors.black, fontSize: 20))
-            //       ],
-            //     ),
-            //   ),
-            // ),
-          ],
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.camera_alt_outlined,
+                size: 25,
+                color: Colors.grey[900],
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.send_outlined,
+                size: 25,
+                color: Colors.grey[900],
+              ),
+              onPressed: () {},
+            ),
+          ]),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(15),
+        scrollDirection: Axis.vertical,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(height: 20),
+                TextField(
+                  style: textStyle,
+                  keyboardType: TextInputType.multiline,
+                  cursorColor: Colors.black26,
+                  maxLines: 15,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText:
+                        'You can ask anything.\n But do not sexual and political and religious asking!',
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(0),
+                      borderSide: BorderSide(color: Colors.black, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(0),
+                      borderSide:
+                          BorderSide(color: Colors.grey[400]!, width: 1),
+                    ),
+                  ),
+                ),
+                Container(height: 10),
+              ],
+            ),
+          ),
         ),
       ),
-      bottomSheet: bottomModal(),
     );
   }
 }

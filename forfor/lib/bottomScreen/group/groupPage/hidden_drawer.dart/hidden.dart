@@ -216,10 +216,31 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
             Row(
               children: [
                 Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.only(left: 5),
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 60,
+                      height: 40,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          ),
+                        ),
+                        onPressed: backHomePage,
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )),
+                Container(
+                  padding: EdgeInsets.only(left: 100),
                   child: SizedBox(
-                    width: 60,
+                    width: 80,
                     height: 40,
                     child: ElevatedButton(
                       style: ButtonStyle(
@@ -236,32 +257,6 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                         "join",
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 90),
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 100,
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                        ),
-                      ),
-                      onPressed: () {
-                        //  controller.setSelectedMenuPosition(0);
-                      },
-                      child: Text(
-                        "1300명",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -287,26 +282,14 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
             Padding(
               padding: EdgeInsets.only(top: 20),
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.only(left: 10),
-              child: SizedBox(
-                width: 250,
-                height: 60,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          side: BorderSide(
-                        width: 1,
-                        color: Colors.black,
-                      )),
-                    ),
-                  ),
-                  onPressed: () {
-                    //  controller.setSelectedMenuPosition(0);
-                  },
+            Card(
+              elevation: 3,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: 8),
+                child: SizedBox(
+                  width: 250,
+                  height: 60,
                   child: Text(
                     "group namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup name",
                     maxLines: 2,
@@ -316,7 +299,7 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            Padding(padding: EdgeInsets.only(top: 25)),
+            Padding(padding: EdgeInsets.only(top: 40)),
             // GridView.count(
             //   crossAxisCount: 5,
             //   children: List.generate(5, (index) {
@@ -570,32 +553,6 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                         ),
                       ),
                       Padding(padding: EdgeInsets.only(top: 20)),
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Container(
-                            padding: EdgeInsets.only(left: 5),
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              width: 60,
-                              height: 40,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.white),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                  ),
-                                ),
-                                onPressed: backHomePage,
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            )),
-                      ),
                     ],
                   ),
                 ),

@@ -24,7 +24,6 @@ class _UserInfomationState extends State<UserInfomation> {
   var _image;
 
   var _country;
-  var _hopeCountry;
   var _birthYear;
   var _gender;
 
@@ -210,8 +209,7 @@ class _UserInfomationState extends State<UserInfomation> {
     if (_usernameControl.text.isEmpty ||
         _gender.toString().isEmpty ||
         _image == null ||
-        _country.toString().isEmpty ||
-        _hopeCountry.toString().isEmpty) {
+        _country.toString().isEmpty) {
       print("check");
 
       return true;
@@ -223,12 +221,9 @@ class _UserInfomationState extends State<UserInfomation> {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     if (koreanSelected) {
+      print("hello");
       _country = "Korea, Republic of South Korea";
     }
-    if (notKoreanSelected) {
-      _hopeCountry = "Korea, Republic of South Korea";
-    }
-
     if (checknull()) {
       showDialog(
           context: context,
@@ -237,19 +232,6 @@ class _UserInfomationState extends State<UserInfomation> {
                 actions: <Widget>[
                   CupertinoDialogAction(
                     child: Text('no empty'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ));
-    } else if (_country.toString() == _hopeCountry.toString() &&
-        _country.toString().isNotEmpty) {
-      showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) => CupertinoAlertDialog(
-                content: Text("Hope country and your country are same."),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: Text('change country'),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -274,15 +256,18 @@ class _UserInfomationState extends State<UserInfomation> {
           return downloadURL;
         });
 
+        print("${_gender.toString()}");
+        print("${_country.toString()}");
+        print("${_usernameControl.text}");
+
         await FirebaseFirestore.instance
             .collection("users")
             .doc(auth.currentUser?.uid)
             .update({
           "gender": _gender.toString(),
           "country": _country.toString(),
-          "hopeCountry": _hopeCountry.toString(),
           "nickname": _usernameControl.text,
-          "url": urlProfileImageApi
+          "url": urlProfileImageApi,
         });
 
         Navigator.pushNamed(context, '/hopeInformation');
@@ -428,9 +413,6 @@ class _UserInfomationState extends State<UserInfomation> {
                             onSelected: (bool value) {
                               setState(() {
                                 koreanSelected = value;
-                                if (notKoreanSelected == true) {
-                                  koreanSelected = false;
-                                }
                               });
 
                               //Do whatever you want when the chip is selected
@@ -450,9 +432,6 @@ class _UserInfomationState extends State<UserInfomation> {
                             notKoreanSelected = value;
                             setState(() {
                               notKoreanSelected = value;
-                              if (koreanSelected == true) {
-                                notKoreanSelected = false;
-                              }
                             });
                           },
                           backgroundColor: Colors.yellow[100],
@@ -460,95 +439,51 @@ class _UserInfomationState extends State<UserInfomation> {
                       ),
                     ],
                   ),
-                  notKoreanSelected == false && koreanSelected == false
+                  notKoreanSelected == false
                       ? Container(
                           // height: height * 0.1,
                           width: width * 0.8,
                           height: 0,
                           child: Text(""))
-                      : notKoreanSelected == true
-                          ? Container(
-                              // height: height * 0.1,
-                              width: width * 0.8,
-                              child: Row(
-                                children: [
-                                  CountryListPick(
-                                      theme: CountryTheme(
-                                        isShowFlag: true,
-                                        isShowTitle: false,
-                                        isShowCode: false,
-                                        isDownIcon: true,
-                                        showEnglishName: true,
-                                      ),
-                                      onChanged: (CountryCode? code) {
-                                        print(code?.name);
-                                        setState(() {
-                                          selectCountry = true;
-                                          _country = code?.name;
-                                        });
-                                      },
-                                      useUiOverlay: true,
-                                      // Whether the country list should be wrapped in a SafeArea
-                                      useSafeArea: false),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(right: width * 0.05)),
-                                  selectCountry == true
-                                      ? Text(
-                                          _country.length > 20
-                                              ? ' ${_country.substring(0, 20)}...'
-                                              : _country,
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15))
-                                      : Text("your country",
-                                          style: TextStyle(
-                                              color: Colors.grey[400],
-                                              fontSize: 15)),
-                                ],
-                              ))
-                          : Container(
-                              // height: height * 0.1,
-                              width: width * 0.8,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(right: width * 0.05)),
-                                  selectKoreanHopeCountry == true
-                                      ? Text(
-                                          _hopeCountry.length > 20
-                                              ? "${_hopeCountry.substring(0, 20)}..."
-                                              : _hopeCountry,
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15))
-                                      : Text("희망 국가",
-                                          style: TextStyle(
-                                              color: Colors.grey[400],
-                                              fontSize: 15)),
-                                  CountryListPick(
-                                      theme: CountryTheme(
-                                        isShowFlag: true,
-                                        isShowTitle: false,
-                                        isShowCode: false,
-                                        isDownIcon: true,
-                                        showEnglishName: true,
-                                      ),
-                                      onChanged: (CountryCode? code) {
-                                        print(code?.name);
-                                        setState(() {
-                                          selectKoreanHopeCountry = true;
-                                          _hopeCountry = code?.name;
-                                        });
-                                      },
-                                      useUiOverlay: true,
-                                      // Whether the country list should be wrapped in a SafeArea
-                                      useSafeArea: false),
-                                ],
-                              )),
+                      : Container(
+                          // height: height * 0.1,
+                          width: width * 0.8,
+                          child: Row(
+                            children: [
+                              CountryListPick(
+                                  theme: CountryTheme(
+                                    isShowFlag: true,
+                                    isShowTitle: false,
+                                    isShowCode: false,
+                                    isDownIcon: true,
+                                    showEnglishName: true,
+                                  ),
+                                  onChanged: (CountryCode? code) {
+                                    print(code?.name);
+                                    setState(() {
+                                      selectCountry = true;
+                                      _country = code?.name;
+                                    });
+                                  },
+                                  useUiOverlay: true,
+                                  // Whether the country list should be wrapped in a SafeArea
+                                  useSafeArea: false),
+                              Padding(
+                                  padding:
+                                      EdgeInsets.only(right: width * 0.05)),
+                              selectCountry == true
+                                  ? Text(
+                                      _country.length > 20
+                                          ? ' ${_country.substring(0, 20)}...'
+                                          : _country,
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15))
+                                  : Text("your country",
+                                      style: TextStyle(
+                                          color: Colors.grey[400],
+                                          fontSize: 15)),
+                            ],
+                          )),
 
                   Container(
                     child: Divider(

@@ -19,103 +19,75 @@ class _MyProfileState extends State<MyProfile> {
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          brightness: Brightness.dark,
-          backgroundColor: Colors.white,
-          title: new Text("View Profile"),
-          actions: <Widget>[
-            // overflow menu
-            IconButton(
-              icon: const Icon(
-                Icons.settings,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return SettingFlatRoute();
-                    },
-                  ),
-                );
-              },
-            ), // overflow menu
-          ]),
+        brightness: Brightness.dark,
+        backgroundColor: Colors.white,
+        title: new Text("View Profile"),
+      ),
       body: ListView(children: [
         Container(
           child: Column(
             children: <Widget>[
               Container(height: 35),
-              InkWell(
-                onTap: () {
-                  print("hello");
-                },
-                child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: CircleAvatar(
-                      radius: 52,
-                      backgroundColor: Colors.black,
-                      child: CircleAvatar(
-                        radius: 49,
-                        backgroundImage:
-                            AssetImage(Img.get("photo_female_5.jpg")),
-                      ),
-                    )),
-              ),
-              Container(height: 15),
-              Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                child: Text("Julianna Carter",
-                    style: MyText.headline(context)!.copyWith(
-                        color: Colors.grey[900], fontWeight: FontWeight.bold)),
-              ),
-              Container(height: 25),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: <Widget>[
-              //     InkWell(
-              //       child: Container(
-              //         width: 60,
-              //         height: 60,
-              //         child: Icon(Icons.person_add, color: Colors.black),
-              //       ),
-              //       onTap: () {},
-              //     ),
-              //     Container(width: 20),
-              //     InkWell(
-              //       child: Container(
-              //         width: 60,
-              //         height: 60,
-              //         child: Icon(Icons.chat, color: Colors.black),
-              //       ),
-              //       onTap: () {},
-              //     ),
-              //     Container(width: 20),
-              //     InkWell(
-              //       child: Container(
-              //         width: 60,
-              //         height: 60,
-              //         child: Icon(Icons.edit, color: Colors.black),
-              //       ),
-              //       onTap: () {},
-              //     ),
-              //   ],
-              // ),
-              // Divider(height: 50),
+              InkWell(onTap: (){},child:
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(1),
+                  side: BorderSide(
+                    color: Colors.black,
+                    width: 1.0,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CircleAvatar(
+                          radius: 52,
+                          backgroundColor: Colors.black,
+                          child: CircleAvatar(
+                            radius: 49,
+                            backgroundImage:
+                                AssetImage(Img.get("photo_female_5.jpg")),
+                          ),
+                        )),
+                    Container(height: 15),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width,
+                      child: Text("Julianna Carter",
+                          style: MyText.headline(context)!.copyWith(
+                              color: Colors.grey[900],
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    Container(height: 15),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      child: Text(MyStrings.middle_lorem_ipsum,
+                          textAlign: TextAlign.center,
+                          style: MyText.subhead(context)!
+                              .copyWith(color: Colors.grey[900])),
+                    ),
+                    Container(height: 15),
+                  ],
+                ),
+              )),
+              Divider(height: 30),
               Row(
                 children: <Widget>[
                   Expanded(
                     flex: 1,
                     child: Column(
                       children: <Widget>[
-                        Text("1.5 K",
-                            style: MyText.title(context)!.copyWith(
-                                color: Colors.purple[600],
-                                fontWeight: FontWeight.bold)),
+                        Image.asset(
+                          'assets/icon/invite.png',
+                          width: 35,
+                          height: 35,
+                        ),
                         Container(height: 5),
-                        Text("followers",
-                            style: MyText.medium(context)
-                                .copyWith(color: Colors.grey[500]))
+                        Text("< invited",
+                            style: TextStyle(
+                                color: Colors.grey[900], fontSize: 20))
                       ],
                     ),
                   ),
@@ -123,14 +95,15 @@ class _MyProfileState extends State<MyProfile> {
                     flex: 1,
                     child: Column(
                       children: <Widget>[
-                        Text("17.8 K",
-                            style: MyText.title(context)!.copyWith(
-                                color: Colors.purple[600],
-                                fontWeight: FontWeight.bold)),
+                        Image.asset(
+                          'assets/icon/buddy.png',
+                          width: 35,
+                          height: 30,
+                        ),
                         Container(height: 5),
                         Text("buddy",
-                            style: MyText.medium(context)
-                                .copyWith(color: Colors.grey[500]))
+                            style: TextStyle(
+                                color: Colors.grey[900], fontSize: 20))
                       ],
                     ),
                   ),
@@ -138,26 +111,19 @@ class _MyProfileState extends State<MyProfile> {
                     flex: 1,
                     child: Column(
                       children: <Widget>[
-                        Text("1.3 K",
-                            style: MyText.title(context)!.copyWith(
-                                color: Colors.purple[600],
-                                fontWeight: FontWeight.bold)),
+                        Image.asset(
+                          'assets/icon/invite.png',
+                          width: 35,
+                          height: 35,
+                        ),
                         Container(height: 5),
-                        Text("Following",
-                            style: MyText.medium(context)
-                                .copyWith(color: Colors.grey[500]))
+                        Text("inviting >",
+                            style: TextStyle(
+                                color: Colors.grey[900], fontSize: 20))
                       ],
                     ),
                   ),
                 ],
-              ),
-              Divider(height: 50),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Text(MyStrings.middle_lorem_ipsum,
-                    textAlign: TextAlign.center,
-                    style: MyText.subhead(context)!
-                        .copyWith(color: Colors.grey[900])),
               ),
               Divider(height: 50),
               Column(children: <Widget>[
@@ -185,7 +151,7 @@ class _MyProfileState extends State<MyProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("Your inviting",
+                        Text("QnA",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
@@ -198,17 +164,25 @@ class _MyProfileState extends State<MyProfile> {
                 ),
                 Divider(height: 0),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return SettingFlatRoute();
+                        },
+                      ),
+                    );
+                  },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("QnA",
+                        Text("settings",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
                         Spacer(),
-                        Icon(Icons.credit_card, color: MyColors.grey_60),
+                        Icon(Icons.settings, color: MyColors.grey_60),
                         Container(width: 10)
                       ],
                     ),

@@ -83,7 +83,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
           padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
           child: Column(
             children: <Widget>[
-              Padding(padding: EdgeInsets.only(top: 50)),
+              Padding(padding: EdgeInsets.only(top: 40)),
               Row(children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
@@ -134,7 +134,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               Expanded(
                                 child: Bubble(
                                   showNip: true,
-                                  padding: BubbleEdges.all(22),
+                                  padding: BubbleEdges.only(
+                                      left: 22, top: 22, bottom: 0, right: 22),
                                   alignment: Alignment.centerLeft,
                                   borderColor: Colors.black,
                                   borderWidth: 1.3,
@@ -170,11 +171,53 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           //               )
                                         ],
                                       ),
-                                      Text(
-                                        "What's the problem?What",
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                      Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            "What's the problem?What",
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                          )),
+                                      Padding(padding: EdgeInsets.only(top: 5)),
+                                      Container(
+                                        alignment: Alignment.topRight,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "12분전",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                            Spacer(),
+                                            IconButton(
+                                              iconSize: 12,
+                                              icon: Icon(Icons
+                                                  .favorite_border_outlined),
+                                              onPressed: () {},
+                                            ),
+                                            Text(
+                                              "12",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.only(right: 4),
+                                              child: Divider(
+                                                thickness: 0.2,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              iconSize: 12,
+                                              icon: Icon(
+                                                  Icons.reply_all_outlined),
+                                              onPressed: () {},
+                                            ),
+                                            Text(
+                                              "1",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -205,7 +248,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     showNip: true,
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.topLeft,
                                     nip: BubbleNip.rightCenter,
                                     margin: const BubbleEdges.all(4),
@@ -244,6 +291,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -279,7 +367,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     borderColor: Colors.black,
@@ -320,6 +412,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -355,7 +488,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -396,6 +533,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -431,7 +609,133 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
+                                    alignment: Alignment.centerLeft,
+                                    nip: BubbleNip.leftCenter,
+                                    margin: const BubbleEdges.all(4),
+                                    borderColor: Colors.black,
+                                    borderWidth: 1.3,
+                                    child: Column(
+                                      children: [
+                                        Wrap(
+                                          children: [
+                                            //               Container(
+                                            //                 decoration: BoxDecoration(
+                                            //                   border: Border.all(
+                                            //                       color: Colors.black),
+                                            //                   borderRadius:
+                                            //                       BorderRadius.circular(10),
+                                            //                 ),
+                                            //                 child: Center(
+                                            //                   child: ClipRect(
+                                            //                     child: Container(
+                                            //                       child: Align(
+                                            //                         alignment:
+                                            //                             Alignment.center,
+                                            //                         child: Image.file(
+                                            //   File(),
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   fit: BoxFit.contain,
+                                            // ),
+                                            //                       ),
+                                            //                     ),
+                                            //                   ),
+                                            //                 ),
+                                            //               )
+                                          ],
+                                        ),
+                                        Text(
+                                          "s's the problem?What's the problem?What's the problem?What's the ",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleImage(
+                                    imageProvider: AssetImage(
+                                        'assets/image/photo_female_1.jpg'),
+                                    size: 45,
+                                  ),
+                                ),
+                                Container(width: 5),
+                                Expanded(
+                                  child: Bubble(
+                                    showNip: true,
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -472,6 +776,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -507,83 +852,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
-                                    alignment: Alignment.centerLeft,
-                                    nip: BubbleNip.leftCenter,
-                                    margin: const BubbleEdges.all(4),
-                                    borderColor: Colors.black,
-                                    borderWidth: 1.3,
-                                    child: Column(
-                                      children: [
-                                        Wrap(
-                                          children: [
-                                            //               Container(
-                                            //                 decoration: BoxDecoration(
-                                            //                   border: Border.all(
-                                            //                       color: Colors.black),
-                                            //                   borderRadius:
-                                            //                       BorderRadius.circular(10),
-                                            //                 ),
-                                            //                 child: Center(
-                                            //                   child: ClipRect(
-                                            //                     child: Container(
-                                            //                       child: Align(
-                                            //                         alignment:
-                                            //                             Alignment.center,
-                                            //                         child: Image.file(
-                                            //   File(),
-                                            //   height: 50,
-                                            //   width: 50,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //                       ),
-                                            //                     ),
-                                            //                   ),
-                                            //                 ),
-                                            //               )
-                                          ],
-                                        ),
-                                        Text(
-                                          "s's the problem?What's the problem?What's the problem?What's the ",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleImage(
-                                    imageProvider: AssetImage(
-                                        'assets/image/photo_female_1.jpg'),
-                                    size: 45,
-                                  ),
-                                ),
-                                Container(width: 5),
-                                Expanded(
-                                  child: Bubble(
-                                    showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     borderColor: Colors.black,
@@ -624,6 +897,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -661,7 +975,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -700,6 +1018,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -735,7 +1094,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -776,6 +1139,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -813,7 +1217,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     showNip: true,
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -852,6 +1260,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -889,7 +1338,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     showNip: true,
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -928,6 +1381,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -965,7 +1459,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     showNip: true,
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -1004,6 +1502,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -1041,7 +1580,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     showNip: true,
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     alignment: Alignment.centerLeft,
                                     nip: BubbleNip.leftCenter,
                                     margin: const BubbleEdges.all(4),
@@ -1080,6 +1623,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -1115,7 +1699,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Bubble(
                                     showNip: true,
-                                    padding: BubbleEdges.all(22),
+                                    padding: BubbleEdges.only(
+                                        left: 22,
+                                        top: 22,
+                                        bottom: 0,
+                                        right: 22),
                                     borderColor: Colors.black,
                                     borderWidth: 1.3,
                                     alignment: Alignment.centerLeft,
@@ -1156,6 +1744,47 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        Padding(
+                                            padding: EdgeInsets.only(top: 5)),
+                                        Container(
+                                          alignment: Alignment.topRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "12분전",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(Icons
+                                                    .favorite_border_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "12",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    EdgeInsets.only(right: 4),
+                                                child: Divider(
+                                                  thickness: 0.2,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 12,
+                                                icon: Icon(
+                                                    Icons.reply_all_outlined),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                "1",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),

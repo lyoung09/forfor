@@ -71,8 +71,9 @@ dependencies:
   intrinsic_grid_view: ^0.0.2
   bubble: ^1.2.1
   hidden_drawer_menu: ^3.0.0
-
+  cached_network_image: ^3.1.0
   slide_drawer: ^1.0.3
+  popup_menu: ^1.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -107,6 +108,12 @@ flutter:
     - assets/icon/gender.png
     - assets/icon/invite.png
     - assets/icon/buddy.png
+    - assets/icon/padlock.png
+    - assets/icon/unlock.png
+    - assets/icon/question.png
+    - assets/icon/groupSetting.png
+    - assets/icon/updated (2).png
+
     - assets/icon/group.png
     - assets/icon/userSetting.png
     - assets/icon/teamwork.png

@@ -43,7 +43,7 @@ class _MyProfileState extends State<MyProfile> {
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.grey[400],
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: new Text("Profile",
             style: TextStyle(color: Colors.black, fontSize: 32)),
@@ -52,124 +52,80 @@ class _MyProfileState extends State<MyProfile> {
         Container(
           child: Column(
             children: <Widget>[
-              Container(height: 15),
-              Stack(children: [
-                Container(
-                  margin: EdgeInsets.only(top: 10),
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        child: CircleAvatar(
-                          radius: 50.0,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 18.0,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.camera_alt,
-                                    size: 16.0,
-                                    color: Color(0xFF404040),
-                                  ),
-                                  onPressed: () {},
-                                ),
-                              ),
-                            ),
-                            radius: 50.0,
-                            backgroundImage:
-                                AssetImage('assets/images/photo_female_1.png'),
-                          ),
-                        ),
-                      )),
-                ),
-              ]),
-              Padding(padding: EdgeInsets.only(right: 10)),
               Container(
-                  padding: EdgeInsets.all(9),
-                  child: Divider(
-                    color: Colors.grey[400],
-                    thickness: 0.8,
-                  )),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(left: 10),
-                    alignment: Alignment.centerLeft,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text("JulJul",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: MyText.headline(context)!.copyWith(
-                                color: Colors.grey[900],
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward_outlined,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              Container(
-                  padding: EdgeInsets.all(9),
-                  child: Divider(
-                    color: Colors.grey[400],
-                    thickness: 1.2,
-                  )),
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(
-                    color: Colors.black,
-                    width: 1.0,
-                  ),
-                ),
+                decoration: BoxDecoration(color: Colors.grey[400]),
                 child: Column(
                   children: [
+                    Container(height: 25),
+                    InkWell(
+                      onTap: updateUser,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Image.asset(
+                            "assets/icon/userSetting.png",
+                            width: 30,
+                            height: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                    CircleAvatar(
+                      radius: 52,
+                      backgroundColor: Colors.purple[600],
+                      child: CircleAvatar(
+                        radius: 49,
+                        backgroundImage:
+                            AssetImage('assets/image/photo_female_1.jpg'),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(right: 10, top: 10)),
                     Container(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                          "MyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsum",
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.start,
-                          style: MyText.subhead(context)!
-                              .copyWith(color: Colors.grey[900])),
+                      padding: EdgeInsets.only(left: 10),
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text("JulJul",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: MyText.headline(context)!.copyWith(
+                                  color: Colors.grey[900],
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(right: 10, top: 10)),
+                    Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(
+                          color: Colors.black,
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                                "MyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsumMyStrings.middle_lorem_ipsum",
+                                maxLines: 5,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
+                                style: MyText.subhead(context)!
+                                    .copyWith(color: Colors.grey[900])),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              Container(height: 8),
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child:
-                          Text("save", style: TextStyle(color: Colors.black))),
-                ),
-              ),
+              Container(height: 20),
               Container(
                   padding: EdgeInsets.all(9),
                   child: Divider(
@@ -228,7 +184,7 @@ class _MyProfileState extends State<MyProfile> {
                     child: Column(
                       children: <Widget>[
                         Image.asset(
-                          'assets/icon/teamwork.png',
+                          'assets/icon/group.png',
                           width: 35,
                           height: 35,
                         ),
@@ -244,17 +200,21 @@ class _MyProfileState extends State<MyProfile> {
               Divider(height: 50),
               Column(children: <Widget>[
                 InkWell(
-                  onTap: changeCategory,
+                  onTap: () {},
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 25),
                     child: Row(
                       children: <Widget>[
-                        Text("Change Category",
+                        Text("내 그룹 설정",
                             style: MyText.medium(context).copyWith(
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
                         Spacer(),
-                        Icon(Icons.picture_in_picture, color: MyColors.grey_60),
+                        Image.asset(
+                          'assets/icon/groupSetting.png',
+                          width: 35,
+                          height: 35,
+                        ),
                         Container(width: 10)
                       ],
                     ),
@@ -272,7 +232,11 @@ class _MyProfileState extends State<MyProfile> {
                                 color: MyColors.grey_80,
                                 fontWeight: FontWeight.w300)),
                         Spacer(),
-                        Icon(Icons.people_outline, color: MyColors.grey_60),
+                        Image.asset(
+                          'assets/icon/question.png',
+                          width: 35,
+                          height: 35,
+                        ),
                         Container(width: 10)
                       ],
                     ),

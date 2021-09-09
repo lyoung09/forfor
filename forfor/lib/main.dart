@@ -28,6 +28,7 @@ import 'bottomScreen/group/group_click.dart';
 import 'bottomScreen/group/groupclick.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
 import 'bottomScreen/infomation/sayScreen.dart';
+import 'bottomScreen/profile/my_update.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return StepperGroupAdd();
+    //       return UserUpdate();
     //     },
     //   ),
     // );

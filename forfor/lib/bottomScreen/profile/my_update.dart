@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:forfor/widget/my_colors.dart';
+import 'package:forfor/widget/my_text.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserUpdate extends StatefulWidget {
@@ -15,6 +17,8 @@ class _UserUpdateState extends State<UserUpdate> {
   var _image;
   final TextEditingController _usernameControl = new TextEditingController();
   bool checkNickname = true;
+  bool categoryButtonClick = false;
+
   void _showPicker(context) {
     showModalBottomSheet(
         context: context,
@@ -108,6 +112,233 @@ class _UserUpdateState extends State<UserUpdate> {
     //         ));
   }
 
+  Widget gridViewCategory() {
+    return GridView.count(
+        crossAxisCount: 4,
+        children: List.generate(8, (index) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: IconButton(
+                  iconSize: 22,
+                  icon: Icon(
+                    Icons.person,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          );
+        }));
+  }
+
+  Widget selectCategory() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      color: Colors.white,
+      elevation: 2,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Container(
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab1",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.lightGreen[500],
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "FRIENDS",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab2",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.yellow[600],
+                      child: Icon(
+                        Icons.people,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "GROUPS",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab3",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.purple[400],
+                      child: Icon(
+                        Icons.location_on,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "NEARBY",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab4",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.blue[400],
+                      child: Icon(
+                        Icons.near_me,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "MOMENT",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ],
+            ),
+            Container(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab5",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.indigo[300],
+                      child: Icon(
+                        Icons.crop_original,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "ALBUMS",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab6",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.green[500],
+                      child: Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "LIKES",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab7",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.lightGreen[400],
+                      child: Icon(
+                        Icons.subject,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "ARTICLES",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "fab8",
+                      elevation: 0,
+                      mini: true,
+                      backgroundColor: Colors.orange[300],
+                      child: Icon(
+                        Icons.textsms,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    Container(height: 5),
+                    Text(
+                      "REVIEWS",
+                      style: MyText.caption(context)!
+                          .copyWith(color: MyColors.grey_40),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -124,92 +355,213 @@ class _UserUpdateState extends State<UserUpdate> {
             Navigator.of(context).pop();
           },
         ),
-        actions: [],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: InkWell(
+                onTap: () {},
+                child: Image.asset(
+                  "assets/icon/updated (2).png",
+                  width: 30,
+                  height: 30,
+                )),
+          )
+        ],
       ),
       body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(children: [
-            Container(
-                width: width,
-                height: height,
-                child: Column(
-                  children: [
-                    Container(
-                        width: 80,
-                        height: 80,
-                        child: GestureDetector(
-                          onTap: () {
-                            _showPicker(context);
-                          },
-                          child: _image != null
-                              ? Image.file(
-                                  File(_image),
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.contain,
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Icon(
+            Padding(
+              padding: EdgeInsets.only(top: 30),
+            ),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        child: CircleAvatar(
+                          radius: 50.0,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            child: Align(
+                              alignment: Alignment.bottomRight,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 18.0,
+                                child: IconButton(
+                                  icon: Icon(
                                     Icons.camera_alt,
-                                    color: Colors.grey[800],
-                                    size: 50,
+                                    size: 16.0,
+                                    color: Color(0xFF404040),
                                   ),
+                                  onPressed: () {
+                                    _showPicker(context);
+                                  },
                                 ),
-                        )),
-                    Padding(padding: EdgeInsets.all(20)),
-                    Container(
-                        height: height * 0.1,
-                        width: width * 0.8,
-                        child: TextField(
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            // contentPadding: EdgeInsets.all(10.0),
-
-                            errorText:
-                                checkNickname ? null : "at least 3 characters",
-                            // enabledBorder: OutlineInputBorder(
-                            //   borderSide: BorderSide(
-                            //     color: Colors.white,
-                            //   ),
-                            //   borderRadius: BorderRadius.circular(5.0),
-                            // ),
-                            hintText: "   nickname",
-                            // prefixIcon: Icon(
-                            //   Icons.mail_outline,
-                            //   color: Colors.black,
-                            // ),
-                            hintStyle: TextStyle(
-                              fontSize: 15.0,
-                              color: Colors.grey[400],
+                              ),
                             ),
+                            radius: 50.0,
+                            backgroundImage:
+                                AssetImage('assets/image/photo_female_1.jpg'),
                           ),
-                          controller: _usernameControl,
-                          maxLines: 1,
-                        )),
-                    Padding(padding: EdgeInsets.all(20)),
-                    Card(
-                      elevation: 3,
-                      child: Container(
-                          child: Column(
-                        children: [
-                          Text("Change category"),
-                          Divider(
-                            thickness: 1.4,
-                            color: Colors.grey[400],
-                          ),
-                          Wrap(
-                            children: [Text("1")],
-                          ),
-                        ],
+                        ),
                       )),
+                ),
+                Padding(padding: EdgeInsets.all(20)),
+                Container(
+                    height: height * 0.1,
+                    width: width * 0.8,
+                    child: TextField(
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        // contentPadding: EdgeInsets.all(10.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+
+                        errorText:
+                            checkNickname ? null : "at least 3 characters",
+                        // enabledBorder: OutlineInputBorder(
+                        //   borderSide: BorderSide(
+                        //     color: Colors.white,
+                        //   ),
+                        //   borderRadius: BorderRadius.circular(5.0),
+                        // ),
+
+                        // prefixIcon: Icon(
+                        //   Icons.mail_outline,
+                        //   color: Colors.black,
+                        // ),
+                        hintText: "jaeyoung",
+                        hintStyle: TextStyle(
+                          fontSize: 15.0,
+                          color: Colors.grey[400],
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide:
+                              BorderSide(color: Colors.grey[900]!, width: 2),
+                        ),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide:
+                              BorderSide(color: Colors.grey[900]!, width: 1),
+                        ),
+                      ),
+                      controller: _usernameControl,
+                      maxLines: 1,
+                      cursorColor: Colors.amber[500],
+                    )),
+                Container(
+                  height: 150,
+                  width: width * 0.8,
+                  child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    cursorColor: Colors.amber[500],
+                    maxLines: 12,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText:
+                          'hello i want to studying english and japanese!',
+                      hintStyle: MyText.body1(context)!
+                          .copyWith(color: Colors.grey[400]),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(0),
+                        borderSide:
+                            BorderSide(color: Colors.grey[900]!, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(0),
+                        borderSide:
+                            BorderSide(color: Colors.grey[900]!, width: 1),
+                      ),
                     ),
-                    Padding(padding: EdgeInsets.all(20)),
-                  ],
-                ))
+                  ),
+                ),
+                Padding(padding: EdgeInsets.only(top: 30)),
+
+                Container(
+                  height: 50.0,
+                  padding: EdgeInsets.only(left: 30, right: 30),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: categoryButtonClick == true
+                            ? Colors.orange[100]
+                            : Colors.grey[50],
+                        onPrimary: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Text("카테고리 변경",
+                              style: MyText.medium(context).copyWith(
+                                  color: MyColors.grey_80,
+                                  fontWeight: FontWeight.w300)),
+                          Spacer(),
+                          Icon(Icons.picture_in_picture,
+                              color: MyColors.grey_60),
+                          Container(width: 10)
+                        ],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          categoryButtonClick = !categoryButtonClick;
+                        });
+                      }),
+                ),
+                categoryButtonClick == true
+                    ? Container(height: 220, child: selectCategory())
+                    : Container(
+                        height: 0,
+                      ),
+
+                // Stack(
+                //   children: [
+                //     Container(
+                //       height: 200,
+                //       width: width * 0.8,
+                //       child: Card(
+                //           elevation: 2,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(20),
+                //             side: BorderSide(
+                //               width: 1,
+                //               color: (Colors.grey[400])!,
+                //             ),
+                //           ),
+                //           child: Container(
+                //               padding: EdgeInsets.only(top: 10),
+                //               alignment: Alignment.center,
+                //               child: gridViewCategory())),
+                //     ),
+                //     Positioned(
+                //       top: -10,
+                //       right: 6,
+                //       child: Container(
+                //         padding:
+                //             EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                //         decoration: BoxDecoration(
+                //             color: Colors.grey[400],
+                //             borderRadius: BorderRadius.only(
+                //               topLeft: Radius.circular(8),
+                //               bottomRight: Radius.circular(8),
+                //             ) // green shaped
+                //             ),
+                //         child: Text(
+                //           "Category",
+                //           style: TextStyle(fontSize: 23),
+                //         ),
+                //       ),
+                //     )
+                //   ],
+                // ),
+              ],
+            )
           ])),
     );
   }

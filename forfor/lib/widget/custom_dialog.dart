@@ -500,3 +500,74 @@ class CustomCongratDialogState extends State<CustomCongratDialog> {
     );
   }
 }
+
+class CustomEventDialog extends StatefulWidget {
+  CustomEventDialog({Key? key}) : super(key: key);
+
+  @override
+  CustomEventDialogState createState() => new CustomEventDialogState();
+}
+
+class CustomEventDialogState extends State<CustomEventDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: 160,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          color: Colors.white,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Wrap(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(20),
+                width: double.infinity,
+                color: Colors.orange[100],
+                child: Column(
+                  children: <Widget>[
+                    Container(height: 10),
+                    Icon(Icons.domain_verification_rounded,
+                        color: Colors.grey[900], size: 80),
+                    Container(height: 10),
+                    Text("Group confirmed!",
+                        style: MyText.title(context)!
+                            .copyWith(color: Colors.grey[900])),
+                    Container(height: 10),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(20),
+                width: double.infinity,
+                color: Colors.grey[50],
+                child: Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.orange,
+                        elevation: 0,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 40),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(18.0)),
+                      ),
+                      child: Text("Get Started",
+                          style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -4,6 +4,7 @@ import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:popup_menu/popup_menu.dart';
 import 'dart:math' as math;
 import 'addGroupStepper.dart';
 import 'widget/groupList.dart';
@@ -65,6 +66,49 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
         },
       ),
     );
+  }
+
+  PopupMenu popup() {
+    PopupMenu menu = PopupMenu(
+      backgroundColor: Colors.teal,
+      lineColor: Colors.tealAccent,
+      maxColumn: 3,
+      items: [
+        MenuItem(title: 'Copy', image: Image.asset('assets/copy.png')),
+        MenuItem(
+            title: 'Home',
+            textStyle: TextStyle(fontSize: 10.0, color: Colors.tealAccent),
+            image: Icon(
+              Icons.home,
+              color: Colors.white,
+            )),
+        MenuItem(
+            title: 'Mail',
+            image: Icon(
+              Icons.mail,
+              color: Colors.white,
+            )),
+        MenuItem(
+            title: 'Power',
+            image: Icon(
+              Icons.power,
+              color: Colors.white,
+            )),
+        MenuItem(
+            title: 'Setting',
+            image: Icon(
+              Icons.settings,
+              color: Colors.white,
+            )),
+        MenuItem(
+            title: 'PopupMenu',
+            image: Icon(
+              Icons.menu,
+              color: Colors.white,
+            ))
+      ],
+    );
+    return menu;
   }
 
   Widget selectCategory() {
@@ -476,11 +520,13 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
-  String _value = "";
+  String _value = "최신";
+  bool settingGroup = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
       body: Builder(builder: (BuildContext context) {
         _scaffoldCtx = context;
         return CustomScrollView(
@@ -540,33 +586,55 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                 iconSize: 20,
                               ),
                               PopupMenuButton(
-                                  iconSize: 20,
-                                  color: Colors.white,
-                                  elevation: 20,
-                                  enabled: true,
-                                  onSelected: (String value) {
-                                    setState(() {
-                                      _value = value;
-                                    });
-                                  },
-                                  itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                          child: Text("최신"),
-                                          value: "최신",
-                                        ),
-                                        PopupMenuItem(
-                                          child: Text("인기"),
-                                          value: "인기",
-                                        ),
-                                        PopupMenuItem(
-                                          child: Text("오픈"),
-                                          value: "오픈",
-                                        ),
-                                        PopupMenuItem(
-                                          child: Text("적은"),
-                                          value: "적은",
-                                        ),
-                                      ]),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    side: BorderSide(color: Colors.black)),
+                                iconSize: 20,
+                                color: Colors.white,
+                                elevation: 20,
+                                enabled: true,
+                                enableFeedback: true,
+                                onSelected: (String value) {
+                                  setState(() {
+                                    _value = value;
+                                  });
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    child: Text("최신",
+                                        style: TextStyle(
+                                            fontWeight: _value == "최신"
+                                                ? FontWeight.bold
+                                                : null)),
+                                    value: "최신",
+                                  ),
+                                  PopupMenuItem(
+                                    child: Text("인기",
+                                        style: TextStyle(
+                                            fontWeight: _value == "인기"
+                                                ? FontWeight.bold
+                                                : null)),
+                                    value: "인기",
+                                  ),
+                                  PopupMenuItem(
+                                    child: Text("오픈",
+                                        style: TextStyle(
+                                            fontWeight: _value == "오픈"
+                                                ? FontWeight.bold
+                                                : null)),
+                                    value: "오픈",
+                                  ),
+                                  PopupMenuItem(
+                                    child: Text("적은",
+                                        style: TextStyle(
+                                            fontWeight: _value == "적은"
+                                                ? FontWeight.bold
+                                                : null)),
+                                    value: "적은",
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),

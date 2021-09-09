@@ -55,11 +55,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
             showUnselectedLabels: true,
             items: [
               BottomNavigationBarItem(
-                  icon: SvgPicture.asset(
-                    "assets/svg/meeting.svg",
+                  icon: Image.asset(
+                    "assets/icon/group.png",
                     fit: BoxFit.fill,
-                    width: size.width * 0.25,
-                    height: size.height * 0.04,
+                    width: 25,
+                    height: 25,
                   ),
                   label: "그룹"),
               BottomNavigationBarItem(
@@ -79,11 +79,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   ),
                   label: "친구"),
               BottomNavigationBarItem(
-                  icon: SvgPicture.asset(
-                    "assets/svg/infomationBottom.svg",
+                  icon: Image.asset(
+                    "assets/icon/question.png",
                     fit: BoxFit.fill,
-                    width: size.width * 0.25,
-                    height: size.height * 0.04,
+                    width: 25,
+                    height: 25,
                   ),
                   label: "QnA"),
               BottomNavigationBarItem(

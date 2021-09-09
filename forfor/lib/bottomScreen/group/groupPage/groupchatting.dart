@@ -41,7 +41,7 @@ class GroupChattingState extends State<GroupChatting> {
         backgroundColor: Colors.grey[400],
         leading: IconButton(
             color: Colors.black,
-            icon: Icon(Icons.arrow_back_ios_new),
+            icon: Icon(Icons.menu),
             onPressed: () {
               widget.controller.toggle();
             }),

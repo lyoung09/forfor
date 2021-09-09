@@ -12,213 +12,53 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
   Rule? _rule;
+  bool selectCategoryButton = false;
 
   initState() {
     super.initState();
     _rule = Rule.All;
   }
 
-  Widget selectCategory() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      color: Colors.white,
-      elevation: 2,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      child: Container(
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab1",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.lightGreen[500],
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "FRIENDS",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab2",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.yellow[600],
-                      child: Icon(
-                        Icons.people,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "GROUPS",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab3",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.purple[400],
-                      child: Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "NEARBY",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab4",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.blue[400],
-                      child: Icon(
-                        Icons.near_me,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "MOMENT",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ],
-            ),
-            Container(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab5",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.indigo[300],
-                      child: Icon(
-                        Icons.crop_original,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "ALBUMS",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab6",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.green[500],
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "LIKES",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab7",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.lightGreen[400],
-                      child: Icon(
-                        Icons.subject,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "ARTICLES",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: "fab8",
-                      elevation: 0,
-                      mini: true,
-                      backgroundColor: Colors.orange[300],
-                      child: Icon(
-                        Icons.textsms,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    Container(height: 5),
-                    Text(
-                      "REVIEWS",
-                      style: MyText.caption(context)!
-                          .copyWith(color: MyColors.grey_40),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+  int? _selectedIndex;
+  List<String> _options = [
+    'language',
+    'journey',
+    'living',
+    'living',
+    'living',
+    'living'
+  ];
+
+  Widget _buildChips() {
+    List<Widget> chips = [];
+
+    for (int i = 0; i < _options.length; i++) {
+      ChoiceChip choiceChip = ChoiceChip(
+        selected: _selectedIndex == i,
+        label: Text(_options[i],
+            style: TextStyle(color: Colors.black, fontSize: 12)),
+        elevation: 2,
+        pressElevation: 5,
+        backgroundColor: Colors.orange[50],
+        selectedColor: Colors.orange[300],
+        onSelected: (bool selected) {
+          setState(() {
+            if (selected) {
+              _selectedIndex = i;
+            }
+          });
+        },
+      );
+
+      chips.add(Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
+    }
+
+    return Wrap(
+      // This next line does the trick.
+      spacing: 6,
+      direction: Axis.horizontal,
+      children: chips,
     );
   }
 
@@ -230,6 +70,7 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -259,9 +100,6 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
         child: Container(
           child: Column(
             children: [
-              Padding(padding: EdgeInsets.only(top: 32)),
-              Text("make language group",
-                  style: TextStyle(color: Colors.black, fontSize: 22)),
               Padding(padding: EdgeInsets.only(top: 25)),
               Expanded(
                 child: Stepper(
@@ -440,42 +278,124 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
                           style: TextStyle(color: Colors.black, fontSize: 22)),
                       content: Column(
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                                elevation: 3,
-                                child: Column(
-                                  children: [
-                                    Text("Join Group style",
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 22)),
-                                    Padding(padding: EdgeInsets.only(top: 10)),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                          // Padding(
+                          //     padding: const EdgeInsets.all(8.0),
+                          //     child: Row(
+                          //       children: [
+                          //         Text("style",
+                          //             style: TextStyle(
+                          //                 color: Colors.black, fontSize: 18)),
+                          //         Padding(padding: EdgeInsets.only(top: 10)),
+                          //         Container(
+                          //             width: 200,
+                          //             height: 100,
+                          //             decoration: BoxDecoration(
+                          //                 border: Border.all(
+                          //                     color: Colors.grey[400]!)),
+                          //             child: Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               crossAxisAlignment:
+                          //                   CrossAxisAlignment.center,
+                          //               children: [
+                          //                 Container(
+                          //                   width: 30,
+                          //                   height: 100,
+                          //                   padding: EdgeInsets.only(
+                          //                       left: 10, top: 10),
+                          //                   child: Column(children: [
+                          //                     Image.asset(
+                          //                       'assets/icon/padlock.png',
+                          //                       width: 30,
+                          //                       height: 35,
+                          //                     ),
+                          //                     Radio(
+                          //                         value: Rule.All,
+                          //                         groupValue: _rule,
+                          //                         onChanged: (Rule? value) {
+                          //                           setState(() {
+                          //                             _rule = value;
+                          //                             print(value.toString());
+                          //                           });
+                          //                         }),
+                          //                   ]),
+                          //                 ),
+                          //                 Expanded(
+                          //                   flex: 1,
+                          //                   child: Container(
+                          //                       height: 100,
+                          //                       child: VerticalDivider(
+                          //                           color: Colors.grey[900])),
+                          //                 ),
+                          //                 Padding(
+                          //                     padding:
+                          //                         EdgeInsets.only(left: 10)),
+                          //                 Container(
+                          //                   width: 30,
+                          //                   height: 100,
+                          //                   padding: EdgeInsets.only(
+                          //                       left: 10, top: 10),
+                          //                   child: Column(children: [
+                          //                     Image.asset(
+                          //                       'assets/icon/unlock.png',
+                          //                       width: 30,
+                          //                       height: 35,
+                          //                     ),
+                          //                     // Text("Invite",
+                          //                     //     style: TextStyle(
+                          //                     //         color: Colors.black,
+                          //                     //         fontSize: 22)),
+                          //                     Radio(
+                          //                         value: Rule.Invite,
+                          //                         groupValue: _rule,
+                          //                         onChanged: (Rule? value) {
+                          //                           setState(() {
+                          //                             _rule = value;
+                          //                             print(_rule.toString());
+                          //                           });
+                          //                         }),
+                          //                   ]),
+                          //                 ),
+                          //               ],
+                          //             )),
+                          //         Padding(padding: EdgeInsets.only(top: 10)),
+                          //       ],
+                          //     )),
+
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                                width: 150,
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: Colors.orange[600]!),
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: Text("Page?",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20))),
+                          ),
+                          Padding(padding: EdgeInsets.only(top: 10)),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 100,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    width: width * 0.5,
+                                    height: 90,
+                                    child: Row(
                                       children: [
                                         Container(
-                                          width: 120,
-                                          height: 120,
-                                          padding: EdgeInsets.only(top: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(),
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                            width: width * 0.2,
+                                            child: Column(
                                               children: [
                                                 Image.asset(
                                                   'assets/icon/padlock.png',
-                                                  width: 35,
+                                                  width: 30,
                                                   height: 35,
                                                 ),
-                                                Text("All",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 22)),
                                                 Radio(
                                                     value: Rule.All,
                                                     groupValue: _rule,
@@ -485,47 +405,78 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
                                                         print(value.toString());
                                                       });
                                                     }),
-                                              ]),
+                                              ],
+                                            )),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                              height: 100,
+                                              child: VerticalDivider(
+                                                  color: Colors.grey[900])),
                                         ),
-                                        Padding(
-                                            padding: EdgeInsets.only(left: 10)),
                                         Container(
-                                          width: 120,
-                                          height: 120,
-                                          padding: EdgeInsets.only(top: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(),
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Column(children: [
-                                            Image.asset(
-                                              'assets/icon/unlock.png',
-                                              width: 35,
-                                              height: 35,
-                                            ),
-                                            Text("Invite",
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 22)),
-                                            Radio(
-                                                value: Rule.Invite,
-                                                groupValue: _rule,
-                                                onChanged: (Rule? value) {
-                                                  setState(() {
-                                                    _rule = value;
-                                                    print(_rule.toString());
-                                                  });
-                                                }),
-                                          ]),
+                                            width: width * 0.2,
+                                            height: 90,
+                                            child: Column(
+                                              children: [
+                                                Image.asset(
+                                                  'assets/icon/unlock.png',
+                                                  width: 30,
+                                                  height: 35,
+                                                ),
+                                                Radio(
+                                                    value: Rule.Invite,
+                                                    groupValue: _rule,
+                                                    onChanged: (Rule? value) {
+                                                      setState(() {
+                                                        _rule = value;
+                                                        print(value.toString());
+                                                      });
+                                                    }),
+                                              ],
+                                            ))
+                                      ],
+                                    ))
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            thickness: 1.5,
+                            color: Colors.grey[900],
+                          ),
+                          Column(
+                            children: [
+                              Padding(padding: EdgeInsets.only(top: 10)),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.orange[600]!),
+                                      borderRadius: BorderRadius.circular(25)),
+                                  child: Text("Category",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                      )),
+                                ),
+                              ),
+                              Padding(padding: EdgeInsets.only(top: 10)),
+                              Card(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Wrap(
+                                      children: <Widget>[
+                                        Container(
+                                          height: 130,
+                                          child: _buildChips(),
                                         ),
                                       ],
-                                    ),
-                                    Padding(padding: EdgeInsets.only(top: 10)),
-                                  ],
-                                )),
-                          ),
-                          // Container(height: 220, child: selectCategory())
+                                    )),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                       isActive: _currentStep >= 0,

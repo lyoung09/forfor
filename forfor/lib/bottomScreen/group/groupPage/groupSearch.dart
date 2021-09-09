@@ -57,7 +57,7 @@ class GroupSearchState extends State<GroupSearch> {
         ),
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios_new,
+            Icons.menu,
             color: Colors.black,
           ),
           onPressed: () {

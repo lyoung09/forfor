@@ -4,7 +4,6 @@ import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
-import 'package:popup_menu/popup_menu.dart';
 import 'dart:math' as math;
 import 'addGroupStepper.dart';
 import 'widget/groupList.dart';
@@ -68,48 +67,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     );
   }
 
-  PopupMenu popup() {
-    PopupMenu menu = PopupMenu(
-      backgroundColor: Colors.teal,
-      lineColor: Colors.tealAccent,
-      maxColumn: 3,
-      items: [
-        MenuItem(title: 'Copy', image: Image.asset('assets/copy.png')),
-        MenuItem(
-            title: 'Home',
-            textStyle: TextStyle(fontSize: 10.0, color: Colors.tealAccent),
-            image: Icon(
-              Icons.home,
-              color: Colors.white,
-            )),
-        MenuItem(
-            title: 'Mail',
-            image: Icon(
-              Icons.mail,
-              color: Colors.white,
-            )),
-        MenuItem(
-            title: 'Power',
-            image: Icon(
-              Icons.power,
-              color: Colors.white,
-            )),
-        MenuItem(
-            title: 'Setting',
-            image: Icon(
-              Icons.settings,
-              color: Colors.white,
-            )),
-        MenuItem(
-            title: 'PopupMenu',
-            image: Icon(
-              Icons.menu,
-              color: Colors.white,
-            ))
-      ],
-    );
-    return menu;
-  }
+
 
   Widget selectCategory() {
     return SizeTransition(

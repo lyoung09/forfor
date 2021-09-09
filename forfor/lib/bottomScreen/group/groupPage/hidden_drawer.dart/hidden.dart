@@ -199,366 +199,392 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
     ), (route) => false);
   }
 
+  Future<bool> _willPopCallback() async {
+    controller.open();
+    return false; //
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      height: double.maxFinite,
-      color: Colors.white,
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 40),
-            ),
-            Row(
-              children: [
-                Container(
-                    padding: EdgeInsets.only(left: 5),
-                    alignment: Alignment.centerLeft,
+    return WillPopScope(
+      onWillPop: _willPopCallback,
+      child: Container(
+        width: double.maxFinite,
+        height: double.maxFinite,
+        color: Colors.white,
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+              ),
+              Row(
+                children: [
+                  Container(
+                      padding: EdgeInsets.only(left: 5),
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        width: 60,
+                        height: 40,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.white),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                            ),
+                          ),
+                          onPressed: backHomePage,
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )),
+                  Container(
+                    padding: EdgeInsets.only(left: 100),
                     child: SizedBox(
-                      width: 60,
+                      width: 80,
                       height: 40,
                       child: ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.white),
+                              MaterialStateProperty.all(Colors.blue),
                           shape: MaterialStateProperty.all(
                             RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
                           ),
                         ),
-                        onPressed: backHomePage,
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
+                        onPressed: () {
+                          //  controller.setSelectedMenuPosition(0);
+                        },
+                        child: Text(
+                          "join",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    )),
-                Container(
-                  padding: EdgeInsets.only(left: 100),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 15),
+              ),
+              // Container(
+              //   alignment: Alignment.centerLeft,
+              //   padding: EdgeInsets.only(left: 10),
+              //   child: SizedBox(
+              //     width: 250,
+              //     height: 150,
+
+              //     //padding: EdgeInsets.only(left: 15),
+
+              //     child: Image.asset('assets/image/photo_female_1.jpg',
+              //         fit: BoxFit.cover),
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: EdgeInsets.only(right: 8),
                   child: SizedBox(
-                    width: 80,
-                    height: 40,
+                    width: 250.0,
+                    height: 100,
                     child: ElevatedButton(
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.blue),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white),
                         shape: MaterialStateProperty.all(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
+                            side: BorderSide(
+                              width: 1,
+                              color: (Colors.grey[400])!,
+                            ),
+                          ),
                         ),
                       ),
-                      onPressed: () {
-                        //  controller.setSelectedMenuPosition(0);
-                      },
-                      child: Text(
-                        "join",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.white),
+                      onPressed: () {},
+                      child: Wrap(
+                        children: [
+                          Text("group name my namegroup name my name ",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                              style: TextStyle(color: Colors.black)),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 15),
-            ),
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.only(left: 10),
-              child: SizedBox(
-                width: 250,
-                height: 150,
-
-                //padding: EdgeInsets.only(left: 15),
-
-                child: Image.asset('assets/image/photo_female_1.jpg',
-                    fit: BoxFit.cover),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-            ),
-            Card(
-              elevation: 3,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 8),
-                child: SizedBox(
-                  width: 250,
-                  height: 60,
-                  child: Text(
-                    "group namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup namegroup name",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.black),
+
+              Padding(padding: EdgeInsets.only(top: 40)),
+              // GridView.count(
+              //   crossAxisCount: 5,
+              //   children: List.generate(5, (index) {
+              //     return CircleAvatar(
+              //       child: Image.asset('assets/image/photo_female_1.jpg'),
+              //     );
+              //   }),
+              // ),
+
+              FadeTransition(
+                opacity: _animationController,
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(0);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.home,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("Home",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(1);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.edit,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("timeline",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(2);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.chat_sharp,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("chat",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(3);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.people,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("friends",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(4);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("search",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(5);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
+                                Icon(
+                                  Icons.ac_unit,
+                                  color: Colors.black,
+                                ),
+                                Spacer(),
+                                Text("anyting",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(padding: EdgeInsets.only(top: 40)),
-            // GridView.count(
-            //   crossAxisCount: 5,
-            //   children: List.generate(5, (index) {
-            //     return CircleAvatar(
-            //       child: Image.asset('assets/image/photo_female_1.jpg'),
-            //     );
-            //   }),
-            // ),
-
-            FadeTransition(
-              opacity: _animationController,
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(0);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.home,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("Home",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(1);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.edit,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("timeline",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(2);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.chat_sharp,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("chat",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(3);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.people,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("friends",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(4);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.search,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("search",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                                side: BorderSide(
-                                  width: 1,
-                                  color: (Colors.grey[400])!,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            controller.setSelectedMenuPosition(5);
-                          },
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Icon(
-                                Icons.ac_unit,
-                                color: Colors.black,
-                              ),
-                              Spacer(),
-                              Text("anyting",
-                                  style: TextStyle(color: Colors.black)),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

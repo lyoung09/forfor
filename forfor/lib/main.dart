@@ -125,18 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     bool _seen = (prefs.getBool('seen') ?? false);
 
-    if (auth.currentUser != null) {
-      Navigator.pushNamed(context, '/bottomScreen');
-    } else {
-      Navigator.pushNamed(context, '/login');
-    }
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) {
-    //       return UserUpdate();
-    //     },
-    //   ),
-    // );
+    // if (auth.currentUser != null) {
+    //   Navigator.pushNamed(context, '/bottomScreen');
+    // } else {
+    //   Navigator.pushNamed(context, '/login');
+    // }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return HopeInfomation();
+        },
+      ),
+    );
   }
 
   @override

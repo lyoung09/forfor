@@ -300,12 +300,6 @@ class _LoginState extends State<Login> {
               child: Card(
                 elevation: 0.0,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      bottom: BorderSide(width: 1.0, color: Colors.black),
-                    ),
-                  ),
                   child: TextField(
                     style: TextStyle(
                       fontSize: 15.0,
@@ -319,14 +313,18 @@ class _LoginState extends State<Login> {
                           color: Colors.white,
                         ),
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(0),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.white,
                         ),
                         borderRadius: BorderRadius.circular(5.0),
                       ),
-                      hintText: "Email",
-                      hintStyle: TextStyle(
+                      labelText: "Email",
+                      labelStyle: TextStyle(
                         fontSize: 15.0,
                         color: Colors.black,
                       ),
@@ -343,12 +341,6 @@ class _LoginState extends State<Login> {
               child: Card(
                 elevation: 0.0,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      bottom: BorderSide(width: 1.0, color: Colors.black),
-                    ),
-                  ),
                   child: TextField(
                     style: TextStyle(
                       fontSize: 15.0,
@@ -362,18 +354,23 @@ class _LoginState extends State<Login> {
                           color: Colors.white,
                         ),
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(0),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.white,
                         ),
                         borderRadius: BorderRadius.circular(5.0),
                       ),
-                      hintText: "Password",
+                      labelText: "Password",
+
                       // prefixIcon: Icon(
                       //   Icons.lock_outline,
                       //   color: Colors.black,
                       // ),
-                      hintStyle: TextStyle(
+                      labelStyle: TextStyle(
                         fontSize: 15.0,
                         color: Colors.black,
                       ),

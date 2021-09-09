@@ -139,8 +139,15 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       appBar: AppBar(
         //automaticallyImplyLeading: false,
-        title: Text("회원가입 페이지"),
-        actions: [],
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: ListView(
         shrinkWrap: true,
@@ -211,16 +218,14 @@ class _SignUpState extends State<SignUp> {
           Row(
             children: [
               Container(
-                width: width * 0.8,
-                padding: EdgeInsets.only(left: 15, right: 5),
+                width: width * 0.75,
+                height: 60,
+                padding: EdgeInsets.only(left: 10),
                 child: Card(
                   elevation: 0.0,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border(
-                        bottom: BorderSide(width: 1.0, color: Colors.black),
-                      ),
                     ),
                     child: TextFormField(
                       style: TextStyle(
@@ -231,23 +236,21 @@ class _SignUpState extends State<SignUp> {
                         contentPadding: EdgeInsets.all(10.0),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0),
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                          ),
                         ),
-
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(color: Colors.black, width: 1),
+                        ),
+                        labelText: "Email",
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                          ),
                           borderRadius: BorderRadius.circular(5.0),
                         ),
-                        hintText: "Email",
+
                         // prefixIcon: Icon(
                         //   Icons.mail_outline,
                         //   color: Colors.black,
                         // ),
-                        hintStyle: TextStyle(
+                        labelStyle: TextStyle(
                           fontSize: 15.0,
                           color: Colors.black,
                         ),
@@ -258,29 +261,24 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
-              SizedBox(),
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        primary: Colors.blue,
-                        elevation: 1),
-                    onPressed: () => sendOtp(),
-                    child: Text("OTP", style: TextStyle(color: Colors.black))),
+              Container(
+                width: width * 0.22,
+                height: 35,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          primary: Colors.blue[200],
+                          elevation: 2),
+                      onPressed: () => sendOtp(),
+                      child:
+                          Text("OTP", style: TextStyle(color: Colors.black))),
+                ),
               ),
             ],
           ),
-          emailRule == true
-              ? Text("")
-              : Container(
-                  padding: EdgeInsets.only(left: 15, right: 35),
-                  width: width * 0.8,
-                  child: Text(
-                    "email authentication",
-                    style: TextStyle(fontSize: 15, color: Colors.red),
-                  )),
           Padding(padding: EdgeInsets.only(top: 8)),
           checkOtp == true && canSignUp == false
               ? Row(
@@ -352,16 +350,10 @@ class _SignUpState extends State<SignUp> {
           Padding(padding: EdgeInsets.only(top: 20)),
           Container(
             padding: EdgeInsets.only(left: 15, right: 35),
-            width: width * 0.8,
+            width: width * 0.7,
             child: Card(
               elevation: 0.0,
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    bottom: BorderSide(width: 1.0, color: Colors.black),
-                  ),
-                ),
                 child: TextFormField(
                   style: TextStyle(
                     fontSize: 15.0,
@@ -371,14 +363,12 @@ class _SignUpState extends State<SignUp> {
                     contentPadding: EdgeInsets.all(10.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(0),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     hintText: "Password(At least 6 character)",

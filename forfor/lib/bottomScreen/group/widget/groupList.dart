@@ -39,13 +39,14 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
   }
 
   groupScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return HiddenMenuSelect();
-        },
-      ),
-    );
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return HiddenMenuSelect();
+    //     },
+    //   ),
+    // );
+    Navigator.pushNamed(context, '/groupPage');
   }
 
   @override

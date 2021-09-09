@@ -290,8 +290,8 @@ class _UserInfomationState extends State<UserInfomation> {
         appBar: AppBar(
           toolbarHeight: height * 0.06,
           centerTitle: true,
-          // backgroundColor: Colors.black,
-          automaticallyImplyLeading: false,
+          backgroundColor: Colors.grey[400],
+          automaticallyImplyLeading: true,
           title: Text(
             "my infomation",
             style: TextStyle(fontSize: 22),

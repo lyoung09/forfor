@@ -168,7 +168,9 @@ class _GroupPostingState extends State<GroupPosting>
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.grey[400],
         leading: IconButton(
@@ -186,22 +188,14 @@ class _GroupPostingState extends State<GroupPosting>
         ],
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.all(8),
         scrollDirection: Axis.vertical,
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
         child: Column(
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(top: 20)),
-            customTab(),
-            Padding(padding: EdgeInsets.only(top: 20)),
-            Container(
-                child: Divider(
-              thickness: 1,
-              color: Colors.grey[800],
-            )),
             Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
+                borderRadius: BorderRadius.circular(4),
+              ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,32 +209,23 @@ class _GroupPostingState extends State<GroupPosting>
                           children: <Widget>[
                             CircleImage(
                               imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
+                                  AssetImage(Img.get('photo_female_2.jpg')),
+                              size: 55,
                             ),
                             Container(width: 15),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text("Emma Richmond",
+                                Text("Bsilico Eat",
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
+                                        fontSize: 18,
+                                        color: Colors.grey[900])),
+                                Container(height: 5),
+                                Text(
+                                  "June 1, 2015",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[500]),
                                 ),
                               ],
                             )
@@ -250,695 +235,70 @@ class _GroupPostingState extends State<GroupPosting>
                         Container(
                           child: Text(MyStrings.middle_lorem_ipsum,
                               style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
+                                  fontSize: 18, color: Colors.grey[700])),
                         ),
                       ],
                     ),
                   ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Emma Richmond",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.middle_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Emma Richmond",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.middle_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Emma Richmond",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.middle_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Emma Richmond",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.middle_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_1.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Emma Richmond",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Hwy, Carthage",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.middle_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
-                  Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("12 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("4 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("3h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_male_7.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Homer J. Allen",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("City, Office",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.short_lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
+                  Container(height: 15),
                   Image.asset(
-                    Img.get('image_2.jpg'),
-                    height: 200,
+                    Img.get('image_7.jpg'),
+                    height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
-                  Divider(color: Colors.grey[300], height: 0),
                   Container(
-                    height: 50,
+                    height: 55,
                     child: Row(
                       children: <Widget>[
                         Container(width: 5),
                         IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
+                          icon: Icon(Icons.favorite, color: Colors.grey[700]),
                           onPressed: () {},
                         ),
-                        Text("145 likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
                         IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
+                          icon: Icon(Icons.share, color: Colors.grey[700]),
                           onPressed: () {},
                         ),
-                        Text("12 comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
                         Spacer(),
-                        Text("12h ago",
+                        IconButton(
+                          icon:
+                              Icon(Icons.mode_comment, color: Colors.grey[700]),
+                          onPressed: () {},
+                        ),
+                        Text("12",
                             style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                                color: Colors.grey[700])),
                         Container(width: 15),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            Container(height: 2),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1)),
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            CircleImage(
-                              imageProvider:
-                                  AssetImage(Img.get('photo_female_6.jpg')),
-                              size: 40,
-                            ),
-                            Container(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Lillie Hoyos",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.grey[800])),
-                                Container(height: 2),
-                                Row(
-                                  children: <Widget>[
-                                    Text("in",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey[500])),
-                                    Container(width: 3),
-                                    Text("Easthampton, MA",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.lightBlue[400],
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(height: 10),
-                        Container(
-                          child: Text(MyStrings.lorem_ipsum,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey[500])),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(height: 10),
                   Divider(color: Colors.grey[300], height: 0),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 5),
-                        IconButton(
-                          icon: Icon(Icons.thumb_up,
-                              color: Colors.green[200], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("1k likes",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        IconButton(
-                          icon: Icon(Icons.chat_bubble,
-                              color: Colors.lightBlue[400], size: 25),
-                          onPressed: () {},
-                        ),
-                        Text("1.3k comments",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[500])),
-                        Spacer(),
-                        Text("12h ago",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[500])),
-                        Container(width: 15),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.all(15),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: <Widget>[
+                  //       Text("Sandra Adams",
+                  //           style: TextStyle(
+                  //               fontWeight: FontWeight.w500,
+                  //               fontSize: 18,
+                  //               color: Colors.grey[900])),
+                  //       Container(height: 5),
+                  //       Text(MyStrings.middle_lorem_ipsum,
+                  //           maxLines: 1,
+                  //           overflow: TextOverflow.ellipsis,
+                  //           style: TextStyle(
+                  //               fontSize: 18, color: Colors.grey[700]))
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             ),
+            Container(height: 5),
           ],
         ),
       ),

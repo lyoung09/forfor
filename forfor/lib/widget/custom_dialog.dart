@@ -571,3 +571,139 @@ class CustomEventDialogState extends State<CustomEventDialog> {
     );
   }
 }
+
+class GroupQuestion extends StatefulWidget {
+  GroupQuestion({Key? key}) : super(key: key);
+
+  @override
+  GroupQuestionState createState() => new GroupQuestionState();
+}
+
+class GroupQuestionState extends State<GroupQuestion> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      elevation: 0.0,
+      backgroundColor: Colors.transparent,
+      child: dialogContent(context),
+    );
+  }
+
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _questionController = TextEditingController();
+
+  Widget dialogContent(BuildContext context) {
+    return Container(
+      height: 400,
+      width: 300,
+      margin: EdgeInsets.only(left: 0.0, right: 0.0),
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(
+              8.0,
+            ),
+            margin: EdgeInsets.only(top: 13.0, right: 8.0),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 0.0,
+                    offset: Offset(0.0, 0.0),
+                  ),
+                ]),
+            child: Column(
+              children: [
+                Padding(padding: EdgeInsets.only(top: 5)),
+                TextField(
+                  controller: _titleController,
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    labelText: "title",
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.grey[900]!, width: 0.5),
+                    ),
+                  ),
+                ),
+                Padding(padding: EdgeInsets.only(top: 15)),
+                Expanded(
+                  child: TextField(
+                    controller: _questionController,
+                    maxLines: 12,
+                    decoration: InputDecoration(
+                      hintText: "question",
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.grey[900]!, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.grey[900]!, width: 1),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(border: Border.all()),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.add),
+                            ),
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.edit),
+                            ),
+                          )),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+          Positioned(
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Align(
+                alignment: Alignment.topRight,
+                child: CircleAvatar(
+                  radius: 14.0,
+                  backgroundColor: Colors.grey[200],
+                  child: Icon(Icons.close, color: Colors.red),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

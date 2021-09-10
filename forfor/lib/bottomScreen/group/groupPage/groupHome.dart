@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
@@ -47,6 +49,15 @@ class _GroupHomeState extends State<GroupHome> {
     'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
     'https://images.unsplash.com/photo-1616766098956-c81f12114571?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
   ];
+
+  @override
+  initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      widget.controller.toggle();
+    });
+  }
 
   Widget buildExpandedBox({
     required List<Widget> children,
@@ -116,18 +127,16 @@ class _GroupHomeState extends State<GroupHome> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.grey[400],
-        leading: IconButton(
-            color: Colors.black,
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              widget.controller.toggle();
-            }),
-        actions: [
-          Icon(
-            Icons.ac_unit,
-            color: Colors.black,
-          )
-        ],
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+              color: Colors.black,
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                widget.controller.toggle();
+              }),
+        ),
+        actions: [],
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -80,12 +80,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   label: "친구"),
               BottomNavigationBarItem(
                   icon: Image.asset(
-                    "assets/icon/question.png",
+                    "assets/icon/chat.png",
                     fit: BoxFit.fill,
                     width: 25,
                     height: 25,
                   ),
-                  label: "QnA"),
+                  label: "세이"),
               BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   "assets/svg/profileBottom.svg",

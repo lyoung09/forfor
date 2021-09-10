@@ -23,6 +23,7 @@ import 'bottomScreen/group/addGroupStepper.dart';
 import 'bottomScreen/group/groupPage/groupFriend.dart';
 import 'bottomScreen/group/groupPage/groupHome.dart';
 import 'bottomScreen/group/groupPage/groupPosting.dart';
+import 'bottomScreen/group/groupPage/groupQnA.dart';
 import 'bottomScreen/group/groupPage/groupSearch.dart';
 import 'bottomScreen/group/group_click.dart';
 import 'bottomScreen/group/groupclick.dart';
@@ -61,27 +62,22 @@ class MyApp extends StatelessWidget {
               Widget screenCurrent = GroupHome(controller: controller);
               switch (position) {
                 case 0:
-                  screenCurrent =
-                      GroupHome(controller: controller, key: JosKeys.groupHome);
+                  screenCurrent = GroupHome(controller: controller);
                   break;
                 case 1:
-                  screenCurrent = GroupPosting(
-                      controller: controller, key: JosKeys.groupPost);
+                  screenCurrent = GroupQnA(controller: controller);
                   break;
                 case 2:
-                  screenCurrent = GroupChatting(
-                      controller: controller, key: JosKeys.groupChat);
+                  screenCurrent = GroupPosting(controller: controller);
                   break;
                 case 3:
-                  screenCurrent = GroupFriend(
-                      controller: controller, key: JosKeys.groupFriend);
+                  screenCurrent = GroupChatting(controller: controller);
                   break;
                 case 4:
-                  screenCurrent = GroupSearch(
-                      controller: controller, key: JosKeys.groupSear);
+                  screenCurrent = GroupFriend(controller: controller);
                   break;
                 case 5:
-                  screenCurrent = GroupFriend(controller: controller);
+                  screenCurrent = GroupSearch(controller: controller);
                   break;
               }
 
@@ -133,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return HopeInfomation();
+          return Login();
         },
       ),
     );

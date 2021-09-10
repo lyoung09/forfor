@@ -54,7 +54,7 @@ dependencies:
   google_sign_in: ^4.5.9
   cloud_firestore: ^2.0.0
   firebase_core: ^1.1.0
-  firebase_storage: ^8.0.5
+  firebase_storage: ^9.0.0
   cloud_functions: ^3.0.0
   flutter_web_auth: ^0.3.0
   uuid: ^3.0.4
@@ -108,9 +108,11 @@ flutter:
     - assets/icon/gender.png
     - assets/icon/invite.png
     - assets/icon/buddy.png
+    - assets/icon/chat.png
     - assets/icon/padlock.png
     - assets/icon/unlock.png
     - assets/icon/question.png
+    - assets/icon/qa.png
     - assets/icon/groupSetting.png
     - assets/icon/updated (2).png
 

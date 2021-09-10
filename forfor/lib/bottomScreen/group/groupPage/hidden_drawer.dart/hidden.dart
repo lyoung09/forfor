@@ -21,130 +21,131 @@ class JosKeys {
   static final groupChat = GlobalKey();
   static final groupSear = GlobalKey();
   static final groupPost = GlobalKey();
+  static final groupQnA = GlobalKey();
 }
 
-class Hey extends StatefulWidget {
-  const Hey({Key? key}) : super(key: key);
+// class Hey extends StatefulWidget {
+//   const Hey({Key? key}) : super(key: key);
 
-  @override
-  _HeyState createState() => _HeyState();
-}
+//   @override
+//   _HeyState createState() => _HeyState();
+// }
 
-class _HeyState extends State<Hey> {
-  late SimpleHiddenDrawerController _controller;
+// class _HeyState extends State<Hey> {
+//   late SimpleHiddenDrawerController _controller;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     _controller.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        _controller.toggle();
-        return Future(() => false);
-      },
-      child: MaterialApp(
-        home: SimpleHiddenDrawer(
-          menu: Menu(),
-          screenSelectedBuilder: (position, controller) {
-            _controller = controller;
-            Widget screenCurrent = GroupHome(controller: _controller);
-            switch (position) {
-              case 0:
-                screenCurrent =
-                    GroupHome(controller: _controller, key: JosKeys.groupHome);
-                break;
-              case 1:
-                screenCurrent = GroupPosting(
-                    controller: _controller, key: JosKeys.groupPost);
-                break;
-              case 2:
-                screenCurrent = GroupChatting(
-                    controller: _controller, key: JosKeys.groupChat);
-                break;
-              case 3:
-                screenCurrent = GroupFriend(
-                    controller: _controller, key: JosKeys.groupFriend);
-                break;
-              case 4:
-                screenCurrent = GroupSearch(
-                    controller: _controller, key: JosKeys.groupSear);
-                break;
-              case 5:
-                screenCurrent = GroupFriend(controller: _controller);
-                break;
-            }
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: () {
+//         _controller.toggle();
+//         return Future(() => false);
+//       },
+//       child: MaterialApp(
+//         home: SimpleHiddenDrawer(
+//           menu: Menu(),
+//           screenSelectedBuilder: (position, controller) {
+//             _controller = controller;
+//             Widget screenCurrent = GroupHome(controller: _controller);
+//             switch (position) {
+//               case 0:
+//                 screenCurrent =
+//                     GroupHome(controller: _controller, key: JosKeys.groupHome);
+//                 break;
+//               case 1:
+//                 screenCurrent = GroupPosting(
+//                     controller: _controller, key: JosKeys.groupPost);
+//                 break;
+//               case 2:
+//                 screenCurrent = GroupChatting(
+//                     controller: _controller, key: JosKeys.groupChat);
+//                 break;
+//               case 3:
+//                 screenCurrent = GroupFriend(
+//                     controller: _controller, key: JosKeys.groupFriend);
+//                 break;
+//               case 4:
+//                 screenCurrent = GroupSearch(
+//                     controller: _controller, key: JosKeys.groupSear);
+//                 break;
+//               case 5:
+//                 screenCurrent = GroupFriend(controller: _controller);
+//                 break;
+//             }
 
-            return Scaffold(
-              body: screenCurrent,
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
+//             return Scaffold(
+//               body: screenCurrent,
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class HiddenMenuSelect extends StatelessWidget {
-  HiddenMenuSelect({Key? key}) : super(key: key);
+// class HiddenMenuSelect extends StatelessWidget {
+//   HiddenMenuSelect({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    late SimpleHiddenDrawerController _controller;
-    return WillPopScope(
-      onWillPop: () {
-        return Future(() => false);
-      },
-      child: MaterialApp(
-        home: SimpleHiddenDrawer(
-          menu: Menu(),
-          screenSelectedBuilder: (position, controller) {
-            _controller = controller;
-            Widget screenCurrent = GroupHome(controller: _controller);
-            switch (position) {
-              case 0:
-                screenCurrent =
-                    GroupHome(controller: _controller, key: JosKeys.groupHome);
-                break;
-              case 1:
-                screenCurrent = GroupPosting(
-                    controller: _controller, key: JosKeys.groupPost);
-                break;
-              case 2:
-                screenCurrent = GroupChatting(
-                    controller: _controller, key: JosKeys.groupChat);
-                break;
-              case 3:
-                screenCurrent = GroupFriend(
-                    controller: _controller, key: JosKeys.groupFriend);
-                break;
-              case 4:
-                screenCurrent = GroupSearch(
-                    controller: _controller, key: JosKeys.groupSear);
-                break;
-              case 5:
-                screenCurrent = GroupFriend(controller: _controller);
-                break;
-            }
+//   @override
+//   Widget build(BuildContext context) {
+//     late SimpleHiddenDrawerController _controller;
+//     return WillPopScope(
+//       onWillPop: () {
+//         return Future(() => false);
+//       },
+//       child: MaterialApp(
+//         home: SimpleHiddenDrawer(
+//           menu: Menu(),
+//           screenSelectedBuilder: (position, controller) {
+//             _controller = controller;
+//             Widget screenCurrent = GroupHome(controller: _controller);
+//             switch (position) {
+//               case 0:
+//                 screenCurrent =
+//                     GroupHome(controller: _controller, key: JosKeys.groupHome);
+//                 break;
+//               case 1:
+//                 screenCurrent = GroupPosting(
+//                     controller: _controller, key: JosKeys.groupPost);
+//                 break;
+//               case 2:
+//                 screenCurrent = GroupChatting(
+//                     controller: _controller, key: JosKeys.groupChat);
+//                 break;
+//               case 3:
+//                 screenCurrent = GroupFriend(
+//                     controller: _controller, key: JosKeys.groupFriend);
+//                 break;
+//               case 4:
+//                 screenCurrent = GroupSearch(
+//                     controller: _controller, key: JosKeys.groupSear);
+//                 break;
+//               case 5:
+//                 screenCurrent = GroupFriend(controller: _controller);
+//                 break;
+//             }
 
-            return Scaffold(
-              body: screenCurrent,
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
+//             return Scaffold(
+//               body: screenCurrent,
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class Menu extends StatefulWidget {
   @override
@@ -167,8 +168,8 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
 
   @override
   void setState(fn) {
-    super.setState(fn);
     if (mounted) {
+      super.setState(fn);
       controller.dispose();
       _animationController.dispose();
     }
@@ -178,7 +179,6 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
     controller = SimpleHiddenDrawerController.of(context);
-    controller.toggle();
 
     controller.addListener(() {
       if (controller.state == MenuState.open) {
@@ -191,17 +191,19 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
     });
   }
 
+  Future<bool> _willPopCallback() async {
+    // await Show dialog of exit or what you want
+    // then
+    controller.open();
+    return false; //
+  }
+
   backHomePage() async {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
       builder: (BuildContext context) {
         return BottomNavigation();
       },
     ), (route) => false);
-  }
-
-  Future<bool> _willPopCallback() async {
-    controller.open();
-    return false; //
   }
 
   @override
@@ -274,28 +276,28 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
               Padding(
                 padding: EdgeInsets.only(top: 15),
               ),
-              // Container(
-              //   alignment: Alignment.centerLeft,
-              //   padding: EdgeInsets.only(left: 10),
-              //   child: SizedBox(
-              //     width: 250,
-              //     height: 150,
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: 15),
+                child: SizedBox(
+                  width: 250,
+                  height: 150,
 
-              //     //padding: EdgeInsets.only(left: 15),
+                  //padding: EdgeInsets.only(left: 15),
 
-              //     child: Image.asset('assets/image/photo_female_1.jpg',
-              //         fit: BoxFit.cover),
-              //   ),
-              // ),
+                  child: Image.asset('assets/image/photo_female_1.jpg',
+                      fit: BoxFit.cover),
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.only(top: 40),
               ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: EdgeInsets.only(right: 8),
+                  padding: EdgeInsets.only(left: 8, right: 8),
                   child: SizedBox(
-                    width: 250.0,
+                    width: MediaQuery.of(context).size.width * 0.65,
                     height: 100,
                     child: ElevatedButton(
                       style: ButtonStyle(
@@ -324,7 +326,7 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                 ),
               ),
 
-              Padding(padding: EdgeInsets.only(top: 40)),
+              Padding(padding: EdgeInsets.only(top: 30)),
               // GridView.count(
               //   crossAxisCount: 5,
               //   children: List.generate(5, (index) {
@@ -409,6 +411,46 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                             child: Row(
                               children: [
                                 Padding(padding: EdgeInsets.only(left: 10)),
+                                Image.asset(
+                                  "assets/icon/qa.png",
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                Spacer(),
+                                Text("QnA",
+                                    style: TextStyle(color: Colors.black)),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      20.0,
+                                    ),
+                                  ),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: (Colors.grey[400])!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.setSelectedMenuPosition(2);
+                            },
+                            child: Row(
+                              children: [
+                                Padding(padding: EdgeInsets.only(left: 10)),
                                 Icon(
                                   Icons.edit,
                                   color: Colors.black,
@@ -443,7 +485,7 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                               ),
                             ),
                             onPressed: () {
-                              controller.setSelectedMenuPosition(2);
+                              controller.setSelectedMenuPosition(3);
                             },
                             child: Row(
                               children: [
@@ -482,7 +524,7 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                               ),
                             ),
                             onPressed: () {
-                              controller.setSelectedMenuPosition(3);
+                              controller.setSelectedMenuPosition(4);
                             },
                             child: Row(
                               children: [
@@ -521,7 +563,7 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                               ),
                             ),
                             onPressed: () {
-                              controller.setSelectedMenuPosition(4);
+                              controller.setSelectedMenuPosition(5);
                             },
                             child: Row(
                               children: [
@@ -532,45 +574,6 @@ class _MenuState extends State<Menu> with TickerProviderStateMixin {
                                 ),
                                 Spacer(),
                                 Text("search",
-                                    style: TextStyle(color: Colors.black)),
-                                Spacer(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 20)),
-                        SizedBox(
-                          width: 200.0,
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.white),
-                              shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(
-                                      20.0,
-                                    ),
-                                  ),
-                                  side: BorderSide(
-                                    width: 1,
-                                    color: (Colors.grey[400])!,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
-                              controller.setSelectedMenuPosition(5);
-                            },
-                            child: Row(
-                              children: [
-                                Padding(padding: EdgeInsets.only(left: 10)),
-                                Icon(
-                                  Icons.ac_unit,
-                                  color: Colors.black,
-                                ),
-                                Spacer(),
-                                Text("anyting",
                                     style: TextStyle(color: Colors.black)),
                                 Spacer(),
                               ],

@@ -82,14 +82,11 @@ class GroupListState extends State<GroupList> with TickerProviderStateMixin {
                       ),
                     ],
                   ),
-                  Hero(
-                    tag: 'groupImage',
-                    child: Image.asset(
-                      "assets/image/photo_female_1.jpg",
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.asset(
+                    "assets/image/photo_female_1.jpg",
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                   Container(
                     padding: EdgeInsets.all(15),

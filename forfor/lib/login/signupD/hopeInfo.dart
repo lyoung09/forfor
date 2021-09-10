@@ -57,12 +57,11 @@ class _HopeInfomationState extends State<HopeInfomation> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: height * 0.06,
-          centerTitle: true,
-          // backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
+          backgroundColor: Colors.grey[400],
           title: Text(
             "Category",
-            style: TextStyle(fontSize: 22),
+            style: TextStyle(fontSize: 32, color: Colors.black),
           ),
         ),
         body: StreamBuilder(

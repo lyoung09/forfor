@@ -15,20 +15,24 @@ class GroupSearchState extends State<GroupSearch> {
   bool finishLoading = true;
   bool showClear = false;
   final TextEditingController inputController = new TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
   }
 
-  void dispose() {
-    widget.controller.dispose();
-    super.dispose();
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+      widget.controller.dispose();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _formKey,
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.grey[400],

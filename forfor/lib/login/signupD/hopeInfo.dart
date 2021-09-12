@@ -62,7 +62,7 @@ class _HopeInfomationState extends State<HopeInfomation> {
           automaticallyImplyLeading: false,
           title: Text(
             "Category",
-            style: TextStyle(fontSize: 22),
+            style: TextStyle(fontSize: 22, color: Colors.black),
           ),
         ),
         body: StreamBuilder(

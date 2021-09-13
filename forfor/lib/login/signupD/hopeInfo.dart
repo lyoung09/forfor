@@ -61,7 +61,11 @@ class _HopeInfomationState extends State<HopeInfomation> {
           backgroundColor: Colors.grey[400],
           title: Text(
             "Category",
+<<<<<<< HEAD
             style: TextStyle(fontSize: 32, color: Colors.black),
+=======
+            style: TextStyle(fontSize: 22, color: Colors.black),
+>>>>>>> ed2263a5a62344e2f0b566f8ed26d2d45a29c44b
           ),
         ),
         body: StreamBuilder(

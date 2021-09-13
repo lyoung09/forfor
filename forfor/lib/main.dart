@@ -121,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     bool _seen = (prefs.getBool('seen') ?? false);
 
+<<<<<<< HEAD
     // if (auth.currentUser != null) {
     //   Navigator.pushNamed(context, '/bottomScreen');
     // } else {
@@ -133,6 +134,20 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+=======
+    if (auth.currentUser != null) {
+      Navigator.pushNamed(context, '/bottomScreen');
+    } else {
+      Navigator.pushNamed(context, '/login');
+    }
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return HopeInfomation();
+    //     },
+    //   ),
+    // );
+>>>>>>> ed2263a5a62344e2f0b566f8ed26d2d45a29c44b
   }
 
   @override

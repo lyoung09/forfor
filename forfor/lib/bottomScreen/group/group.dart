@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/data/user.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
@@ -24,18 +26,23 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
   late Animation<double> animation1, animation1View;
   late BuildContext _scaffoldCtx;
   TextEditingController _filter = new TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+  UserInf userInfo = new UserInf(uid: 'ha');
+    print('out ${userInfo.getUserId}');
     controller1 = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),
     );
     animation1 = Tween(begin: 0.0, end: 180.0).animate(controller1);
     animation1View = CurvedAnimation(parent: controller1, curve: Curves.linear);
-
+    print(auth.currentUser!.uid);
+  
+    
+    
     controller1.addListener(() {
       setState(() {});
     });
@@ -66,8 +73,6 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
       ),
     );
   }
-
-
 
   Widget selectCategory() {
     return SizeTransition(
@@ -510,7 +515,9 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                               Text(
                                 "K-pop",
                                 style: TextStyle(
-                                    fontSize: 25, color: Colors.grey[800]),
+                                    fontSize: 25,
+                                    color: Colors.grey[800],
+                                    fontFamily: "GloryBold"),
                               ),
                               Container(
                                 decoration:

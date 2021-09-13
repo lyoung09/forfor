@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forfor/data/user.dart';
 import 'package:forfor/widget/custom_dialog.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
@@ -17,6 +18,9 @@ class _StepperGroupAddState extends State<StepperGroupAdd> {
   initState() {
     super.initState();
     _rule = Rule.All;
+
+    UserInf userInfo = new UserInf(uid: '');
+    print('out ${userInfo.getUserId}');
   }
 
   int? _selectedIndex;

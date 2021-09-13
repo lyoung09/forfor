@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:forfor/data/user.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/signupD/userInfo.dart';
 import 'package:email_auth/email_auth.dart';

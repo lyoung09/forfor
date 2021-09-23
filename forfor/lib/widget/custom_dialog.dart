@@ -58,8 +58,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               Row(
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 8.0, left: 5, bottom: 3),
+                    padding: const EdgeInsets.only(left: 5, bottom: 3),
                     child: ClipOval(
                       child: Image.network(
                         widget.img,

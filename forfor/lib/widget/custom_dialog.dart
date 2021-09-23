@@ -10,7 +10,7 @@ import 'my_text.dart';
 
 class CustomDialogBox extends StatefulWidget {
   final String title, descriptions, text;
-  final Image img;
+  final String img;
 
   const CustomDialogBox(
       {Key? key,
@@ -115,12 +115,13 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
         Positioned(
           left: 20,
           right: 20,
-          child: CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: 45,
-            child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(45)),
-                child: widget.img),
+          child: ClipOval(
+            child: Image.network(
+              widget.img,
+              fit: BoxFit.scaleDown,
+              width: 120,
+              height: 100,
+            ),
           ),
         ),
       ],

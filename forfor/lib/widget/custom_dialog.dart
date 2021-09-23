@@ -55,9 +55,25 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(
-                widget.title,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              Row(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 8.0, left: 5, bottom: 3),
+                    child: ClipOval(
+                      child: Image.network(
+                        widget.img,
+                        fit: BoxFit.cover,
+                        width: 85,
+                        height: 90,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    widget.title,
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 15,
@@ -113,15 +129,17 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
           ),
         ),
         Positioned(
-          left: 20,
-          right: 20,
-          child: ClipOval(
-            child: Image.network(
-              widget.img,
-              fit: BoxFit.scaleDown,
-              width: 120,
-              height: 100,
-            ),
+          right: 5,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 5, bottom: 3),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )),
           ),
         ),
       ],

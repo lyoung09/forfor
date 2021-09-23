@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/model/scientist.dart';
@@ -14,7 +15,7 @@ class InvitePersonScreen extends StatefulWidget {
 
 class _InvitePersonScreenState extends State<InvitePersonScreen> {
   int? _index;
-  CollectionReference user = FirebaseFirestore.instance.collection('users');
+
   bool click = false;
   bool categoryClick = false;
   bool newClick = false;
@@ -24,161 +25,18 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
   var detail;
   var uid;
+
   initState() {
     super.initState();
     uid = auth.currentUser?.uid;
     print(uid);
   }
 
-  Widget tabbar() {
-    return Row(children: [
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: newClick == true
-                  ? BorderSide(color: Colors.black)
-                  : BorderSide(color: Colors.white),
-            ),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("new", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          //delayShowingContent();
-          setState(() {
-            newClick = !newClick;
-            if (newClick) {
-              categoryClick = false;
-              nearClick = false;
-              genderClick = false;
-              sameCountryClick = false;
-            }
-          });
-        },
-      ),
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: categoryClick == true
-                  ? BorderSide(color: Colors.black)
-                  : BorderSide(color: Colors.white),
-            ),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("카테고리", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          //delayShowingContent();
-          setState(() {
-            categoryClick = !categoryClick;
-            if (categoryClick) {
-              newClick = false;
-
-              nearClick = false;
-              genderClick = false;
-              sameCountryClick = false;
-            }
-          });
-        },
-      ),
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: nearClick == true
-                  ? BorderSide(color: Colors.black)
-                  : BorderSide(color: Colors.white),
-            ),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("주변", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          setState(() {
-            nearClick = !nearClick;
-            if (nearClick) {
-              categoryClick = false;
-              newClick = false;
-              genderClick = false;
-              sameCountryClick = false;
-            }
-          });
-          //delayShowingContent();
-        },
-      ),
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: genderClick == true
-                  ? BorderSide(color: Colors.black)
-                  : BorderSide(color: Colors.white),
-            ),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("성별", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          //delayShowingContent();
-          setState(() {
-            genderClick = !genderClick;
-            if (genderClick) {
-              categoryClick = false;
-              newClick = false;
-              nearClick = false;
-              sameCountryClick = false;
-            }
-          });
-        },
-      ),
-      Container(width: 10),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: sameCountryClick == true
-                  ? BorderSide(color: Colors.black)
-                  : BorderSide(color: Colors.white),
-            ),
-            primary: Colors.white,
-            elevation: 1),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child:
-              Text("내국인", style: TextStyle(color: Colors.black, fontSize: 14)),
-        ),
-        onPressed: () {
-          setState(() {
-            sameCountryClick = !sameCountryClick;
-            if (sameCountryClick) {
-              categoryClick = false;
-              newClick = false;
-              nearClick = false;
-              genderClick = false;
-            }
-          });
-          //delayShowingContent();
-        },
-      ),
-    ]);
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   late int selectedIndex;
@@ -192,11 +50,13 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           if (!categoryData.hasData) {
             return Text("");
           }
-
+          if (detail == null) {
+            detail = categoryData.data!.docs[0]["categoryId"];
+          }
           return ListView.builder(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
-              itemCount: 3,
+              itemCount: categoryData.data!.size,
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -215,12 +75,12 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                                 categoryData.data!.docs[index]["categoryName"],
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 22,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold))
                             : Text(
                                 categoryData.data!.docs[index]["categoryName"],
                                 style: TextStyle(
-                                    color: Colors.grey[900], fontSize: 18)),
+                                    color: Colors.grey[900], fontSize: 13)),
                       ),
                     ),
                   ),
@@ -369,21 +229,32 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     );
   }
 
-  Widget gridviewWidget(email, string, detail) {
+  CollectionReference user = FirebaseFirestore.instance.collection('users');
+  Widget gridviewWidget(string, detail) {
     var futureUser;
     if (string == "category")
-      futureUser = user.where("category", arrayContains: detail).get();
+      futureUser = user
+          .where("uid", isNotEqualTo: uid)
+          .where("category", arrayContains: detail)
+          .get();
+
     if (string == "new")
       futureUser = user
-          .where("email", isNotEqualTo: email)
-          .where("gender", isEqualTo: "여")
+          .where("uid", isNotEqualTo: uid)
+          .where("gender", isEqualTo: "남")
           .get();
     if (string == "near")
-      futureUser = user.where("gender", isEqualTo: "여").get();
+      futureUser = user
+          .where("uid", isNotEqualTo: uid)
+          .where("email", isEqualTo: "lyoung09@hanmail.net")
+          .get();
     if (string == "gender")
       futureUser = user.where("gender", isEqualTo: "여").get();
     if (string == "sameCountry")
-      futureUser = user.where("country", isEqualTo: detail).get();
+      futureUser = user
+          .where("uid", isNotEqualTo: uid)
+          .where("country", isEqualTo: detail)
+          .get();
     if (string == "") futureUser = user.where("uid", isNotEqualTo: uid).get();
     return FutureBuilder(
         future: futureUser,
@@ -397,7 +268,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
               itemCount: userData.data!.docs.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-                childAspectRatio: 1 / 1, //item 의 가로 1, 세로 2 의 비율
+                childAspectRatio: 1 / 1.2, //item 의 가로 1, 세로 2 의 비율
                 mainAxisSpacing: 10, //수평 Padding
                 crossAxisSpacing: 10, //수직 Padding
               ),
@@ -434,7 +305,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 8.0, left: 8, bottom: 2),
+                                    top: 8.0, left: 5, bottom: 3),
                                 child: ClipOval(
                                   child: Image.network(
                                     "${userData.data!.docs[index]['url']}",
@@ -446,25 +317,27 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               ),
                               Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 8.0, top: 8.0),
-                                    child: Text(
-                                      "국기",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                  CountryListPick(
+                                      theme: CountryTheme(
+                                        isShowFlag: true,
+                                        isShowTitle: false,
+                                        isShowCode: false,
+                                        isDownIcon: false,
+                                        showEnglishName: false,
                                       ),
-                                    ),
-                                  ),
+                                      initialSelection: "+82",
+                                      onChanged: (CountryCode? code) {},
+
+                                      // Whether the country list should be wrapped in a SafeArea
+                                      useSafeArea: false),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        right: 8.0, top: 8.0),
+                                        right: 8.0, top: 3.0),
                                     child: Text(
                                       "0.1km",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                        fontSize: 13,
                                       ),
                                     ),
                                   ),
@@ -474,27 +347,27 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                right: 4, left: 15, bottom: 5, top: 5),
+                                right: 4, left: 5, bottom: 5, top: 5),
                             child: Text(
                               userData.data!.docs[index]['nickname'],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18.5,
+                                fontSize: 19.5,
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                right: 4, left: 5, bottom: 5),
+                                top: 5, right: 4, left: 5, bottom: 5),
                             child: Text(
                               userData.data!.docs[index]['email'],
                               //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 13,
                               ),
                             ),
                           ),
@@ -574,15 +447,16 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         onPressed: () {
                           //delayShowingContent();
                           setState(() {
-                            string = "category";
                             categoryClick = !categoryClick;
                             if (categoryClick) {
+                              string = "category";
                               newClick = false;
 
                               nearClick = false;
                               genderClick = false;
                               sameCountryClick = false;
-                            }
+                            } else
+                              string = "";
                           });
                         },
                       ),
@@ -612,8 +486,9 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               nearClick = false;
                               genderClick = false;
                               sameCountryClick = false;
-                            }
-                            string = "new";
+                              string = "new";
+                            } else
+                              string = "";
                           });
                         },
                       ),
@@ -642,8 +517,9 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               newClick = false;
                               genderClick = false;
                               sameCountryClick = false;
-                            }
-                            string = "near";
+                              string = "near";
+                            } else
+                              string = "";
                           });
                           //delayShowingContent();
                         },
@@ -674,8 +550,9 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               newClick = false;
                               nearClick = false;
                               sameCountryClick = false;
-                            }
-                            string = "gender";
+                              string = "gender";
+                            } else
+                              string = "";
                           });
                         },
                       ),
@@ -704,9 +581,10 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               newClick = false;
                               nearClick = false;
                               genderClick = false;
-                            }
-                            string = "sameCountry";
-                            detail = datas["country"];
+                              string = "sameCountry";
+                              detail = datas["country"];
+                            } else
+                              string = "";
                           });
                           //delayShowingContent();
                         },
@@ -726,7 +604,10 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         height: 0,
                       ),
                 Padding(padding: EdgeInsets.only(top: 15)),
-                gridviewWidget(datas["email"], string, detail)
+                if (string == "category" && detail == null)
+                  gridviewWidget(string, datas["category"][0])
+                else
+                  gridviewWidget(string, detail)
               ],
             ),
           ));

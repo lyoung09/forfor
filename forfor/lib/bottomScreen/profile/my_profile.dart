@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/profile/my_update.dart';
 import 'package:forfor/bottomScreen/profile/settings.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
@@ -19,13 +21,17 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
-  final controller = Get.put(UserController());
+  final controller = Get.put(AuthController());
 
   initState() {
     super.initState();
-    print(controller.user.nickname);
-    print(controller.user.email);
-    print(controller.user.gender);
+    user();
+  }
+
+  user() async {
+    var x = await UserDatabase().getUser(controller.user!.uid);
+    print(x.gender);
+    print(x.category);
   }
 
   updateUser() {

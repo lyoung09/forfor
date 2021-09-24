@@ -6,41 +6,34 @@ import 'package:get/get.dart';
 class UserDatabase {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<bool> createNewUser(UserModel user) async {
-    try {
-      await _firestore.collection("users").doc(user.id).set({
-        "email": user.email,
-      });
+  // Future<bool> createNewUser(UserModel user) async {
+  //   try {
+  //     await _firestore.collection("users").doc(user.id).set({
+  //       "email": user.email,
+  //     });
 
-      return true;
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
+  //     return true;
+  //   } catch (e) {
+  //     print(e);
+  //     return false;
+  //   }
+  // }
 
   Future<bool> addDataUser(UserModel user) async {
     try {
-      await _firestore.collection("users").doc(user.id).update({
+      await _firestore.collection("users").doc(user.id).set({
         "gender": user.gender,
         "country": user.country,
         "nickname": user.nickname,
-        "url": user.url
-      });
-      return true;
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> addUserCategory(UserModel user) async {
-    try {
-      await _firestore.collection("users").doc(user.id).update({
-        "gender": user.gender,
-        "country": user.country,
-        "nickname": user.nickname,
-        "url": user.url
+        "url": user.url,
+        "email": user.email,
+        "access": user.access,
+        "uid": user.id,
+        "category": FieldValue.arrayUnion([
+          user.category![0],
+          user.category![1],
+          user.category![2],
+        ])
       });
       return true;
     } catch (e) {

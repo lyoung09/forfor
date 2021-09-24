@@ -43,6 +43,7 @@ class _UserInfomationState extends State<UserInfomation>
   bool nullCheck = true;
   List<RadioModel> sampleData = [];
   var userid;
+  final controller = Get.put(AuthController());
   @override
   initState() {
     super.initState();
@@ -51,6 +52,7 @@ class _UserInfomationState extends State<UserInfomation>
     WidgetsBinding.instance!.addObserver(this);
   }
 
+  @override
   dispose() {
     super.dispose();
     WidgetsBinding.instance!.removeObserver(this);
@@ -59,12 +61,12 @@ class _UserInfomationState extends State<UserInfomation>
   @override
   didChangeAppLifecycleState(AppLifecycleState state) {
     if (AppLifecycleState.paused == state) {
-      print("Status :" + state.toString());
+      controller.deleteUser();
     }
     if (AppLifecycleState.detached == state) {
       print("Status :" + state.toString());
+      controller.deleteUser();
     }
-    print("Status :" + state.toString());
   }
 
   _pickDateDialog() {
@@ -266,8 +268,6 @@ class _UserInfomationState extends State<UserInfomation>
           checkNickname = false;
         });
       } else {
-        final controller = Get.put(AuthController());
-
         Reference ref = FirebaseStorage.instance
             .ref()
             .child("profile/${controller.user?.uid}");
@@ -282,11 +282,8 @@ class _UserInfomationState extends State<UserInfomation>
           return downloadURL;
         });
 
-        controller.addUserDB(
-            _gender.toString().trim(),
-            _countryCode.toString().trim(),
-            _usernameControl.text.trim(),
-            urlProfileImageApi.trim());
+        controller.addUserInformation(_gender.toString(),
+            _countryCode.toString(), _usernameControl.text, urlProfileImageApi);
       }
     }
   }

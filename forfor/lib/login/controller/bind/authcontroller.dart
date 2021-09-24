@@ -14,7 +14,13 @@ import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
 
 class AuthController extends GetxController {
   FirebaseAuth _auth = FirebaseAuth.instance;
-
+  late String uid;
+  late String email;
+  late String access;
+  late String gender;
+  late String country;
+  late String nickname;
+  late String url;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
 
@@ -31,74 +37,71 @@ class AuthController extends GetxController {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password.trim());
-      UserModel _user = UserModel(
-        id: _auth.currentUser!.uid,
-        email: email.trim(),
-      );
 
-      if (await UserDatabase().createNewUser(_user)) {
-        Get.put(UserController()).user = _user;
-      }
+      this.uid = _auth.currentUser!.uid;
+      this.email = email.trim();
+      this.access = "email";
       Get.offAll(() => UserInfomation());
     } catch (e) {}
   }
 
-  void addUserDB(
-      String gender, String country, String nickname, String url) async {
+  addUserInformation(
+      String gender, String country, String nickname, String url) {
+    this.gender = gender.trim();
+    this.country = country.trim();
+    this.nickname = nickname.trim();
+    this.url = url.trim();
+
+    Get.to(() => HopeInfomation());
+  }
+
+  void setUserDatabase(List<dynamic> list) async {
     try {
       UserModel _user = UserModel(
-        gender: gender,
-        country: country,
-        nickname: nickname,
-        url: url,
-      );
+          id: this.uid,
+          email: this.email,
+          access: this.access,
+          gender: this.gender,
+          country: this.country,
+          nickname: this.nickname,
+          url: this.url,
+          category: list);
 
       if (await UserDatabase().addDataUser(_user)) {
         Get.put(UserController()).user = _user;
       }
-      Get.offAll(() => HopeInfomation());
-    } catch (e) {
-      await _auth.currentUser?.delete();
-      Get.find<UserController>().clear();
-    }
+      Get.offAll(() => BottomNavigation());
+    } catch (e) {}
   }
 
   issueAccessToken(String authCode) async {
     try {
+      print("11");
       var token = await AuthApi.instance.issueAccessToken(authCode);
 
       AccessTokenStore.instance.toStore(token);
       final kakaotalUser.User userKakao =
           await kakaotalUser.UserApi.instance.me();
+
       List<String> providers = await _auth
           .fetchSignInMethodsForEmail(userKakao.kakaoAccount?.email ?? "");
-
-      if (providers.isEmpty && providers.length > 0) {
-        print("already has providers: ${providers.toString()}");
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+      print(" prov${providers}");
+      if (providers.length > 0) {
+        await _auth.signInWithEmailAndPassword(
             email: userKakao.kakaoAccount?.email ?? "",
             password: "kakaologinuser");
 
         Get.to(() => BottomNavigation());
       } else {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: userKakao.kakaoAccount?.email ?? "",
-                password: "kakaologinuser");
-        if (userCredential.additionalUserInfo!.isNewUser) {
-          UserModel _user = UserModel(
-            id: user?.uid,
-            email: user?.email,
-          );
+        print("44");
+        await _auth.createUserWithEmailAndPassword(
+            email: userKakao.kakaoAccount?.email ?? "",
+            password: "kakaologinuser");
 
-          if (await UserDatabase().createNewUser(_user)) {
-            Get.put(UserController()).user = _user;
-
-            Get.offAll(UserInfomation());
-          }
-        } else {
-          Get.offAll(BottomNavigation());
-        }
+        this.uid = user!.uid;
+        this.email = userKakao.kakaoAccount!.email!;
+        this.access = "kakao";
+        Get.offAll(UserInfomation());
       }
     } catch (e) {
       print("error on issuing access token: $e");
@@ -121,23 +124,20 @@ class AuthController extends GetxController {
     User? user = userCredential.user;
 
     if (userCredential.additionalUserInfo!.isNewUser) {
-      UserModel _user = UserModel(
-        id: user?.uid,
-        email: user?.email,
-      );
-
-      if (await UserDatabase().createNewUser(_user)) {
-        Get.put(UserController()).user = _user;
-
-        Get.offAll(UserInfomation());
-      }
+      this.uid = user!.uid;
+      this.email = user.email!;
+      this.access = "google";
+      Get.offAll(UserInfomation());
     } else {
       Get.offAll(BottomNavigation());
     }
   }
 
   void google_signOut() async {
-    await googleSignIn.signOut();
+    try {
+      await googleSignIn.signOut();
+      Get.find<UserController>().clear();
+    } catch (e) {}
   }
 
   void loginUser(String email, String password) async {
@@ -147,13 +147,28 @@ class AuthController extends GetxController {
       Get.put(UserController()).user =
           await UserDatabase().getUser(_auth.currentUser!.uid);
 
-      Get.offAll(UserInfomation());
+      Get.offAll(BottomNavigation());
     } catch (e) {}
   }
 
-  void logoutUser() async {
+  logoutUser() async {
     try {
       await _auth.signOut();
+      Get.find<UserController>().clear();
+    } catch (e) {}
+  }
+
+  logoutTalk() async {
+    try {
+      await _auth.signOut();
+      await kakaotalUser.UserApi.instance.logout();
+      Get.find<UserController>().clear();
+    } catch (e) {}
+  }
+
+  deleteUser() {
+    try {
+      _auth.currentUser!.delete();
       Get.find<UserController>().clear();
     } catch (e) {}
   }

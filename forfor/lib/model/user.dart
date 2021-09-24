@@ -7,14 +7,17 @@ class UserModel {
   String? nickname;
   String? url;
   String? country;
-
+  String? access;
+  List<dynamic>? category;
   UserModel(
       {this.id,
       this.email,
       this.gender,
       this.nickname,
       this.url,
-      this.country});
+      this.country,
+      this.access,
+      this.category});
 
   UserModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot.id;
@@ -23,5 +26,7 @@ class UserModel {
     nickname = documentSnapshot["nickname"];
     url = documentSnapshot["url"];
     country = documentSnapshot["country"];
+    access = documentSnapshot["access"];
+    category = documentSnapshot["category"];
   }
 }

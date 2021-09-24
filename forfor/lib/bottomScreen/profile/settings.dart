@@ -279,7 +279,10 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
             ),
             Divider(height: 0),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                controller.logoutTalk();
+                Get.offAll(Login());
+              },
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),

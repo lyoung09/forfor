@@ -4,6 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/controller/bind/usercontroller.dart';
+import 'package:forfor/service/userdatabase.dart';
+import 'package:get/get.dart';
 import 'package:multi_select_item/multi_select_item.dart';
 
 class HopeInfomation extends StatefulWidget {
@@ -20,6 +24,7 @@ class _HopeInfomationState extends State<HopeInfomation> {
   Map<int, bool> checking = new Map();
 
   FirebaseAuth auth = FirebaseAuth.instance;
+  final controller = Get.put(AuthController());
 
   @override
   void initState() {
@@ -31,16 +36,10 @@ class _HopeInfomationState extends State<HopeInfomation> {
     if (checking.length != 3) {
       print("u cant go");
     } else {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(auth.currentUser?.uid)
-          .update({
-        "category": FieldValue.arrayUnion([
-          checking.keys.elementAt(0),
-          checking.keys.elementAt(1),
-          checking.keys.elementAt(2)
-        ])
-      });
+      list1[0] = checking.keys.elementAt(0);
+      list1[1] = checking.keys.elementAt(1);
+      list1[2] = checking.keys.elementAt(2);
+      controller.setUserDatabase(list1);
 
       Navigator.pushNamed(context, '/bottomScreen');
     }

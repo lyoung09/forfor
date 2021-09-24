@@ -9,12 +9,16 @@ import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
+import 'package:forfor/login/controller/bind/authbinding.dart';
 
-import 'package:forfor/login/login_main.dart';
-import 'package:forfor/login/signupD/hopeInfo.dart';
-import 'package:forfor/login/signupD/userInfo.dart';
-import 'package:forfor/login/sigup_main.dart';
+import 'package:forfor/login/screen/login_main.dart';
+import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/login/screen/sigup_main.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,9 +37,13 @@ import 'bottomScreen/profile/my_update.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'login/controller/bind/authcontroller.dart';
+import 'login/controller/bind/usercontroller.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
+  KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
   await Firebase.initializeApp();
   runApp(MyApp());
 }
@@ -47,7 +55,8 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return MaterialApp(
+    return GetMaterialApp(
+      initialBinding: AuthBinding(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           backgroundColor: Colors.white,
@@ -103,6 +112,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final controller = Get.put(AuthController());
+
   initState() {
     super.initState();
     startTime();
@@ -114,14 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  FirebaseAuth auth = FirebaseAuth.instance;
-
   checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
 
-    if (auth.currentUser != null) {
+    if (controller.user?.uid != null) {
       Navigator.pushNamed(context, '/bottomScreen');
     } else {
       Navigator.pushNamed(context, '/login');
@@ -129,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return UserInfomation();
+    //       return Login();
     //     },
     //   ),
     // );

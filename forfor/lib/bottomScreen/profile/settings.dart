@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/controller/bind/usercontroller.dart';
+import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
@@ -12,6 +15,8 @@ class SettingFlatRoute extends StatefulWidget {
 }
 
 class SettingFlatRouteState extends State<SettingFlatRoute> {
+  final controller = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     bool isSwitched1 = true, isSwitched2 = true;
@@ -260,7 +265,10 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
             ),
             Divider(height: 0),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                controller.logoutUser();
+                Get.offAll(Login());
+              },
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),

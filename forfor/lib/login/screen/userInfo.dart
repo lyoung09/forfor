@@ -6,8 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/controller/bind/usercontroller.dart';
+import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/model/user.dart';
+import 'package:forfor/service/userdatabase.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,11 +25,13 @@ class UserInfomation extends StatefulWidget {
   _UserInfomationState createState() => _UserInfomationState();
 }
 
-class _UserInfomationState extends State<UserInfomation> {
+class _UserInfomationState extends State<UserInfomation>
+    with WidgetsBindingObserver {
   final TextEditingController _usernameControl = new TextEditingController();
   var _image;
 
   var _country;
+  var _countryCode;
   var _birthYear;
   var _gender;
 
@@ -35,10 +43,28 @@ class _UserInfomationState extends State<UserInfomation> {
   bool nullCheck = true;
   List<RadioModel> sampleData = [];
   var userid;
+  @override
   initState() {
     super.initState();
     sampleData.add(new RadioModel(false, '남'));
     sampleData.add(new RadioModel(false, '여'));
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
+  dispose() {
+    super.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
+  }
+
+  @override
+  didChangeAppLifecycleState(AppLifecycleState state) {
+    if (AppLifecycleState.paused == state) {
+      print("Status :" + state.toString());
+    }
+    if (AppLifecycleState.detached == state) {
+      print("Status :" + state.toString());
+    }
+    print("Status :" + state.toString());
   }
 
   _pickDateDialog() {
@@ -218,11 +244,9 @@ class _UserInfomationState extends State<UserInfomation> {
   }
 
   void userInfomationSave() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-
     if (koreanSelected) {
       print("hello");
-      _country = "Korea, Republic of South Korea";
+      _countryCode = "+82";
     }
     if (checknull()) {
       showDialog(
@@ -242,9 +266,11 @@ class _UserInfomationState extends State<UserInfomation> {
           checkNickname = false;
         });
       } else {
+        final controller = Get.put(AuthController());
+
         Reference ref = FirebaseStorage.instance
             .ref()
-            .child("profile/${auth.currentUser?.uid}");
+            .child("profile/${controller.user?.uid}");
 
         await ref.putFile(File(_image));
 
@@ -256,21 +282,11 @@ class _UserInfomationState extends State<UserInfomation> {
           return downloadURL;
         });
 
-        print("${_gender.toString()}");
-        print("${_country.toString()}");
-        print("${_usernameControl.text}");
-
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(auth.currentUser?.uid)
-            .update({
-          "gender": _gender.toString(),
-          "country": _country.toString(),
-          "nickname": _usernameControl.text,
-          "url": urlProfileImageApi,
-        });
-
-        Navigator.pushNamed(context, '/hopeInformation');
+        controller.addUserDB(
+            _gender.toString().trim(),
+            _countryCode.toString().trim(),
+            _usernameControl.text.trim(),
+            urlProfileImageApi.trim());
       }
     }
   }
@@ -459,8 +475,8 @@ class _UserInfomationState extends State<UserInfomation> {
                                     showEnglishName: true,
                                   ),
                                   onChanged: (CountryCode? code) {
-                                    print(code?.name);
                                     setState(() {
+                                      _countryCode = code?.dialCode;
                                       selectCountry = true;
                                       _country = code?.name;
                                     });

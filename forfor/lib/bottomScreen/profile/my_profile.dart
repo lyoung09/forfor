@@ -96,8 +96,7 @@ class MyProfile extends GetWidget<AuthController> {
                                         child: Container(
                                           child: Padding(
                                             padding: const EdgeInsets.all(12.0),
-                                            child: Text(
-                                                user.nickname ?? "Avatar",
+                                            child: Text(user.nickname ?? "User",
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                                 style: TextStyle(fontSize: 30)),

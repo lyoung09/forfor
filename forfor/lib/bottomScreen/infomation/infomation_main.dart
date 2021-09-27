@@ -119,8 +119,6 @@ class _InformationMainScreenState extends State<InformationMainScreen>
           return Text("Loading..");
         }
 
-        //if (selectedIndex == null) selectedIndex = data["category1"];
-
         return SizedBox(
           height: 100,
           child: ListView.builder(

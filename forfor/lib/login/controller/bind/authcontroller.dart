@@ -21,6 +21,8 @@ class AuthController extends GetxController {
   late String country;
   late String nickname;
   late String url;
+  late String timeStamp;
+  late List<dynamic> list;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
 
@@ -63,7 +65,8 @@ class AuthController extends GetxController {
           Timestamp.fromDate(currentPhoneDate); //To TimeStamp
 
       DateTime myDateTime = myTimeStamp.toDate();
-
+      this.list = list;
+      this.timeStamp = myDateTime.toString();
       UserModel _user = UserModel(
           id: this.uid,
           email: this.email,
@@ -78,6 +81,34 @@ class AuthController extends GetxController {
       if (await UserDatabase().addDataUser(_user)) {
         Get.put(UserController()).user = _user;
       }
+      Get.offAll(() => BottomNavigation());
+    } catch (e) {}
+  }
+
+  void updateUserDatabase(UserModel user, String? nickname,
+      String? introduction, List<dynamic>? list) async {
+    print("hello");
+    print(nickname);
+
+    print(introduction);
+    print(list);
+    try {
+      UserModel _user = UserModel(
+          id: user.id,
+          email: user.email,
+          access: user.access,
+          gender: user.gender,
+          country: user.country,
+          nickname: nickname == "" ? user.nickname : nickname,
+          url: user.url,
+          category: list,
+          timeStamp: user.timeStamp,
+          introduction: introduction == "" ? null : introduction);
+
+      if (await UserDatabase().updateDataUser(_user)) {
+        Get.put(UserController()).user = _user;
+      }
+      print("s");
       Get.offAll(() => BottomNavigation());
     } catch (e) {}
   }

@@ -232,11 +232,11 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Widget gridviewWidget(string, detail) {
     var futureUser;
-    if (string == "category")
-      futureUser = user
-          .where("uid", isNotEqualTo: uid)
-          .where("category", arrayContains: detail)
-          .get();
+    if (string == "category") print(detail);
+    futureUser = user
+        .where("uid", isNotEqualTo: uid)
+        .where("category", arrayContains: detail)
+        .get();
 
     if (string == "new")
       futureUser = user

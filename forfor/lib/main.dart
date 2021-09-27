@@ -133,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final controller = Get.put(AuthController());
 
     if (controller.user?.uid != null) {
+      print(controller.user?.uid);
       DocumentSnapshot ds = await FirebaseFirestore.instance
           .collection("users")
           .doc(controller.user!.uid)

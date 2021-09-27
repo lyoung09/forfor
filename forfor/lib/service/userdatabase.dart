@@ -44,26 +44,15 @@ class UserDatabase {
     }
   }
 
-  Future<bool> updateUser(
-    UserModel user,
-  ) async {
+  Future<bool> updateDataUser(UserModel user) async {
     try {
-      await _firestore.collection("users").doc(user.id).set({
-        "gender": user.gender,
-        "country": user.country,
+      await _firestore.collection("users").doc(user.id).update({
         "nickname": user.nickname,
         "url": user.url,
-        "email": user.email,
-        "access": user.access,
-        "uid": user.id,
-        "timeStamp": user.timeStamp,
         "introduction": user.introduction,
-        "category": FieldValue.arrayUnion([
-          user.category![0],
-          user.category![1],
-          user.category![2],
-        ])
+        "category": user.category,
       });
+
       return true;
     } catch (e) {
       print(e);

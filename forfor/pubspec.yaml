@@ -107,6 +107,8 @@ flutter:
     - assets/icon/email.png
     - assets/icon/gender.png
     - assets/icon/invite.png
+    - assets/icon/national.png
+    - assets/icon/citizenship.png
     - assets/icon/buddy.png
     - assets/icon/chat.png
     - assets/icon/padlock.png

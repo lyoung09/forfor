@@ -8,6 +8,8 @@ class UserModel {
   String? url;
   String? country;
   String? access;
+  String? timeStamp;
+  String? introduction;
   List<dynamic>? category;
   UserModel(
       {this.id,
@@ -17,7 +19,9 @@ class UserModel {
       this.url,
       this.country,
       this.access,
-      this.category});
+      this.category,
+      this.timeStamp,
+      this.introduction});
 
   UserModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot.id;
@@ -28,5 +32,7 @@ class UserModel {
     country = documentSnapshot["country"];
     access = documentSnapshot["access"];
     category = documentSnapshot["category"];
+    timeStamp = documentSnapshot["timeStamp"];
+    introduction = documentSnapshot["introduction"];
   }
 }

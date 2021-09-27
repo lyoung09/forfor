@@ -266,7 +266,7 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
             Divider(height: 0),
             InkWell(
               onTap: () {
-                controller.logoutUser();
+                controller.google_signOut();
                 Get.offAll(Login());
               },
               child: Container(

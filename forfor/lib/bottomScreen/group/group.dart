@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/data/user.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'addGroupStepper.dart';
 import 'widget/groupList.dart';
@@ -31,7 +34,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-  UserInf userInfo = new UserInf(uid: 'ha');
+    UserInf userInfo = new UserInf(uid: 'ha');
     print('out ${userInfo.getUserId}');
     controller1 = AnimationController(
       vsync: this,
@@ -40,9 +43,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     animation1 = Tween(begin: 0.0, end: 180.0).animate(controller1);
     animation1View = CurvedAnimation(parent: controller1, curve: Curves.linear);
     print(auth.currentUser!.uid);
-  
-    
-    
+
     controller1.addListener(() {
       setState(() {});
     });

@@ -17,7 +17,8 @@ class HopeInfomation extends StatefulWidget {
   _HopeInfomationState createState() => _HopeInfomationState();
 }
 
-class _HopeInfomationState extends State<HopeInfomation> {
+class _HopeInfomationState extends State<HopeInfomation>
+    with WidgetsBindingObserver {
   // ignore: deprecated_member_use
 
   var list1 = [0, 0, 0];
@@ -30,6 +31,22 @@ class _HopeInfomationState extends State<HopeInfomation> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
+  }
+
+  @override
+  didChangeAppLifecycleState(AppLifecycleState state) {
+    if (AppLifecycleState.paused == state) {}
+    if (AppLifecycleState.detached == state) {
+      print("Status :" + state.toString());
+      controller.deleteUser();
+    }
   }
 
   next() async {

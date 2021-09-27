@@ -57,6 +57,13 @@ class AuthController extends GetxController {
 
   void setUserDatabase(List<dynamic> list) async {
     try {
+      DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+      Timestamp myTimeStamp =
+          Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+      DateTime myDateTime = myTimeStamp.toDate();
+
       UserModel _user = UserModel(
           id: this.uid,
           email: this.email,
@@ -65,6 +72,7 @@ class AuthController extends GetxController {
           country: this.country,
           nickname: this.nickname,
           url: this.url,
+          timeStamp: myDateTime.toString(),
           category: list);
 
       if (await UserDatabase().addDataUser(_user)) {
@@ -85,7 +93,7 @@ class AuthController extends GetxController {
 
       List<String> providers = await _auth
           .fetchSignInMethodsForEmail(userKakao.kakaoAccount?.email ?? "");
-      print(" prov${providers}");
+
       if (providers.length > 0) {
         await _auth.signInWithEmailAndPassword(
             email: userKakao.kakaoAccount?.email ?? "",
@@ -142,12 +150,17 @@ class AuthController extends GetxController {
 
   void loginUser(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (_auth.currentUser != null) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
 
-      Get.put(UserController()).user =
-          await UserDatabase().getUser(_auth.currentUser!.uid);
+        Get.put(UserController()).user =
+            await UserDatabase().getUser(_auth.currentUser!.uid);
 
-      Get.offAll(BottomNavigation());
+        Get.offAll(BottomNavigation());
+      } else {
+        print("abcd");
+      }
     } catch (e) {}
   }
 

@@ -11,6 +11,7 @@ import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/widget/my_text.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:get/get.dart';
@@ -60,9 +61,7 @@ class _UserInfomationState extends State<UserInfomation>
 
   @override
   didChangeAppLifecycleState(AppLifecycleState state) {
-    if (AppLifecycleState.paused == state) {
-      controller.deleteUser();
-    }
+    if (AppLifecycleState.paused == state) {}
     if (AppLifecycleState.detached == state) {
       print("Status :" + state.toString());
       controller.deleteUser();
@@ -237,7 +236,8 @@ class _UserInfomationState extends State<UserInfomation>
     if (_usernameControl.text.isEmpty ||
         _gender.toString().isEmpty ||
         _image == null ||
-        _country.toString().isEmpty) {
+        _countryCode.toString().isEmpty ||
+        _usernameControl.text.length < 3) {
       print("check");
 
       return true;
@@ -246,10 +246,6 @@ class _UserInfomationState extends State<UserInfomation>
   }
 
   void userInfomationSave() async {
-    if (koreanSelected) {
-      print("hello");
-      _countryCode = "+82";
-    }
     if (checknull()) {
       showDialog(
           context: context,
@@ -263,28 +259,22 @@ class _UserInfomationState extends State<UserInfomation>
                 ],
               ));
     } else {
-      if (_usernameControl.text.length < 3) {
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child("profile/${controller.user?.uid}");
+
+      await ref.putFile(File(_image));
+
+      urlProfileImageApi = await ref.getDownloadURL().then((value) {
+        var downloadURL = "";
         setState(() {
-          checkNickname = false;
+          downloadURL = value;
         });
-      } else {
-        Reference ref = FirebaseStorage.instance
-            .ref()
-            .child("profile/${controller.user?.uid}");
-
-        await ref.putFile(File(_image));
-
-        urlProfileImageApi = await ref.getDownloadURL().then((value) {
-          var downloadURL = "";
-          setState(() {
-            downloadURL = value;
-          });
-          return downloadURL;
-        });
-
-        controller.addUserInformation(_gender.toString(),
-            _countryCode.toString(), _usernameControl.text, urlProfileImageApi);
-      }
+        return downloadURL;
+      });
+      print(_countryCode);
+      controller.addUserInformation(_gender.toString(), _countryCode.toString(),
+          _usernameControl.text, urlProfileImageApi);
     }
   }
 
@@ -304,7 +294,7 @@ class _UserInfomationState extends State<UserInfomation>
           toolbarHeight: height * 0.06,
           centerTitle: true,
           backgroundColor: Colors.grey[400],
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
           title: Text(
             "my infomation",
             style: TextStyle(fontSize: 22),
@@ -317,7 +307,7 @@ class _UserInfomationState extends State<UserInfomation>
               height: height,
               child: Column(
                 children: [
-                  Padding(padding: EdgeInsets.only(top: height * 0.08)),
+                  Padding(padding: EdgeInsets.only(top: 50)),
                   Container(
                       height: height * 0.2,
                       width: height * 0.2,
@@ -344,11 +334,11 @@ class _UserInfomationState extends State<UserInfomation>
                                 ),
                               ),
                       )),
-                  Padding(padding: EdgeInsets.only(top: height * 0.05)),
+                  Padding(padding: EdgeInsets.only(top: 45)),
 
                   Container(
-                      height: height * 0.1,
-                      width: width * 0.8,
+                      height: 55,
+                      width: width * 0.85,
                       child: TextField(
                         autofocus: false,
                         decoration: InputDecoration(
@@ -356,18 +346,24 @@ class _UserInfomationState extends State<UserInfomation>
 
                           errorText:
                               checkNickname ? null : "at least 3 characters",
-                          // enabledBorder: OutlineInputBorder(
-                          //   borderSide: BorderSide(
-                          //     color: Colors.white,
-                          //   ),
-                          //   borderRadius: BorderRadius.circular(5.0),
-                          // ),
-                          hintText: "   nickname",
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          labelText: "nickname",
                           // prefixIcon: Icon(
                           //   Icons.mail_outline,
                           //   color: Colors.black,
                           // ),
-                          hintStyle: TextStyle(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          labelStyle: TextStyle(
                             fontSize: 15.0,
                             color: Colors.grey[400],
                           ),
@@ -375,141 +371,165 @@ class _UserInfomationState extends State<UserInfomation>
                         controller: _usernameControl,
                         maxLines: 1,
                       )),
-
-                  // Padding(padding: EdgeInsets.only(top: height * 0.02)),
+                  Padding(padding: EdgeInsets.only(top: 20)),
                   Container(
-                      // height: height * 0.1,
-                      width: width * 0.8,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: SvgPicture.asset(
-                              "assets/svg/calender.svg",
-                              fit: BoxFit.fill,
-                              width: 25,
-                              height: 25,
-                            ),
-                            onPressed: _pickDateDialog,
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey[400],
+                    ),
+                    padding: EdgeInsets.only(
+                        left: width * 0.1, right: width * 0.1, bottom: 0.0),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     Container(
+                  //       width: width * 0.2,
+                  //       child: Image.asset(
+                  //         "assets/icon/citizenship.png",
+                  //         height: 35.0,
+                  //         width: 35,
+                  //       ),
+                  //     ),
+                  //     Row(
+                  //       mainAxisAlignment: MainAxisAlignment
+                  //           .center, //Center Row contents horizontally,,
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       children: [
+                  //         Container(
+                  //           alignment: Alignment.center,
+                  //           margin: EdgeInsets.only(top: 10, bottom: 10),
+                  //           child: ChoiceChip(
+                  //             label: Text("korean"),
+                  //             selected: koreanSelected,
+                  //             onSelected: (bool value) {
+                  //               setState(() {
+                  //                 koreanSelected = value;
+                  //               });
+
+                  //               //Do whatever you want when the chip is selected
+                  //             },
+                  //             backgroundColor: Colors.transparent,
+                  //             selectedColor: Colors.transparent,
+                  //           ),
+                  //         ),
+                  //         SizedBox(
+                  //           width: width * 0.1,
+                  //         ),
+                  //         Container(
+                  //           alignment: Alignment.center,
+                  //           margin: EdgeInsets.only(top: 10, bottom: 10),
+                  //           child: ChoiceChip(
+                  //             label: Text("not korean"),
+                  //             selected: notKoreanSelected,
+                  //             onSelected: (bool value) {
+                  //               notKoreanSelected = value;
+                  //               setState(() {
+                  //                 notKoreanSelected = value;
+                  //               });
+                  //             },
+                  //             backgroundColor: Colors.transparent,
+                  //             selectedColor: Colors.transparent,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  // notKoreanSelected == false
+                  //     ? Container(
+                  //         // height: height * 0.1,
+                  //         width: width * 0.8,
+                  //         height: 0,
+                  //         child: Text(""))
+                  //     : Container(
+                  //         // height: height * 0.1,
+                  //         width: width * 0.8,
+                  //         child: Row(
+                  //           children: [
+                  //             CountryListPick(
+                  //                 theme: CountryTheme(
+                  //                   isShowFlag: true,
+                  //                   isShowTitle: false,
+                  //                   isShowCode: false,
+                  //                   isDownIcon: true,
+                  //                   showEnglishName: true,
+                  //                 ),
+                  //                 onChanged: (CountryCode? code) {
+                  //                   setState(() {
+                  //                     _countryCode = code?.dialCode;
+                  //                     selectCountry = true;
+                  //                     _country = code?.name;
+                  //                   });
+                  //                 },
+                  //                 useUiOverlay: true,
+                  //                 // Whether the country list should be wrapped in a SafeArea
+                  //                 useSafeArea: false),
+                  //             Padding(
+                  //                 padding:
+                  //                     EdgeInsets.only(right: width * 0.05)),
+                  //             selectCountry == true
+                  //                 ? Text(
+                  //                     _country.length > 20
+                  //                         ? ' ${_country.substring(0, 20)}...'
+                  //                         : _country,
+                  //                     style: TextStyle(
+                  //                         color: Colors.black, fontSize: 15))
+                  //                 : Text("your country",
+                  //                     style: TextStyle(
+                  //                         color: Colors.grey[400],
+                  //                         fontSize: 15)),
+                  //           ],
+                  //         )),
+
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          width: width * 0.2,
+                          child: Image.asset(
+                            "assets/icon/citizenship.png",
+                            height: 35.0,
+                            width: 35,
                           ),
-                          Padding(padding: EdgeInsets.only(right: width * 0.1)),
-                          selectBirth == true
-                              ? Text(_birthYear.toString(),
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 15))
-                              : Text("Age",
-                                  style: TextStyle(
-                                      color: Colors.grey[400], fontSize: 15)),
-                        ],
-                      )),
-                  Container(
-                    child: Divider(
-                      thickness: 1,
-                      color: Colors.grey[800],
-                    ),
-                    padding: EdgeInsets.only(
-                        left: width * 0.1, right: width * 0.1, bottom: 0.0),
-                  ),
-                  Align(
-                      alignment: Alignment.center,
-                      child: Text("You are", style: TextStyle(fontSize: 20))),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment
-                        .center, //Center Row contents horizontally,,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        alignment: Alignment.topCenter,
-                        margin: EdgeInsets.only(top: 20),
-                        child: ChoiceChip(
-                            label: Text("korean"),
-                            selected: koreanSelected,
-                            onSelected: (bool value) {
-                              setState(() {
-                                koreanSelected = value;
-                              });
-
-                              //Do whatever you want when the chip is selected
-                            },
-                            backgroundColor: Colors.yellow[100]),
-                      ),
-                      SizedBox(
-                        width: width * 0.1,
-                      ),
-                      Container(
-                        alignment: Alignment.topCenter,
-                        margin: EdgeInsets.only(top: 20),
-                        child: ChoiceChip(
-                          label: Text("not korean"),
-                          selected: notKoreanSelected,
-                          onSelected: (bool value) {
-                            notKoreanSelected = value;
-                            setState(() {
-                              notKoreanSelected = value;
-                            });
-                          },
-                          backgroundColor: Colors.yellow[100],
                         ),
-                      ),
-                    ],
-                  ),
-                  notKoreanSelected == false
-                      ? Container(
-                          // height: height * 0.1,
-                          width: width * 0.8,
-                          height: 0,
-                          child: Text(""))
-                      : Container(
-                          // height: height * 0.1,
-                          width: width * 0.8,
-                          child: Row(
-                            children: [
-                              CountryListPick(
-                                  theme: CountryTheme(
-                                    isShowFlag: true,
-                                    isShowTitle: false,
-                                    isShowCode: false,
-                                    isDownIcon: true,
-                                    showEnglishName: true,
-                                  ),
-                                  onChanged: (CountryCode? code) {
-                                    setState(() {
-                                      _countryCode = code?.dialCode;
-                                      selectCountry = true;
-                                      _country = code?.name;
-                                    });
-                                  },
-                                  useUiOverlay: true,
-                                  // Whether the country list should be wrapped in a SafeArea
-                                  useSafeArea: false),
-                              Padding(
-                                  padding:
-                                      EdgeInsets.only(right: width * 0.05)),
-                              selectCountry == true
-                                  ? Text(
-                                      _country.length > 20
-                                          ? ' ${_country.substring(0, 20)}...'
-                                          : _country,
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 15))
-                                  : Text("your country",
-                                      style: TextStyle(
-                                          color: Colors.grey[400],
-                                          fontSize: 15)),
-                            ],
-                          )),
-
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          alignment: Alignment.centerRight,
+                          child: CountryListPick(
+                              theme: CountryTheme(
+                                isShowFlag: true,
+                                isShowTitle: false,
+                                isShowCode: false,
+                                isDownIcon: true,
+                                showEnglishName: true,
+                              ),
+                              onChanged: (CountryCode? code) {
+                                setState(() {
+                                  _countryCode = code?.dialCode;
+                                  selectCountry = true;
+                                  _country = code?.name;
+                                });
+                                FocusManager.instance.primaryFocus!.unfocus();
+                              },
+                              useUiOverlay: true,
+                              // Whether the country list should be wrapped in a SafeArea
+                              useSafeArea: false),
+                        )
+                      ]),
                   Container(
                     child: Divider(
                       thickness: 1,
-                      color: Colors.grey[800],
+                      color: Colors.grey[400],
                     ),
                     padding: EdgeInsets.only(
                         left: width * 0.1, right: width * 0.1, bottom: 0.0),
                   ),
 
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Padding(padding: EdgeInsets.only(left: width * 0.06)),
                       Container(
                         width: width * 0.2,
                         child: Image.asset(
@@ -518,10 +538,9 @@ class _UserInfomationState extends State<UserInfomation>
                           width: 35,
                         ),
                       ),
-                      Padding(padding: EdgeInsets.only(left: width * 0.08)),
                       Container(
                         height: MediaQuery.of(context).size.height * 0.1,
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         alignment: Alignment.center,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -563,36 +582,88 @@ class _UserInfomationState extends State<UserInfomation>
                       ),
                     ],
                   ),
-                  SizedBox(height: height * 0.06),
                   Container(
-                    height: 50.0,
-                    margin: EdgeInsets.all(10),
-                    child: RaisedButton(
-                      onPressed: userInfomationSave,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(80.0)),
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xff374ABE), Color(0xff64B6FF)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderRadius: BorderRadius.circular(30.0)),
-                        child: Container(
-                          constraints:
-                              BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Continue",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ),
-                      ),
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey[400],
                     ),
+                    padding: EdgeInsets.only(
+                        left: width * 0.1, right: width * 0.1, bottom: 0.0),
                   ),
+
+                  // Padding(padding: EdgeInsets.only(top: height * 0.02)),
+                  // Container(
+                  //   height: height * 0.15,
+                  //   width: width * 0.8,
+                  //   child: TextField(
+                  //     keyboardType: TextInputType.multiline,
+                  //     cursorColor: Colors.amber[500],
+                  //     maxLines: 12,
+                  //     minLines: 7,
+                  //     decoration: InputDecoration(
+                  //       labelText: 'introduction',
+                  //       labelStyle: TextStyle(
+                  //         fontSize: 12.0,
+                  //         color: Colors.grey[400],
+                  //       ),
+                  //       focusedBorder: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(0),
+                  //         borderSide: BorderSide(color: Colors.black, width: 2),
+                  //       ),
+                  //       enabledBorder: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(0),
+                  //         borderSide: BorderSide(color: Colors.black, width: 1),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        child: TextButton(
+                          child: Text(
+                            "skip >",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                          onPressed: userInfomationSave,
+                        ),
+                        padding: EdgeInsets.only(right: 30),
+                      )),
+                  // Container(
+                  //   height: 50.0,
+                  //   margin: EdgeInsets.all(10),
+                  //   child: RaisedButton(
+                  //     onPressed: userInfomationSave,
+                  //     shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(80.0)),
+                  //     padding: EdgeInsets.all(0.0),
+                  //     child: Ink(
+                  //       decoration: BoxDecoration(
+                  //           gradient: LinearGradient(
+                  //             colors: [Color(0xff374ABE), Color(0xff64B6FF)],
+                  //             begin: Alignment.centerLeft,
+                  //             end: Alignment.centerRight,
+                  //           ),
+                  //           borderRadius: BorderRadius.circular(30.0)),
+                  //       child: Container(
+                  //         constraints:
+                  //             BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                  //         alignment: Alignment.center,
+                  //         child: Text(
+                  //           "Continue",
+                  //           textAlign: TextAlign.center,
+                  //           style: TextStyle(color: Colors.white, fontSize: 15),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

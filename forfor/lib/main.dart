@@ -15,6 +15,7 @@ import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/login/screen/sigup_main.dart';
+import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
@@ -112,8 +113,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final controller = Get.put(AuthController());
-
   initState() {
     super.initState();
     startTime();
@@ -125,20 +124,37 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool userData = false;
+
   checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
+    final controller = Get.put(AuthController());
 
     if (controller.user?.uid != null) {
-      Navigator.pushNamed(context, '/bottomScreen');
+      DocumentSnapshot ds = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(controller.user!.uid)
+          .get();
+
+      this.setState(() {
+        userData = ds.exists;
+      });
+
+      if (!userData) {
+        controller.deleteUser();
+        Navigator.pushNamed(context, '/login');
+      } else {
+        Navigator.pushNamed(context, '/bottomScreen');
+      }
     } else {
       Navigator.pushNamed(context, '/login');
     }
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return BottomNavigation();
+    //       return UserUpdate();
     //     },
     //   ),
     // );

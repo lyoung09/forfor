@@ -29,6 +29,35 @@ class UserDatabase {
         "email": user.email,
         "access": user.access,
         "uid": user.id,
+        "timeStamp": user.timeStamp,
+        "introduction": null,
+        "category": FieldValue.arrayUnion([
+          user.category![0],
+          user.category![1],
+          user.category![2],
+        ])
+      });
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> updateUser(
+    UserModel user,
+  ) async {
+    try {
+      await _firestore.collection("users").doc(user.id).set({
+        "gender": user.gender,
+        "country": user.country,
+        "nickname": user.nickname,
+        "url": user.url,
+        "email": user.email,
+        "access": user.access,
+        "uid": user.id,
+        "timeStamp": user.timeStamp,
+        "introduction": user.introduction,
         "category": FieldValue.arrayUnion([
           user.category![0],
           user.category![1],

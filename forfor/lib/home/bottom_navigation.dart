@@ -8,6 +8,11 @@ import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
 import 'package:forfor/bottomScreen/infomation/timeline.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/service/userdatabase.dart';
+import 'package:get/get.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override
@@ -26,6 +31,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
     SayScreen(),
     MyProfile(),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

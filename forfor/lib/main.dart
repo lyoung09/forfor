@@ -62,9 +62,10 @@ class MyApp extends StatelessWidget {
       initialBinding: AuthBinding(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          backgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
-          visualDensity: VisualDensity.adaptivePlatformDensity),
+        backgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
       home: MyHomePage(),
       routes: {
         '/groupPage': (context) {
@@ -156,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return MyProfile();
+          return Login();
         },
       ),
     );

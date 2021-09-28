@@ -25,16 +25,25 @@ class SignUp extends GetWidget<AuthController> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        //automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_outlined,
-            color: Colors.black,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+        child: AppBar(
+          //automaticallyImplyLeading: false,
+          backgroundColor: Colors.orange[50],
+          title: Text(
+            "Account",
+            style: TextStyle(
+                fontSize: 28, color: Colors.black, fontWeight: FontWeight.w500),
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_outlined,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
       ),
       body: Form(
@@ -49,10 +58,10 @@ class SignUp extends GetWidget<AuthController> {
                 top: 25.0,
               ),
               child: Text(
-                "Create an account",
+                "",
                 style: TextStyle(
                   fontSize: 22.0,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   color: Colors.black,
                 ),
               ),
@@ -74,6 +83,9 @@ class SignUp extends GetWidget<AuthController> {
                       color: Colors.black,
                     ),
                     decoration: InputDecoration(
+                      errorStyle: TextStyle(
+                        fontSize: 13.0,
+                      ),
                       contentPadding: EdgeInsets.all(10.0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -127,6 +139,9 @@ class SignUp extends GetWidget<AuthController> {
                       color: Colors.black,
                     ),
                     decoration: InputDecoration(
+                      errorStyle: TextStyle(
+                        fontSize: 13.0,
+                      ),
                       contentPadding: EdgeInsets.all(10.0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -165,21 +180,15 @@ class SignUp extends GetWidget<AuthController> {
             Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: Colors.black)),
-                  child: TextButton(
-                    child: Text(
-                      "SKIP",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
+                  // decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(50),
+                  //     border: Border.all(color: Colors.black)),
+                  child: IconButton(
+                    icon: Icon(Icons.navigate_next_rounded),
+                    iconSize: 45,
                     onPressed: signUpLoginButton,
                   ),
-                  margin: EdgeInsets.only(right: 15),
+                  margin: EdgeInsets.only(right: 8),
                 )),
           ],
         ),

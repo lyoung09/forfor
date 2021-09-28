@@ -18,6 +18,8 @@ import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 
 class BottomNavigation extends StatefulWidget {
+  int? index;
+  BottomNavigation({this.index});
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
@@ -39,6 +41,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(widget.index);
+    if (widget.index != null) _selectedIndex = widget.index!;
   }
 
   @override

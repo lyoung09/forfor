@@ -71,13 +71,20 @@ class _HopeInfomationState extends State<HopeInfomation>
         return Future(() => false);
       },
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: height * 0.06,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.grey[400],
-          title: Text(
-            "Category",
-            style: TextStyle(fontSize: 22, color: Colors.black),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(65),
+          child: AppBar(
+            toolbarHeight: height * 0.06,
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.orange[50],
+            centerTitle: false,
+            title: Text(
+              "Category",
+              style: TextStyle(
+                  fontSize: 28,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+            ),
           ),
         ),
         body: StreamBuilder(
@@ -188,32 +195,27 @@ class _HopeInfomationState extends State<HopeInfomation>
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
+                      width: MediaQuery.of(context).size.width * 0.75,
                       height: 50.0,
                       margin: EdgeInsets.all(10),
-                      child: RaisedButton(
+                      child: ElevatedButton(
                         onPressed: next,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(80.0)),
-                        padding: EdgeInsets.all(0.0),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Color(0xff374ABE), Color(0xff64B6FF)],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(30.0)),
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth: 250.0, minHeight: 50.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "${checking.length} / 3",
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            ),
-                          ),
+                        style: ElevatedButton.styleFrom(
+                          primary: checking.length == 3
+                              ? Colors.orange[50]
+                              : Colors.white,
+                          onPrimary: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                              side: checking.length == 3
+                                  ? BorderSide(
+                                      color: Colors.orange[100]!, width: 2)
+                                  : BorderSide(color: Colors.black, width: 1)),
+                        ),
+                        child: Text(
+                          "${checking.length} / 3",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                       ),
                     ),

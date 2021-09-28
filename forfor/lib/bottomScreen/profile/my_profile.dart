@@ -40,11 +40,16 @@ class MyProfile extends GetWidget<AuthController> {
   Widget build(BuildContext context) {
     return new Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          title: new Text("Profile",
-              style: TextStyle(color: Colors.black, fontSize: 32)),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(65.0), // here the desired height
+
+          child: AppBar(
+            centerTitle: false,
+            backgroundColor: Colors.orange[50],
+            automaticallyImplyLeading: false,
+            title: new Text("Profile",
+                style: TextStyle(color: Colors.black, fontSize: 30)),
+          ),
         ),
         body: GetX<UserController>(initState: (_) async {
           Get.find<UserController>().user = await UserDatabase()
@@ -56,7 +61,6 @@ class MyProfile extends GetWidget<AuthController> {
 
           if (snapshot.user.id != null) {
             final List<int> category = snapshot.user.category!.cast<int>();
-            print(category.length);
 
             return ListView(children: [
               Container(
@@ -64,7 +68,7 @@ class MyProfile extends GetWidget<AuthController> {
                 child: Column(
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      padding: EdgeInsets.only(top: 20, bottom: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                       ),
@@ -76,39 +80,59 @@ class MyProfile extends GetWidget<AuthController> {
                               child: Column(
                                 children: [
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                          padding: EdgeInsets.only(left: 20)),
+                                          padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.01)),
                                       snapshot.user.url == null
-                                          ? CircleAvatar(
-                                              radius: 60,
-                                              backgroundColor: Colors.grey[400],
-                                              child:
-                                                  Icon(Icons.person, size: 50))
-                                          : CircleAvatar(
-                                              radius: 60,
-                                              backgroundColor: Colors.white,
-                                              backgroundImage: NetworkImage(
-                                                  snapshot.user.url ?? ""),
+                                          ? Expanded(
+                                              flex: 3,
+                                              child: Container(
+                                                alignment: Alignment.topLeft,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.25,
+                                                child: CircleAvatar(
+                                                    radius: 45,
+                                                    backgroundColor:
+                                                        Colors.grey[400],
+                                                    child: Icon(Icons.person,
+                                                        size: 50)),
+                                              ),
+                                            )
+                                          : Expanded(
+                                              flex: 3,
+                                              child: Container(
+                                                child: CircleAvatar(
+                                                  radius: 45,
+                                                  backgroundColor: Colors.white,
+                                                  backgroundImage: NetworkImage(
+                                                      snapshot.user.url ?? ""),
+                                                ),
+                                              ),
                                             ),
                                       Padding(
-                                          padding: EdgeInsets.only(left: 10)),
-                                      Container(
-                                        alignment: Alignment.topLeft,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(width: 1)),
-                                        height: 200,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(5),
+                                          padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.03)),
+                                      Expanded(
+                                        flex: 8,
+                                        child: Container(
+                                          alignment: Alignment.topLeft,
+                                          height: 135,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
                                                 child: Text(
                                                     snapshot.user.nickname ??
                                                         "User",
@@ -116,99 +140,284 @@ class MyProfile extends GetWidget<AuthController> {
                                                         TextOverflow.ellipsis,
                                                     maxLines: 1,
                                                     style: TextStyle(
-                                                        fontSize: 37)),
+                                                        fontSize: 33)),
                                               ),
-                                            ),
-                                            Container(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(5),
-                                                child: Text(
-                                                    snapshot.user.category
-                                                        .toString(),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                    style: TextStyle(
-                                                        fontSize: 15)),
+                                              Container(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(5),
+                                                  child: Text(
+                                                      snapshot.user.category
+                                                          .toString(),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                          fontSize: 15)),
+                                                ),
                                               ),
-                                            ),
-                                            Container(
-                                              height: 100,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.6,
-                                              child: FutureBuilder(
-                                                  future: FirebaseFirestore
-                                                      .instance
-                                                      .collection("category")
-                                                      .where("categoryId",
-                                                          whereIn: [
-                                                        for (int i = 0;
-                                                            i < category.length;
-                                                            i++)
-                                                          category[i]
-                                                        //   category[0],
-                                                        // category[1],
-                                                        // category[2],
-                                                        // category[3],
-                                                        // category[4],
-                                                      ]).get(),
-                                                  builder: (context,
-                                                      AsyncSnapshot<
-                                                              QuerySnapshot>
-                                                          categoryData) {
-                                                    if (categoryData.hasData) {
-                                                      print(categoryData
-                                                              .data!.docs[0]
-                                                          ['categoryName']);
+                                              Container(
+                                                height: 60,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.7,
+                                                child: FutureBuilder(
+                                                    future: FirebaseFirestore
+                                                        .instance
+                                                        .collection("category")
+                                                        .where("categoryId",
+                                                            whereIn: [
+                                                          for (int i = 0;
+                                                              i <
+                                                                  category
+                                                                      .length;
+                                                              i++)
+                                                            category[i]
+                                                          // 1,
+                                                          // 2,
+                                                          // 3,
+                                                          // 4,
+                                                          // 5,
+                                                        ]).get(),
+                                                    builder: (context,
+                                                        AsyncSnapshot<
+                                                                QuerySnapshot>
+                                                            categoryData) {
+                                                      if (categoryData
+                                                          .hasData) {
+                                                        print(categoryData
+                                                                .data!.docs[0]
+                                                            ['categoryName']);
 
-                                                      return GridView.builder(
-                                                          gridDelegate:
-                                                              new SliverGridDelegateWithFixedCrossAxisCount(
-                                                                  crossAxisCount:
-                                                                      3,
+                                                        return GridView.builder(
+                                                            gridDelegate:
+                                                                new SliverGridDelegateWithFixedCrossAxisCount(
+                                                                    crossAxisCount:
+                                                                        3,
 
-                                                                  // childAspectRatio: MediaQuery.of(
-                                                                  //             context)
-                                                                  //         .size
-                                                                  //         .width /
-                                                                  //     (MediaQuery.of(
-                                                                  //                 context)
-                                                                  //             .size
-                                                                  //             .height /
-                                                                  //         3),
-                                                                  childAspectRatio:
-                                                                      180 /
-                                                                          100),
-                                                          itemCount:
-                                                              categoryData
-                                                                  .data!.size,
-                                                          itemBuilder:
-                                                              (context, count) {
-                                                            return Chip(
-                                                              label: Text(
+                                                                    // childAspectRatio: MediaQuery.of(
+                                                                    //             context)
+                                                                    //         .size
+                                                                    //         .width /
+                                                                    //     (MediaQuery.of(
+                                                                    //                 context)
+                                                                    //             .size
+                                                                    //             .height /
+                                                                    //         3),
+                                                                    childAspectRatio:
+                                                                        180 /
+                                                                            100),
+                                                            itemCount:
                                                                 categoryData
-                                                                        .data!
-                                                                        .docs[count]
-                                                                    [
-                                                                    "categoryName"],
-                                                              ),
-                                                            );
-                                                          });
-                                                    }
-                                                    return Text("??");
-                                                  }),
-                                            )
-                                          ],
+                                                                    .data!.size,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    count) {
+                                                              return Chip(
+                                                                  backgroundColor:
+                                                                      Colors.orange[
+                                                                          50],
+                                                                  // avatar: CircleAvatar(
+                                                                  //     radius:
+                                                                  //         100,
+                                                                  //     backgroundColor:
+                                                                  //         Colors.orange[
+                                                                  //             50],
+                                                                  //     backgroundImage: NetworkImage(categoryData
+                                                                  //             .data!
+                                                                  //             .docs[count]
+                                                                  //         [
+                                                                  //         "categoryImage"])),
+                                                                  label: Text(categoryData
+                                                                          .data!
+                                                                          .docs[count]
+                                                                      [
+                                                                      "categoryName"]));
+                                                            });
+                                                      }
+                                                      return Text("??");
+                                                    }),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                      )
                                     ],
                                   ),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.only(bottom: 20, top: 20)),
+                                  //////////////////////
+                                  //////////////////////
+                                  ///////user vip////////
+                                  /////////category 6////////
+                                  //////////////////////
+                                  //////////////////////
+                                  // Row(
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.start,
+                                  //   children: [
+                                  //     Padding(
+                                  //         padding: EdgeInsets.only(
+                                  //             left: MediaQuery.of(context)
+                                  //                     .size
+                                  //                     .width *
+                                  //                 0.01)),
+                                  //     snapshot.user.url == null
+                                  //         ? Expanded(
+                                  //             flex: 3,
+                                  //             child: Container(
+                                  //               alignment: Alignment.topLeft,
+                                  //               width: MediaQuery.of(context)
+                                  //                       .size
+                                  //                       .width *
+                                  //                   0.25,
+                                  //               child: CircleAvatar(
+                                  //                   radius: 45,
+                                  //                   backgroundColor:
+                                  //                       Colors.grey[400],
+                                  //                   child: Icon(Icons.person,
+                                  //                       size: 50)),
+                                  //             ),
+                                  //           )
+                                  //         : Expanded(
+                                  //             flex: 3,
+                                  //             child: Container(
+                                  //               child: CircleAvatar(
+                                  //                 radius: 45,
+                                  //                 backgroundColor: Colors.white,
+                                  //                 backgroundImage: NetworkImage(
+                                  //                     snapshot.user.url ?? ""),
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //     Padding(
+                                  //         padding: EdgeInsets.only(
+                                  //             left: MediaQuery.of(context)
+                                  //                     .size
+                                  //                     .width *
+                                  //                 0.03)),
+                                  //     Expanded(
+                                  //       flex: 8,
+                                  //       child: Container(
+                                  //         alignment: Alignment.topLeft,
+                                  //         height: 165,
+                                  //         child: Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.start,
+                                  //           children: [
+                                  //             Container(
+                                  //               child: Text(
+                                  //                   snapshot.user.nickname ??
+                                  //                       "User",
+                                  //                   overflow:
+                                  //                       TextOverflow.ellipsis,
+                                  //                   maxLines: 1,
+                                  //                   style: TextStyle(
+                                  //                       fontSize: 33)),
+                                  //             ),
+                                  //             Container(
+                                  //               child: Padding(
+                                  //                 padding:
+                                  //                     const EdgeInsets.all(5),
+                                  //                 child: Text(
+                                  //                     snapshot.user.category
+                                  //                         .toString(),
+                                  //                     overflow:
+                                  //                         TextOverflow.ellipsis,
+                                  //                     maxLines: 1,
+                                  //                     style: TextStyle(
+                                  //                         fontSize: 15)),
+                                  //               ),
+                                  //             ),
+                                  //             Container(
+                                  //               height: 90,
+                                  //               width: MediaQuery.of(context)
+                                  //                       .size
+                                  //                       .width *
+                                  //                   0.7,
+                                  //               child: FutureBuilder(
+                                  //                   future: FirebaseFirestore
+                                  //                       .instance
+                                  //                       .collection("category")
+                                  //                       .where("categoryId",
+                                  //                           whereIn: [
+                                  //                         // for (int i = 0;
+                                  //                         //     i <
+                                  //                         //         category
+                                  //                         //             .length;
+                                  //                         //     i++)
+                                  //                         //   category[i]
+                                  //                         1,
+                                  //                         2,
+                                  //                         3,
+                                  //                         4,
+                                  //                         5,
+                                  //                       ]).get(),
+                                  //                   builder: (context,
+                                  //                       AsyncSnapshot<
+                                  //                               QuerySnapshot>
+                                  //                           categoryData) {
+                                  //                     if (categoryData
+                                  //                         .hasData) {
+                                  //                       print(categoryData
+                                  //                               .data!.docs[0]
+                                  //                           ['categoryName']);
+
+                                  //                       return GridView.builder(
+                                  //                           gridDelegate:
+                                  //                               new SliverGridDelegateWithFixedCrossAxisCount(
+                                  //                                   crossAxisCount:
+                                  //                                       3,
+
+                                  //                                   // childAspectRatio: MediaQuery.of(
+                                  //                                   //             context)
+                                  //                                   //         .size
+                                  //                                   //         .width /
+                                  //                                   //     (MediaQuery.of(
+                                  //                                   //                 context)
+                                  //                                   //             .size
+                                  //                                   //             .height /
+                                  //                                   //         3),
+                                  //                                   childAspectRatio:
+                                  //                                       180 /
+                                  //                                           100),
+                                  //                           itemCount:
+                                  //                               categoryData
+                                  //                                   .data!.size,
+                                  //                           itemBuilder:
+                                  //                               (context,
+                                  //                                   count) {
+                                  //                             return Chip(
+                                  //                                 backgroundColor:
+                                  //                                     Colors.orange[
+                                  //                                         50],
+                                  //                                 // avatar: CircleAvatar(
+                                  //                                 //     radius:
+                                  //                                 //         100,
+                                  //                                 //     backgroundColor:
+                                  //                                 //         Colors.orange[
+                                  //                                 //             50],
+                                  //                                 //     backgroundImage: NetworkImage(categoryData
+                                  //                                 //             .data!
+                                  //                                 //             .docs[count]
+                                  //                                 //         [
+                                  //                                 //         "categoryImage"])),
+                                  //                                 label: Text(categoryData
+                                  //                                         .data!
+                                  //                                         .docs[count]
+                                  //                                     [
+                                  //                                     "categoryName"]));
+                                  //                           });
+                                  //                     }
+                                  //                     return Text("??");
+                                  //                   }),
+                                  //             )
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //     )
+                                  //   ],
+                                  // ),
+                                  Padding(padding: EdgeInsets.only(top: 8)),
                                   Card(
                                     elevation: 3,
                                     shape: RoundedRectangleBorder(
@@ -239,7 +448,8 @@ class MyProfile extends GetWidget<AuthController> {
 
                                                   //  ?
                                                   TextStyle(
-                                                      color: Colors.grey[400])
+                                                      color: Colors.black,
+                                                      fontSize: 12)
                                               // : MyText.subhead(context)!
                                               //     .copyWith(
                                               //         color: Colors.grey[900])

@@ -33,6 +33,21 @@ class _UserUpdateState extends State<UserUpdate> {
   var list1;
   var categoryNumber;
 
+  final FocusNode _nodeText = FocusNode();
+
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+      keyboardBarColor: Colors.grey[200],
+      nextFocus: false,
+      actions: [
+        KeyboardActionsItem(
+          focusNode: _nodeText,
+        ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -518,329 +533,344 @@ class _UserUpdateState extends State<UserUpdate> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[400],
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_outlined,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              child: InkWell(
-                  onTap: userUpdate,
-                  child: Image.asset(
-                    "assets/icon/userSetting.png",
-                    width: 30,
-                    height: 30,
-                  )),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(65),
+        child: AppBar(
+          backgroundColor: Colors.orange[50],
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_outlined,
+              color: Colors.black,
             ),
-          )
-        ],
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: InkWell(
+                    onTap: userUpdate,
+                    child: Image.asset(
+                      "assets/icon/userSetting.png",
+                      width: 30,
+                      height: 30,
+                    )),
+              ),
+            )
+          ],
+        ),
       ),
       body: GetX<UserController>(initState: (_) async {
         Get.find<UserController>().user =
             await UserDatabase().getUser(Get.find<AuthController>().user!.uid);
       }, builder: (snapshot) {
-        if (snapshot.user.nickname != null) {
+        if (snapshot.user.id != null) {
           user = snapshot.user;
           _usernameControl.text = user!.nickname!;
-
+          _usernameControl.selection = TextSelection(
+              baseOffset: user!.nickname!.length,
+              extentOffset: user!.nickname!.length);
           _introductionControl.text = user!.introduction!;
 
+          _introductionControl.selection = TextSelection(
+              baseOffset: user!.introduction!.length,
+              extentOffset: user!.introduction!.length);
 //          user!.vip == true ? categoryNumber = 6 : categoryNumber = 3;
           categoryNumber = 3;
 
-          return Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 30),
-                  ),
-                  Column(
-                    children: [
-                      _image == null
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: SizedBox(
-                                    child: CircleAvatar(
-                                      radius: 70.0,
-                                      backgroundColor: Colors.white,
+          return KeyboardActions(
+            config: _buildConfig(context),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 30),
+                    ),
+                    Column(
+                      children: [
+                        _image == null
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: SizedBox(
                                       child: CircleAvatar(
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.white,
-                                              radius: 18.0,
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.camera_alt,
-                                                  size: 16.0,
-                                                  color: Color(0xFF404040),
+                                        radius: 70.0,
+                                        backgroundColor: Colors.white,
+                                        child: CircleAvatar(
+                                            child: Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.white,
+                                                radius: 18.0,
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.camera_alt,
+                                                    size: 16.0,
+                                                    color: Color(0xFF404040),
+                                                  ),
+                                                  onPressed: () {
+                                                    _showPicker(context);
+                                                    FocusManager
+                                                        .instance.primaryFocus!
+                                                        .unfocus();
+                                                  },
                                                 ),
-                                                onPressed: () {
-                                                  _showPicker(context);
-                                                  FocusManager
-                                                      .instance.primaryFocus!
-                                                      .unfocus();
-                                                },
                                               ),
                                             ),
-                                          ),
-                                          radius: 70.0,
-                                          backgroundImage: NetworkImage(
-                                              snapshot.user.url ?? "")),
-                                    ),
-                                  )),
-                            )
-                          : Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: SizedBox(
-                                    child: CircleAvatar(
-                                      radius: 70.0,
-                                      backgroundColor: Colors.white,
+                                            radius: 70.0,
+                                            backgroundImage: NetworkImage(
+                                                snapshot.user.url ?? "")),
+                                      ),
+                                    )),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: SizedBox(
                                       child: CircleAvatar(
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.white,
-                                              radius: 18.0,
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.camera_alt,
-                                                  size: 16.0,
-                                                  color: Color(0xFF404040),
+                                        radius: 70.0,
+                                        backgroundColor: Colors.white,
+                                        child: CircleAvatar(
+                                            child: Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.white,
+                                                radius: 18.0,
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.camera_alt,
+                                                    size: 16.0,
+                                                    color: Color(0xFF404040),
+                                                  ),
+                                                  onPressed: () {
+                                                    _showPicker(context);
+                                                  },
                                                 ),
-                                                onPressed: () {
-                                                  _showPicker(context);
-                                                },
                                               ),
                                             ),
-                                          ),
-                                          radius: 70.0,
-                                          backgroundImage:
-                                              FileImage(File(_image))),
-                                    ),
-                                  )),
-                            ),
-                      // Image.file(
-                      //           File(_image),
-                      //           height: 50,
-                      //           width: 50,
-                      //           fit: BoxFit.contain,
-                      //         ),
-                      Padding(padding: EdgeInsets.all(20)),
-                      Container(
-                          height: height * 0.1,
+                                            radius: 70.0,
+                                            backgroundImage:
+                                                FileImage(File(_image))),
+                                      ),
+                                    )),
+                              ),
+                        // Image.file(
+                        //           File(_image),
+                        //           height: 50,
+                        //           width: 50,
+                        //           fit: BoxFit.contain,
+                        //         ),
+                        Padding(padding: EdgeInsets.all(20)),
+                        Container(
+                            height: height * 0.1,
+                            width: width * 0.8,
+                            child: TextFormField(
+                              autofocus: false,
+                              decoration: InputDecoration(
+                                // contentPadding: EdgeInsets.all(10.0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                      color: Colors.grey[900]!, width: 2),
+                                ),
+
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                      color: Colors.grey[900]!, width: 1),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.length > 0 && value.length < 3) {
+                                  return "at least 3 words";
+                                }
+                                _usernameControl.text = value;
+                                // _usernameControl.selection = TextSelection(
+                                //     baseOffset: _usernameControl.text.length,
+                                //     extentOffset: value.length);
+                                return null;
+                              },
+                              controller: _usernameControl,
+                              maxLines: 1,
+                              cursorColor: Colors.amber[500],
+                            )),
+                        Container(
+                          height: 150,
                           width: width * 0.8,
                           child: TextFormField(
-                            autofocus: false,
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.done,
+                            cursorColor: Colors.amber[500],
+                            maxLines: 7,
+                            focusNode: _nodeText,
                             decoration: InputDecoration(
-                              // contentPadding: EdgeInsets.all(10.0),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-
+                              border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(0),
                                 borderSide: BorderSide(
                                     color: Colors.grey[900]!, width: 2),
                               ),
-
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(0),
                                 borderSide: BorderSide(
                                     color: Colors.grey[900]!, width: 1),
                               ),
                             ),
+                            controller: _introductionControl,
                             validator: (value) {
-                              if (value!.length > 0 && value.length < 3) {
-                                return "at least 3 words";
+                              if (value!.isNotEmpty) {
+                                _introductionControl.text = value;
+                                return null;
                               }
-                              _usernameControl.text = value;
-                              // _usernameControl.selection = TextSelection(
-                              //     baseOffset: _usernameControl.text.length,
-                              //     extentOffset: value.length);
                               return null;
                             },
-                            controller: _usernameControl,
-                            maxLines: 1,
-                            cursorColor: Colors.amber[500],
-                          )),
-                      Container(
-                        height: 150,
-                        width: width * 0.8,
-                        child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.done,
-                          cursorColor: Colors.amber[500],
-                          maxLines: 7,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(0),
-                              borderSide: BorderSide(
-                                  color: Colors.grey[900]!, width: 2),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(0),
-                              borderSide: BorderSide(
-                                  color: Colors.grey[900]!, width: 1),
-                            ),
                           ),
-                          controller: _introductionControl,
-                          validator: (value) {
-                            if (value!.isNotEmpty) {
-                              _introductionControl.text = value;
-                              return null;
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 30)),
+                        Padding(padding: EdgeInsets.only(top: 30)),
 
-                      Container(
-                        height: 50.0,
-                        padding: EdgeInsets.only(left: 30, right: 30),
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: categoryButtonClick == true
-                                  ? Colors.orange[50]
-                                  : Colors.grey[50],
-                              onPrimary: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(32.0),
+                        Container(
+                          height: 50.0,
+                          padding: EdgeInsets.only(left: 30, right: 30),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: categoryButtonClick == true
+                                    ? Colors.orange[50]
+                                    : Colors.grey[50],
+                                onPrimary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32.0),
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                categoryButtonClick == true
-                                    ? Text("변경 취소",
-                                        style: MyText.medium(context).copyWith(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w300))
-                                    : Text("카테고리 변경",
-                                        style: MyText.medium(context).copyWith(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w300)),
-                                Spacer(),
-                                categoryButtonClick == true
-                                    ? Icon(Icons.cancel, color: Colors.black)
-                                    : Icon(Icons.arrow_drop_down_rounded,
-                                        color: Colors.black),
-                                Container(width: 10)
-                              ],
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                categoryButtonClick = !categoryButtonClick;
-                                if (categoryButtonClick) {
-                                  checking = new Map<dynamic, bool>();
-                                  for (int i = 0;
-                                      i < user!.category!.length;
-                                      i++) {
-                                    checking[user!.category![i]] = true;
+                              child: Row(
+                                children: <Widget>[
+                                  categoryButtonClick == true
+                                      ? Text("변경 취소",
+                                          style: MyText.medium(context)
+                                              .copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w300))
+                                      : Text("카테고리 변경",
+                                          style: MyText.medium(context)
+                                              .copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w300)),
+                                  Spacer(),
+                                  categoryButtonClick == true
+                                      ? Icon(Icons.cancel, color: Colors.black)
+                                      : Icon(Icons.arrow_drop_down_rounded,
+                                          color: Colors.black),
+                                  Container(width: 10)
+                                ],
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  categoryButtonClick = !categoryButtonClick;
+                                  if (categoryButtonClick) {
+                                    checking = new Map<dynamic, bool>();
+                                    for (int i = 0;
+                                        i < user!.category!.length;
+                                        i++) {
+                                      checking[user!.category![i]] = true;
+                                    }
                                   }
-                                }
-                                // if (categoryButtonClick) {
-                                // } else {
-                                //   checking = new Map<dynamic, bool>();
-                                //   for (int i = 0;
-                                //       i < user!.category!.length;
-                                //       i++) {
-                                //     checking[user!.category![i]] = true;
-                                //   }
-                                // }
-                              });
-                            }),
-                      ),
-                      categoryButtonClick == true
-                          ? Container(
-                              height: 220,
-                              margin: EdgeInsets.only(top: 20),
-                              child: changeCategory(user!.category))
-                          : Container(
-                              height: 0,
-                            ),
-                      // Container(
-                      //   height: 50.0,
-                      //   width: MediaQuery.of(context).size.width * 0.8,
-                      //   padding: EdgeInsets.only(left: 30, right: 30),
-                      //   child: ElevatedButton(
-                      //       style: ElevatedButton.styleFrom(
-                      //         primary: Colors.white,
-                      //         onPrimary: Colors.white,
-                      //         shape: RoundedRectangleBorder(
-                      //             borderRadius: BorderRadius.circular(32.0),
-                      //             side: BorderSide(
-                      //                 color: Colors.black, width: 1)),
-                      //       ),
-                      //       child: Text(
-                      //         "LOGIN",
-                      //         style: TextStyle(
-                      //           color: Colors.black,
-                      //         ),
-                      //       ),
-                      //       onPressed: userUpdate),
-                      // ),
-                      // Stack(
-                      //   children: [
-                      //     Container(
-                      //       height: 200,
-                      //       width: width * 0.8,
-                      //       child: Card(
-                      //           elevation: 2,
-                      //           shape: RoundedRectangleBorder(
-                      //             borderRadius: BorderRadius.circular(20),
-                      //             side: BorderSide(
-                      //               width: 1,
-                      //               color: (Colors.grey[400])!,
-                      //             ),
-                      //           ),
-                      //           child: Container(
-                      //               padding: EdgeInsets.only(top: 10),
-                      //               alignment: Alignment.center,
-                      //               child: gridViewCategory())),
-                      //     ),
-                      //     Positioned(
-                      //       top: -10,
-                      //       right: 6,
-                      //       child: Container(
-                      //         padding:
-                      //             EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                      //         decoration: BoxDecoration(
-                      //             color: Colors.grey[400],
-                      //             borderRadius: BorderRadius.only(
-                      //               topLeft: Radius.circular(8),
-                      //               bottomRight: Radius.circular(8),
-                      //             ) // green shaped
-                      //             ),
-                      //         child: Text(
-                      //           "Category",
-                      //           style: TextStyle(fontSize: 23),
-                      //         ),
-                      //       ),
-                      //     )
-                      //   ],
-                      // ),
-                    ],
-                  )
-                ])),
+                                  // if (categoryButtonClick) {
+                                  // } else {
+                                  //   checking = new Map<dynamic, bool>();
+                                  //   for (int i = 0;
+                                  //       i < user!.category!.length;
+                                  //       i++) {
+                                  //     checking[user!.category![i]] = true;
+                                  //   }
+                                  // }
+                                });
+                              }),
+                        ),
+                        categoryButtonClick == true
+                            ? Container(
+                                height: 220,
+                                margin: EdgeInsets.only(top: 20),
+                                child: changeCategory(user!.category))
+                            : Container(
+                                height: 0,
+                              ),
+                        // Container(
+                        //   height: 50.0,
+                        //   width: MediaQuery.of(context).size.width * 0.8,
+                        //   padding: EdgeInsets.only(left: 30, right: 30),
+                        //   child: ElevatedButton(
+                        //       style: ElevatedButton.styleFrom(
+                        //         primary: Colors.white,
+                        //         onPrimary: Colors.white,
+                        //         shape: RoundedRectangleBorder(
+                        //             borderRadius: BorderRadius.circular(32.0),
+                        //             side: BorderSide(
+                        //                 color: Colors.black, width: 1)),
+                        //       ),
+                        //       child: Text(
+                        //         "LOGIN",
+                        //         style: TextStyle(
+                        //           color: Colors.black,
+                        //         ),
+                        //       ),
+                        //       onPressed: userUpdate),
+                        // ),
+                        // Stack(
+                        //   children: [
+                        //     Container(
+                        //       height: 200,
+                        //       width: width * 0.8,
+                        //       child: Card(
+                        //           elevation: 2,
+                        //           shape: RoundedRectangleBorder(
+                        //             borderRadius: BorderRadius.circular(20),
+                        //             side: BorderSide(
+                        //               width: 1,
+                        //               color: (Colors.grey[400])!,
+                        //             ),
+                        //           ),
+                        //           child: Container(
+                        //               padding: EdgeInsets.only(top: 10),
+                        //               alignment: Alignment.center,
+                        //               child: gridViewCategory())),
+                        //     ),
+                        //     Positioned(
+                        //       top: -10,
+                        //       right: 6,
+                        //       child: Container(
+                        //         padding:
+                        //             EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                        //         decoration: BoxDecoration(
+                        //             color: Colors.grey[400],
+                        //             borderRadius: BorderRadius.only(
+                        //               topLeft: Radius.circular(8),
+                        //               bottomRight: Radius.circular(8),
+                        //             ) // green shaped
+                        //             ),
+                        //         child: Text(
+                        //           "Category",
+                        //           style: TextStyle(fontSize: 23),
+                        //         ),
+                        //       ),
+                        //     )
+                        //   ],
+                        // ),
+                      ],
+                    )
+                  ])),
+            ),
           );
         }
+
         return Center(
           child: Text("loading"),
         );

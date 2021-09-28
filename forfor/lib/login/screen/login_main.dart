@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/widget/button/signupButton/googlebutton.dart';
@@ -7,11 +8,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/screen/sigup_main.dart';
+import 'package:forfor/widget/custom_dialog.dart';
 import 'package:get/get.dart';
 
 class Login extends GetWidget<AuthController> {
   final TextEditingController _usernameControl = new TextEditingController();
   final TextEditingController _passwordControl = new TextEditingController();
+  final TextEditingController _emailControl = new TextEditingController();
 
   Future<bool> _willPopCallback() async {
     return false;
@@ -30,15 +33,21 @@ class Login extends GetWidget<AuthController> {
     return WillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.grey[400],
-          automaticallyImplyLeading: false,
-          title: Text(
-            "Login",
-            style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(65.0),
+          child: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.orange[50],
+            automaticallyImplyLeading: false,
+            title: Text(
+              "Login",
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                  fontSize: 28),
+            ),
+            actions: [],
           ),
-          actions: [],
         ),
         body: ListView(
           shrinkWrap: true,
@@ -97,7 +106,7 @@ class Login extends GetWidget<AuthController> {
                 ),
               ),
             ),
-            SizedBox(height: 10.0),
+            SizedBox(height: 15.0),
             Container(
               padding: EdgeInsets.only(left: 35, right: 35),
               child: Card(
@@ -140,7 +149,7 @@ class Login extends GetWidget<AuthController> {
                 ),
               ),
             ),
-            SizedBox(height: 10.0),
+            SizedBox(height: 20.0),
             Container(
               alignment: Alignment.centerRight,
               padding: EdgeInsets.only(right: 35),
@@ -153,17 +162,64 @@ class Login extends GetWidget<AuthController> {
                     color: Colors.black,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Write your email'),
+                          content: TextFormField(
+                            controller: _emailControl,
+                            decoration: InputDecoration(
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                          actions: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                FlatButton(
+                                  color: Colors.white,
+                                  textColor: Colors.black,
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    controller.resetPassword(
+                                        _emailControl.text.trim());
+                                  },
+                                ),
+                                FlatButton(
+                                  color: Colors.white,
+                                  textColor: Colors.black,
+                                  child: Text('cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      });
+                  //controller.resetPassword("");
+                },
               ),
             ),
             SizedBox(height: 15.0),
             Container(
               height: 50.0,
-              padding: EdgeInsets.only(left: 30, right: 30),
+              padding: EdgeInsets.only(left: 40, right: 40),
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     primary: Colors.white,
-                    onPrimary: Colors.white,
+                    onPrimary: Colors.orange[200],
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32.0),
                         side: BorderSide(color: Colors.black, width: 1)),

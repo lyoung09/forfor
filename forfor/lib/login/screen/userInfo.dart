@@ -182,10 +182,13 @@ class _UserInfomationState extends State<UserInfomation>
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      _image = imageFile!.path;
-    });
+    if (imageFile != null) {
+      setState(() {
+        _image = imageFile.path;
+      });
+    } else {
+      _image = null;
+    }
     // showDialog(
     //     context: context,
     //     builder: (BuildContext context) => CupertinoAlertDialog(
@@ -207,10 +210,14 @@ class _UserInfomationState extends State<UserInfomation>
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
-    setState(() {
-      _image = imageFile!.path;
-    });
-    print("hoit ${imageFile!.path}");
+    if (imageFile != null) {
+      setState(() {
+        _image = imageFile.path;
+      });
+    } else {
+      _image = null;
+    }
+
     // showSave();
     // showDialog(
     //     context: context,
@@ -290,14 +297,19 @@ class _UserInfomationState extends State<UserInfomation>
         return Future(() => false);
       },
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: height * 0.06,
-          centerTitle: true,
-          backgroundColor: Colors.grey[400],
-          automaticallyImplyLeading: false,
-          title: Text(
-            "my infomation",
-            style: TextStyle(fontSize: 22),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(65),
+          child: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.orange[50],
+            automaticallyImplyLeading: false,
+            title: Text(
+              "user infomation",
+              style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600),
+            ),
           ),
         ),
         body: ListView(
@@ -314,6 +326,7 @@ class _UserInfomationState extends State<UserInfomation>
                       child: GestureDetector(
                         onTap: () {
                           _showPicker(context);
+                          FocusManager.instance.primaryFocus!.unfocus();
                         },
                         child: _image != null
                             ? Image.file(
@@ -550,7 +563,7 @@ class _UserInfomationState extends State<UserInfomation>
                               sampleData[index].isSelected = true;
                               return new InkWell(
                                 //highlightColor: Colors.red,
-                                splashColor: Colors.blueAccent,
+                                splashColor: Colors.transparent,
                                 onTap: () {
                                   setState(() {
                                     sampleData.forEach((element) =>
@@ -623,21 +636,15 @@ class _UserInfomationState extends State<UserInfomation>
                   Align(
                       alignment: Alignment.bottomRight,
                       child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            border: Border.all(color: Colors.black)),
-                        child: TextButton(
-                          child: Text(
-                            "SKIP",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
+                        // decoration: BoxDecoration(
+                        //     borderRadius: BorderRadius.circular(50),
+                        //     border: Border.all(color: Colors.black)),
+                        child: IconButton(
+                          icon: Icon(Icons.navigate_next_rounded),
+                          iconSize: 45,
                           onPressed: userInfomationSave,
                         ),
-                        margin: EdgeInsets.only(right: 30),
+                        margin: EdgeInsets.only(right: 10),
                       )),
                   // Container(
                   //   height: 50.0,
@@ -699,10 +706,10 @@ class RadioItem extends StatelessWidget {
                       fontSize: 18.0)),
             ),
             decoration: new BoxDecoration(
-              // color: _item.isSelected ? Colors.black : Colors.transparent,
+              color: _item.isSelected ? Colors.orange[50] : Colors.transparent,
               border: new Border.all(
                   width: _item.isSelected ? 2.0 : 1.0,
-                  color: _item.isSelected ? Colors.black : Colors.grey),
+                  color: _item.isSelected ? Colors.orange[300]! : Colors.grey),
               borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
             ),
           ),

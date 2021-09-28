@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +29,47 @@ class AuthController extends GetxController {
   Rxn<User> _user = Rxn<User>();
 
   User? get user => _user.value;
-
+  String? errorType;
   @override
 
   // ignore: must_call_super
   void onInit() {
     _user.bindStream(_auth.authStateChanges());
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      _auth.setLanguageCode("ko");
+      print(email);
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (error) {
+      print(error.code);
+      switch (error.code) {
+        case 'user-not-found':
+          errorType = "no existing accout";
+          break;
+        case 'invalid-email':
+          errorType = "invalid email";
+          break;
+        case 'A network error (such as timeout, interrupted connection or unreachable host) has occurred.':
+          errorType = "newtwork error";
+          break;
+
+        // ...
+        default:
+          errorType = error.code;
+      }
+
+      Get.defaultDialog(
+        title: "Error",
+        middleText: errorType!,
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
+    }
   }
 
   void createUser(String email, String password) async {
@@ -44,7 +81,28 @@ class AuthController extends GetxController {
       this.email = email.trim();
       this.access = "email";
       Get.offAll(() => UserInfomation());
-    } catch (e) {}
+    } on FirebaseAuthException catch (error) {
+      print(error.code);
+      switch (error.code) {
+        case 'email-already-in-use':
+          errorType = "email already exists";
+          break;
+
+        // ...
+        default:
+          errorType = error.code;
+      }
+
+      Get.defaultDialog(
+        title: "Error",
+        middleText: errorType!,
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
+    }
   }
 
   addUserInformation(
@@ -103,8 +161,8 @@ class AuthController extends GetxController {
       if (await UserDatabase().updateDataUser(_user)) {
         Get.put(UserController()).user = _user;
       }
-      print("s");
-      Get.offAll(() => BottomNavigation());
+
+      Get.offAll(() => BottomNavigation(index: 4));
     } catch (e) {}
   }
 
@@ -187,7 +245,45 @@ class AuthController extends GetxController {
       } else {
         print("abcd");
       }
-    } catch (e) {}
+    } on FirebaseAuthException catch (error) {
+      print(error.code);
+      switch (error.code) {
+        case 'user-not-found':
+          errorType = "no user";
+          break;
+        case 'wrong-password':
+          errorType = "wrong password";
+          break;
+        case 'A network error (such as timeout, interrupted connection or unreachable host) has occurred.':
+          errorType = "newtwork error";
+          break;
+        case 'invalid-email':
+          errorType = "email style wrong";
+          break;
+        // ...
+        default:
+          errorType = error.code;
+      }
+
+      Get.defaultDialog(
+        title: "Error",
+        middleText: errorType!,
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
+
+      // Get.defaultDialog(
+      //   backgroundColor: Colors.white,
+      //   title: errorType!,
+      //   textConfirm: "Confirm",
+      //   confirmTextColor: Colors.black,
+      //   buttonColor: Colors.white,
+      //   barrierDismissible: false,
+      // );
+    }
   }
 
   logoutUser() async {
@@ -212,3 +308,5 @@ class AuthController extends GetxController {
     } catch (e) {}
   }
 }
+
+enum authProblems { UserNotFound, PasswordNotValid, NetworkError }

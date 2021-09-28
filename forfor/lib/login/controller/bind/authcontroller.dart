@@ -85,13 +85,8 @@ class AuthController extends GetxController {
     } catch (e) {}
   }
 
-  void updateUserDatabase(UserModel user, String? nickname,
+  void updateUserDatabase(UserModel user, String? nickname, String url,
       String? introduction, List<dynamic>? list) async {
-    print("hello");
-    print(nickname);
-
-    print(introduction);
-    print(list);
     try {
       UserModel _user = UserModel(
           id: user.id,
@@ -99,11 +94,11 @@ class AuthController extends GetxController {
           access: user.access,
           gender: user.gender,
           country: user.country,
-          nickname: nickname == "" ? user.nickname : nickname,
-          url: user.url,
+          nickname: nickname,
+          url: url,
           category: list,
           timeStamp: user.timeStamp,
-          introduction: introduction == "" ? null : introduction);
+          introduction: introduction);
 
       if (await UserDatabase().updateDataUser(_user)) {
         Get.put(UserController()).user = _user;

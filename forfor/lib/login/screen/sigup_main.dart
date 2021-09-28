@@ -51,16 +51,16 @@ class SignUp extends GetWidget<AuthController> {
               child: Text(
                 "Create an account",
                 style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).accentColor,
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
                 ),
               ),
             ),
             SizedBox(height: 20.0),
             Container(
               width: width * 0.7,
-              height: 60,
+              height: 80,
               padding: EdgeInsets.only(left: 10),
               child: Card(
                 elevation: 0.0,
@@ -113,7 +113,7 @@ class SignUp extends GetWidget<AuthController> {
             Padding(padding: EdgeInsets.only(top: 8)),
             Container(
               width: width * 0.7,
-              height: 60,
+              height: 80,
               padding: EdgeInsets.only(left: 10),
               child: Card(
                 elevation: 0.0,
@@ -165,17 +165,21 @@ class SignUp extends GetWidget<AuthController> {
             Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(color: Colors.black)),
                   child: TextButton(
                     child: Text(
-                      "skip >",
+                      "SKIP",
                       style: TextStyle(
                         fontSize: 20,
+                        fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),
                     ),
                     onPressed: signUpLoginButton,
                   ),
-                  padding: EdgeInsets.only(right: 15),
+                  margin: EdgeInsets.only(right: 15),
                 )),
           ],
         ),

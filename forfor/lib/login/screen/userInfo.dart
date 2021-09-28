@@ -272,7 +272,7 @@ class _UserInfomationState extends State<UserInfomation>
         });
         return downloadURL;
       });
-      print(_countryCode);
+
       controller.addUserInformation(_gender.toString(), _countryCode.toString(),
           _usernameControl.text, urlProfileImageApi);
     }
@@ -623,17 +623,21 @@ class _UserInfomationState extends State<UserInfomation>
                   Align(
                       alignment: Alignment.bottomRight,
                       child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: Colors.black)),
                         child: TextButton(
                           child: Text(
-                            "skip >",
+                            "SKIP",
                             style: TextStyle(
                               fontSize: 20,
+                              fontWeight: FontWeight.w600,
                               color: Colors.black,
                             ),
                           ),
                           onPressed: userInfomationSave,
                         ),
-                        padding: EdgeInsets.only(right: 30),
+                        margin: EdgeInsets.only(right: 30),
                       )),
                   // Container(
                   //   height: 50.0,

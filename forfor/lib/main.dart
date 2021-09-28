@@ -15,6 +15,7 @@ import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/login/screen/sigup_main.dart';
+import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -34,6 +35,7 @@ import 'bottomScreen/group/group_click.dart';
 import 'bottomScreen/group/groupclick.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
 import 'bottomScreen/infomation/sayScreen.dart';
+import 'bottomScreen/profile/my_profile.dart';
 import 'bottomScreen/profile/my_update.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -132,33 +134,32 @@ class _MyHomePageState extends State<MyHomePage> {
     bool _seen = (prefs.getBool('seen') ?? false);
     final controller = Get.put(AuthController());
 
-    if (controller.user?.uid != null) {
-      print(controller.user?.uid);
-      DocumentSnapshot ds = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(controller.user!.uid)
-          .get();
+    // if (controller.user?.uid != null) {
+    //   DocumentSnapshot ds = await FirebaseFirestore.instance
+    //       .collection("users")
+    //       .doc(controller.user!.uid)
+    //       .get();
 
-      this.setState(() {
-        userData = ds.exists;
-      });
+    //   this.setState(() {
+    //     userData = ds.exists;
+    //   });
 
-      if (!userData) {
-        controller.deleteUser();
-        Navigator.pushNamed(context, '/login');
-      } else {
-        Navigator.pushNamed(context, '/bottomScreen');
-      }
-    } else {
-      Navigator.pushNamed(context, '/login');
-    }
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) {
-    //       return UserUpdate();
-    //     },
-    //   ),
-    // );
+    //   if (!userData) {
+    //     controller.deleteUser();
+    //     Navigator.pushNamed(context, '/login');
+    //   } else {
+    //     Navigator.pushNamed(context, '/bottomScreen');
+    //   }
+    // } else {
+    //   Navigator.pushNamed(context, '/login');
+    // }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return MyProfile();
+        },
+      ),
+    );
   }
 
   @override

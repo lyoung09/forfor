@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:forfor/home/bottom_navigation.dart';
@@ -12,6 +13,7 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 
 class UserUpdate extends StatefulWidget {
   const UserUpdate({Key? key}) : super(key: key);
@@ -29,6 +31,7 @@ class _UserUpdateState extends State<UserUpdate> {
   bool checkNickname = true;
   bool categoryButtonClick = false;
   var list1;
+  var categoryNumber;
 
   @override
   void initState() {
@@ -152,20 +155,44 @@ class _UserUpdateState extends State<UserUpdate> {
         }));
   }
 
-  void userUpdate() {
-    var list = new List.filled(checking.length, 0, growable: false);
-    print(list);
-    for (int i = 0; i < checking.length; i++) {
-      print(checking.keys.elementAt(i));
-      list[i] = checking.keys.elementAt(i);
+  void userUpdate() async {
+    String urlProfileImageApi;
+    if (_image != null) {
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child("profile/${controller.user?.uid}");
+
+      await ref.putFile(File(_image));
+
+      urlProfileImageApi = await ref.getDownloadURL().then((value) {
+        var downloadURL = "";
+        setState(() {
+          downloadURL = value;
+        });
+        return downloadURL;
+      });
+    } else {
+      urlProfileImageApi = user!.url!;
     }
 
-    // list[0] = checking.keys.elementAt(0);
-    // list[1] = checking.keys.elementAt(1);
-    // list[2] = checking.keys.elementAt(2);
-
-    controller.updateUserDatabase(
-        user!, _usernameControl.text, _introductionControl.text, list);
+    if (checking.isNotEmpty) {
+      var list = new List.filled(checking.length, 0, growable: false);
+      for (int i = 0; i < checking.length; i++) {
+        list[i] = checking.keys.elementAt(i);
+      }
+      if (categoryNumber != checking.length) {
+      } else {
+        if (_formKey.currentState!.validate() && checking.length > 0) {
+          controller.updateUserDatabase(user!, _usernameControl.text,
+              urlProfileImageApi, _introductionControl.text, list);
+        }
+      }
+    } else {
+      if (_formKey.currentState!.validate()) {
+        controller.updateUserDatabase(user!, _usernameControl.text,
+            urlProfileImageApi, _introductionControl.text, user!.category);
+      }
+    }
   }
 
   Widget selectCategory(categoryList) {
@@ -375,7 +402,7 @@ class _UserUpdateState extends State<UserUpdate> {
 
   Map<dynamic, bool> checking = new Map();
 
-  Widget changeCategory(categoryList) {
+  Widget changeCategory(list1) {
     return FutureBuilder(
         future: FirebaseFirestore.instance.collection('category').get(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -385,15 +412,16 @@ class _UserUpdateState extends State<UserUpdate> {
             );
           }
 
-          return Container(
-            padding: EdgeInsets.only(top: 20),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
-              color: Colors.white,
-              elevation: 2,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            color: Colors.white,
+            elevation: 2,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: SingleChildScrollView(
               child: GridView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     childAspectRatio: 1,
@@ -402,7 +430,7 @@ class _UserUpdateState extends State<UserUpdate> {
                   itemBuilder: (context, count) {
                     return Container(
                       alignment: Alignment.center,
-                      padding: EdgeInsets.only(left: 15, right: 15, top: 5),
+                      padding: EdgeInsets.only(left: 15, right: 15, top: 25),
                       child: Column(
                         children: <Widget>[
                           Row(
@@ -413,12 +441,13 @@ class _UserUpdateState extends State<UserUpdate> {
                                     style: ElevatedButton.styleFrom(
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(30),
+                                              BorderRadius.circular(50),
                                           side: checking[
                                                       snapshot.data!.docs[count]
                                                           ["categoryId"]] ==
                                                   true
-                                              ? BorderSide(color: Colors.black)
+                                              ? BorderSide(
+                                                  color: Colors.black, width: 2)
                                               : BorderSide(color: Colors.white),
                                         ),
                                         primary: Colors.white,
@@ -451,8 +480,9 @@ class _UserUpdateState extends State<UserUpdate> {
                                         checking
                                             .removeWhere((k, v) => v == false);
 
-                                        if (checking.length > list1.length) {
-                                          if (checking.length % list1.length ==
+                                        if (checking.length > categoryNumber) {
+                                          if (checking.length %
+                                                  categoryNumber ==
                                               1) {
                                             checking.remove(
                                                 checking.entries.first.key);
@@ -464,8 +494,8 @@ class _UserUpdateState extends State<UserUpdate> {
                                   Container(height: 5),
                                   Text(
                                     "${snapshot.data!.docs[count]["categoryName"]}",
-                                    style: MyText.caption(context)!
-                                        .copyWith(color: MyColors.grey_40),
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 12),
                                     textAlign: TextAlign.center,
                                   )
                                 ],
@@ -520,6 +550,13 @@ class _UserUpdateState extends State<UserUpdate> {
       }, builder: (snapshot) {
         if (snapshot.user.nickname != null) {
           user = snapshot.user;
+          _usernameControl.text = user!.nickname!;
+
+          _introductionControl.text = user!.introduction!;
+
+//          user!.vip == true ? categoryNumber = 6 : categoryNumber = 3;
+          categoryNumber = 3;
+
           return Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -537,7 +574,7 @@ class _UserUpdateState extends State<UserUpdate> {
                                   alignment: Alignment.topCenter,
                                   child: SizedBox(
                                     child: CircleAvatar(
-                                      radius: 75.0,
+                                      radius: 70.0,
                                       backgroundColor: Colors.white,
                                       child: CircleAvatar(
                                           child: Align(
@@ -553,11 +590,14 @@ class _UserUpdateState extends State<UserUpdate> {
                                                 ),
                                                 onPressed: () {
                                                   _showPicker(context);
+                                                  FocusManager
+                                                      .instance.primaryFocus!
+                                                      .unfocus();
                                                 },
                                               ),
                                             ),
                                           ),
-                                          radius: 75.0,
+                                          radius: 70.0,
                                           backgroundImage: NetworkImage(
                                               snapshot.user.url ?? "")),
                                     ),
@@ -569,7 +609,7 @@ class _UserUpdateState extends State<UserUpdate> {
                                   alignment: Alignment.topCenter,
                                   child: SizedBox(
                                     child: CircleAvatar(
-                                      radius: 75.0,
+                                      radius: 70.0,
                                       backgroundColor: Colors.white,
                                       child: CircleAvatar(
                                           child: Align(
@@ -589,7 +629,7 @@ class _UserUpdateState extends State<UserUpdate> {
                                               ),
                                             ),
                                           ),
-                                          radius: 75.0,
+                                          radius: 70.0,
                                           backgroundImage:
                                               FileImage(File(_image))),
                                     ),
@@ -613,15 +653,6 @@ class _UserUpdateState extends State<UserUpdate> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
 
-                              errorText: checkNickname
-                                  ? null
-                                  : "at least 3 characters",
-
-                              hintText: snapshot.user.nickname,
-                              hintStyle: TextStyle(
-                                fontSize: 15.0,
-                                color: Colors.grey[400],
-                              ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                                 borderSide: BorderSide(
@@ -635,11 +666,14 @@ class _UserUpdateState extends State<UserUpdate> {
                               ),
                             ),
                             validator: (value) {
-                              if (value == null) {
-                                _usernameControl.text =
-                                    snapshot.user.nickname.toString();
+                              if (value!.length > 0 && value.length < 3) {
+                                return "at least 3 words";
                               }
-                              _usernameControl.text = value!;
+                              _usernameControl.text = value;
+                              // _usernameControl.selection = TextSelection(
+                              //     baseOffset: _usernameControl.text.length,
+                              //     extentOffset: value.length);
+                              return null;
                             },
                             controller: _usernameControl,
                             maxLines: 1,
@@ -649,15 +683,12 @@ class _UserUpdateState extends State<UserUpdate> {
                         height: 150,
                         width: width * 0.8,
                         child: TextFormField(
-                          keyboardType: TextInputType.multiline,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
                           cursorColor: Colors.amber[500],
                           maxLines: 7,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: snapshot.user.introduction ??
-                                "write your introduction",
-                            hintStyle: MyText.body1(context)!
-                                .copyWith(color: Colors.grey[400]),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(0),
                               borderSide: BorderSide(
@@ -671,11 +702,11 @@ class _UserUpdateState extends State<UserUpdate> {
                           ),
                           controller: _introductionControl,
                           validator: (value) {
-                            if (value == null) {
-                              _introductionControl.text =
-                                  snapshot.user.nickname.toString();
+                            if (value!.isNotEmpty) {
+                              _introductionControl.text = value;
+                              return null;
                             }
-                            _introductionControl.text = value!;
+                            return null;
                           },
                         ),
                       ),
@@ -687,7 +718,7 @@ class _UserUpdateState extends State<UserUpdate> {
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: categoryButtonClick == true
-                                  ? Colors.orange[100]
+                                  ? Colors.orange[50]
                                   : Colors.grey[50],
                               onPrimary: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -696,32 +727,75 @@ class _UserUpdateState extends State<UserUpdate> {
                             ),
                             child: Row(
                               children: <Widget>[
-                                Text("카테고리 변경",
-                                    style: MyText.medium(context).copyWith(
-                                        color: MyColors.grey_80,
-                                        fontWeight: FontWeight.w300)),
+                                categoryButtonClick == true
+                                    ? Text("변경 취소",
+                                        style: MyText.medium(context).copyWith(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w300))
+                                    : Text("카테고리 변경",
+                                        style: MyText.medium(context).copyWith(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w300)),
                                 Spacer(),
-                                Icon(Icons.picture_in_picture,
-                                    color: MyColors.grey_60),
+                                categoryButtonClick == true
+                                    ? Icon(Icons.cancel, color: Colors.black)
+                                    : Icon(Icons.arrow_drop_down_rounded,
+                                        color: Colors.black),
                                 Container(width: 10)
                               ],
                             ),
                             onPressed: () {
                               setState(() {
                                 categoryButtonClick = !categoryButtonClick;
-                                list1 = snapshot.user.category;
-                                for (int i = 0;
-                                    i < snapshot.user.category!.length;
-                                    i++) checking[list1[i]] = true;
+                                if (categoryButtonClick) {
+                                  checking = new Map<dynamic, bool>();
+                                  for (int i = 0;
+                                      i < user!.category!.length;
+                                      i++) {
+                                    checking[user!.category![i]] = true;
+                                  }
+                                }
+                                // if (categoryButtonClick) {
+                                // } else {
+                                //   checking = new Map<dynamic, bool>();
+                                //   for (int i = 0;
+                                //       i < user!.category!.length;
+                                //       i++) {
+                                //     checking[user!.category![i]] = true;
+                                //   }
+                                // }
                               });
                             }),
                       ),
                       categoryButtonClick == true
-                          ? Container(height: 250, child: changeCategory(list1))
+                          ? Container(
+                              height: 220,
+                              margin: EdgeInsets.only(top: 20),
+                              child: changeCategory(user!.category))
                           : Container(
                               height: 0,
                             ),
-
+                      // Container(
+                      //   height: 50.0,
+                      //   width: MediaQuery.of(context).size.width * 0.8,
+                      //   padding: EdgeInsets.only(left: 30, right: 30),
+                      //   child: ElevatedButton(
+                      //       style: ElevatedButton.styleFrom(
+                      //         primary: Colors.white,
+                      //         onPrimary: Colors.white,
+                      //         shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(32.0),
+                      //             side: BorderSide(
+                      //                 color: Colors.black, width: 1)),
+                      //       ),
+                      //       child: Text(
+                      //         "LOGIN",
+                      //         style: TextStyle(
+                      //           color: Colors.black,
+                      //         ),
+                      //       ),
+                      //       onPressed: userUpdate),
+                      // ),
                       // Stack(
                       //   children: [
                       //     Container(

@@ -72,13 +72,13 @@ class _KaKaoButtonState extends State<KaKaoButton> {
             email: userKakao.kakaoAccount?.email ?? "",
             password: "kakaologinuser");
 
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) {
-              return BottomNavigation();
-            },
-          ),
-        );
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (BuildContext context) {
+        //       return BottomNavigation();
+        //     },
+        //   ),
+        // );
       } else {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(

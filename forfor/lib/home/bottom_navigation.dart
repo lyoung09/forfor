@@ -9,8 +9,11 @@ import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
 import 'package:forfor/bottomScreen/infomation/timeline.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 
@@ -47,6 +50,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
       },
       child: Scaffold(
         body: _widgetOptions.elementAt(_selectedIndex),
+        // return TabBarView(
+        //   children: <Widget>[
+        //     Group(user: user),
+        //     ChatMainScreen(),
+        //     InvitePersonScreen(),
+        //     SayScreen(),
+        //     MyProfile(),
+        //   ],
+        // );
+
         bottomNavigationBar: Theme(
           data: Theme.of(context).copyWith(
               // sets the background color of the `BottomNavigationBar`

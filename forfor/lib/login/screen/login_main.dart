@@ -32,12 +32,11 @@ class Login extends GetWidget<AuthController> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.blue[200],
+          backgroundColor: Colors.grey[400],
           automaticallyImplyLeading: false,
           title: Text(
             "Login",
-            style: TextStyle(
-                fontWeight: FontWeight.w500, color: Colors.purple[900]),
+            style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black),
           ),
           actions: [],
         ),
@@ -55,7 +54,7 @@ class Login extends GetWidget<AuthController> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w700,
-                  color: Colors.purple,
+                  color: Colors.transparent,
                 ),
               ),
             ),
@@ -83,9 +82,7 @@ class Login extends GetWidget<AuthController> {
                         borderSide: BorderSide(color: Colors.black, width: 1),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                        ),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                       labelText: "Email",
@@ -115,18 +112,14 @@ class Login extends GetWidget<AuthController> {
                       contentPadding: EdgeInsets.all(10.0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                        ),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(0),
                         borderSide: BorderSide(color: Colors.black, width: 1),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                        ),
+                        borderSide: BorderSide(color: Colors.black, width: 1),
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                       labelText: "Password",
@@ -157,7 +150,7 @@ class Login extends GetWidget<AuthController> {
                   style: TextStyle(
                     fontSize: 17.0,
                     fontWeight: FontWeight.w500,
-                    color: Colors.purple[900],
+                    color: Colors.black,
                   ),
                 ),
                 onPressed: () {},
@@ -169,16 +162,16 @@ class Login extends GetWidget<AuthController> {
               padding: EdgeInsets.only(left: 30, right: 30),
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[200],
+                    primary: Colors.white,
                     onPrimary: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32.0),
-                    ),
+                        borderRadius: BorderRadius.circular(32.0),
+                        side: BorderSide(color: Colors.black, width: 1)),
                   ),
                   child: Text(
                     "LOGIN",
                     style: TextStyle(
-                      color: Colors.purple[900],
+                      color: Colors.black,
                     ),
                   ),
                   onPressed: buttonLogin),
@@ -187,7 +180,7 @@ class Login extends GetWidget<AuthController> {
             Container(
               child: Divider(
                 thickness: 2.5,
-                color: Colors.blue[800],
+                color: Colors.grey[400],
               ),
               padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 0.0),
             ),

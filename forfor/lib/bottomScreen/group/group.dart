@@ -1,23 +1,27 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import 'package:forfor/data/user.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
-import 'package:get/get.dart';
-import 'dart:math' as math;
-import 'addGroupStepper.dart';
-import 'widget/groupList.dart';
+
 import 'addGroup.dart';
+import 'addGroupStepper.dart';
 import 'group_click.dart';
+import 'widget/groupList.dart';
 
 class Group extends StatefulWidget {
-  const Group({Key? key}) : super(key: key);
-
+  String? uid;
+  Group({this.uid});
   @override
   _GroupState createState() => _GroupState();
 }
@@ -34,8 +38,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    UserInf userInfo = new UserInf(uid: 'ha');
-    print('out ${userInfo.getUserId}');
+
     controller1 = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),

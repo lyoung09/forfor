@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -133,14 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
+
     final controller = Get.put(AuthController());
 
     // if (controller.user?.uid != null) {
-    //   DocumentSnapshot ds = await FirebaseFirestore.instance
-    //       .collection("users")
-    //       .doc(controller.user!.uid)
-    //       .get();
-
+    //   DocumentSnapshot ds =
+    //       await UserDatabase().getUserDs(controller.user!.uid);
+    //   print(ds.get('uid'));
     //   this.setState(() {
     //     userData = ds.exists;
     //   });

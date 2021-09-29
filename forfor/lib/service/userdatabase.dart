@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info/device_info.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
 import 'package:get/get.dart';
@@ -31,6 +34,7 @@ class UserDatabase {
         "uid": user.id,
         "timeStamp": user.timeStamp,
         "introduction": "",
+        "deviceId": user.deviceId,
         "category": FieldValue.arrayUnion([
           user.category![0],
           user.category![1],
@@ -60,12 +64,38 @@ class UserDatabase {
     }
   }
 
+  Future<bool> currentUserChange(String uid, String deviceId) async {
+    try {
+      await _firestore
+          .collection("users")
+          .doc(uid)
+          .update({"deviceId": deviceId});
+
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   Future<UserModel> getUser(String uid) async {
     try {
       DocumentSnapshot _doc =
           await _firestore.collection("users").doc(uid).get();
 
       return UserModel.fromDocumentSnapshot(documentSnapshot: _doc);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<DocumentSnapshot> getUserDs(String uid) async {
+    try {
+      DocumentSnapshot _doc =
+          await _firestore.collection("users").doc(uid).get();
+
+      return _doc;
     } catch (e) {
       print(e);
       rethrow;

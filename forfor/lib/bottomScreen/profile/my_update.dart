@@ -9,9 +9,11 @@ import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/utils/crop.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
@@ -52,6 +54,7 @@ class _UserUpdateState extends State<UserUpdate> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("hello");
   }
 
   void _showPicker(context) {
@@ -121,12 +124,33 @@ class _UserUpdateState extends State<UserUpdate> {
     //         ));
   }
 
+  _cropImage(filePath) async {
+    print("bye");
+    File? croppedImage = await ImageCropper.cropImage(
+      sourcePath: filePath,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
+    if (croppedImage != null) {
+      imageFile = croppedImage;
+
+      setState(() {
+        print("hi");
+        _image = imageFile.path;
+      });
+    }
+  }
+
+  var imageFile;
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
-    setState(() {
-      _image = imageFile!.path;
-    });
+    imageFile = await imagePicker.getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    _cropImage(imageFile);
+
     print("hoit ${imageFile!.path}");
     // showSave();
     // showDialog(

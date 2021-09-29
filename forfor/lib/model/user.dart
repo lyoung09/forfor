@@ -10,7 +10,9 @@ class UserModel {
   String? access;
   String? timeStamp;
   String? introduction;
+  String? deviceId;
   List<dynamic>? category;
+
   UserModel(
       {this.id,
       this.email,
@@ -18,6 +20,7 @@ class UserModel {
       this.nickname,
       this.url,
       this.country,
+      this.deviceId,
       this.access,
       this.category,
       this.timeStamp,
@@ -34,5 +37,6 @@ class UserModel {
     category = documentSnapshot["category"];
     timeStamp = documentSnapshot["timeStamp"];
     introduction = documentSnapshot["introduction"];
+    deviceId = documentSnapshot["deviceId"];
   }
 }

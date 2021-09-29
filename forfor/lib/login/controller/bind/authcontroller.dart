@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/home/bottom_navigation.dart';
@@ -13,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,6 +37,17 @@ class AuthController extends GetxController {
   // ignore: must_call_super
   void onInit() {
     _user.bindStream(_auth.authStateChanges());
+  }
+
+  Future<String> getDeviceId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.identifierForVendor; // on iOS
+    } else {
+      var androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.androidId; // on Android
+    }
   }
 
   Future<void> resetPassword(String email) async {
@@ -117,6 +130,7 @@ class AuthController extends GetxController {
 
   void setUserDatabase(List<dynamic> list) async {
     try {
+      String deviceId = await getDeviceId();
       DateTime currentPhoneDate = DateTime.now(); //DateTime
 
       Timestamp myTimeStamp =
@@ -133,6 +147,7 @@ class AuthController extends GetxController {
           country: this.country,
           nickname: this.nickname,
           url: this.url,
+          deviceId: deviceId,
           timeStamp: myDateTime.toString(),
           category: list);
 
@@ -201,27 +216,47 @@ class AuthController extends GetxController {
   }
 
   void googleCreteUser() async {
-    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    try {
+      final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    UserCredential userCredential =
-        await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
-    User? user = userCredential.user;
+      User? user = userCredential.user;
 
-    if (userCredential.additionalUserInfo!.isNewUser) {
-      this.uid = user!.uid;
-      this.email = user.email!;
-      this.access = "google";
-      Get.offAll(UserInfomation());
-    } else {
-      Get.offAll(BottomNavigation());
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        this.uid = user!.uid;
+        this.email = user.email!;
+        this.access = "google";
+        Get.offAll(UserInfomation());
+      } else {
+        Get.offAll(BottomNavigation());
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          errorType = "newtwork error";
+          break;
+
+        default:
+          errorType = e.code;
+      }
+      Get.defaultDialog(
+        title: "Error",
+        middleText: errorType!,
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
     }
   }
 
@@ -234,17 +269,30 @@ class AuthController extends GetxController {
 
   void loginUser(String email, String password) async {
     try {
-      if (_auth.currentUser != null) {
-        await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-        Get.put(UserController()).user =
-            await UserDatabase().getUser(_auth.currentUser!.uid);
+      DocumentSnapshot ds =
+          await UserDatabase().getUserDs(_auth.currentUser!.uid);
 
-        Get.offAll(BottomNavigation());
-      } else {
-        print("abcd");
+      if (ds.get("deviceId") != await getDeviceId()) {
+        // Get.defaultDialog(
+        //   title: "Error",
+        //   middleText: "user in use ",
+        //   backgroundColor: Colors.white,
+        //   middleTextStyle: TextStyle(color: Colors.black),
+        //   textCancel: "ok",
+        //   buttonColor: Colors.white,
+        //   cancelTextColor: Colors.black,
+        // );
+
+        UserDatabase()
+            .currentUserChange(_auth.currentUser!.uid, await getDeviceId());
       }
+
+      Get.put(UserController()).user =
+          await UserDatabase().getUser(_auth.currentUser!.uid);
+
+      Get.offAll(BottomNavigation());
     } on FirebaseAuthException catch (error) {
       print(error.code);
       switch (error.code) {
@@ -289,6 +337,8 @@ class AuthController extends GetxController {
   logoutUser() async {
     try {
       await _auth.signOut();
+
+      await kakaotalUser.UserApi.instance.logout();
       Get.find<UserController>().clear();
     } catch (e) {}
   }
@@ -296,6 +346,7 @@ class AuthController extends GetxController {
   logoutTalk() async {
     try {
       await _auth.signOut();
+      await googleSignIn.signOut();
       await kakaotalUser.UserApi.instance.logout();
       Get.find<UserController>().clear();
     } catch (e) {}

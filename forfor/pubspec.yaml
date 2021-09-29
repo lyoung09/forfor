@@ -75,6 +75,9 @@ dependencies:
   slide_drawer: ^1.0.3
   popup_menu: ^1.0.5
   keyboard_actions: ^3.4.4
+  device_info: ^2.0.2
+  image_cropper: ^1.4.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

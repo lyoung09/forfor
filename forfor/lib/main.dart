@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
@@ -49,6 +50,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
+
   await Firebase.initializeApp();
   runApp(MyApp());
 }
@@ -118,6 +120,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   initState() {
     super.initState();
     startTime();
@@ -129,39 +133,51 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<String> getDeviceId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.identifierForVendor; // on iOS
+    } else {
+      var androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.androidId; // on Android
+    }
+  }
+
   bool userData = false;
 
   checkFirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    bool _seen = (prefs.getBool('seen') ?? false);
-
     final controller = Get.put(AuthController());
 
-    // if (controller.user?.uid != null) {
-    //   DocumentSnapshot ds =
-    //       await UserDatabase().getUserDs(controller.user!.uid);
-    //   print(ds.get('uid'));
-    //   this.setState(() {
-    //     userData = ds.exists;
-    //   });
+    if (controller.user!.uid.isNotEmpty) {
+      DocumentSnapshot ds =
+          await UserDatabase().getUserDs(controller.user!.uid);
 
-    //   if (!userData) {
-    //     controller.deleteUser();
-    //     Navigator.pushNamed(context, '/login');
-    //   } else {
-    //     Navigator.pushNamed(context, '/bottomScreen');
-    //   }
-    // } else {
-    //   Navigator.pushNamed(context, '/login');
-    // }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return Login();
-        },
-      ),
-    );
+      this.setState(() {
+        userData = ds.exists;
+      });
+
+      if (!userData) {
+        controller.deleteUser();
+        Navigator.pushNamed(context, '/login');
+      } else {
+        if (ds.get('deviceId') != controller.getDeviceId()) {
+          Navigator.pushNamed(context, '/login');
+          controller.logoutUser();
+        } else {
+          Navigator.pushNamed(context, '/bottomScreen');
+        }
+      }
+    } else {
+      Navigator.pushNamed(context, '/login');
+    }
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return Login();
+    //     },
+    //   ),
+    // );
   }
 
   @override

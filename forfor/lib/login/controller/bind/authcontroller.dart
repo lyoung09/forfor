@@ -41,6 +41,7 @@ class AuthController extends GetxController {
 
   Future<String> getDeviceId() async {
     var deviceInfo = DeviceInfoPlugin();
+
     if (Platform.isIOS) {
       var iosInfo = await deviceInfo.iosInfo;
       return iosInfo.identifierForVendor; // on iOS
@@ -284,6 +285,7 @@ class AuthController extends GetxController {
         //   buttonColor: Colors.white,
         //   cancelTextColor: Colors.black,
         // );
+//        )
 
         UserDatabase()
             .currentUserChange(_auth.currentUser!.uid, await getDeviceId());

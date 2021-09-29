@@ -157,7 +157,7 @@ class MyProfile extends GetWidget<AuthController> {
                                                 ),
                                               ),
                                               Container(
-                                                height: 60,
+                                                height: 50,
                                                 margin:
                                                     EdgeInsets.only(right: 5),
                                                 width: MediaQuery.of(context)

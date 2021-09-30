@@ -91,7 +91,10 @@ class _HopeInfomationState extends State<HopeInfomation>
           stream: FirebaseFirestore.instance.collection('category').snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.orange[50],
+              ));
             } else {
               return Column(
                 children: [

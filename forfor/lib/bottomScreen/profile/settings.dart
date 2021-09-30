@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/login/screen/login_main.dart';
+import 'package:forfor/login/screen/show.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
@@ -266,8 +267,8 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
             Divider(height: 0),
             InkWell(
               onTap: () {
-                controller.google_signOut();
-                Get.offAll(Login());
+                controller.logoutUser();
+                Get.offAll(MainLogin());
               },
               child: Container(
                 width: double.infinity,
@@ -281,7 +282,7 @@ class SettingFlatRouteState extends State<SettingFlatRoute> {
             InkWell(
               onTap: () {
                 controller.logoutTalk();
-                Get.offAll(Login());
+                Get.offAll(MainLogin());
               },
               child: Container(
                 width: double.infinity,

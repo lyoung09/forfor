@@ -262,16 +262,16 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           if (!userData.hasData) {
             return Text("");
           } else {
-            return GridView.builder(
+            return ListView.builder(
               shrinkWrap: true,
               physics: ClampingScrollPhysics(),
               itemCount: userData.data!.docs.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-                childAspectRatio: 1 / 1.2, //item 의 가로 1, 세로 2 의 비율
-                mainAxisSpacing: 10, //수평 Padding
-                crossAxisSpacing: 10, //수직 Padding
-              ),
+              // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              //   crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
+              //   childAspectRatio: 1 / 1.2, //item 의 가로 1, 세로 2 의 비율
+              //   mainAxisSpacing: 10, //수평 Padding
+              //   crossAxisSpacing: 10, //수직 Padding
+              // ),
               scrollDirection: Axis.vertical,
               padding: EdgeInsets.all(4),
               itemBuilder: (BuildContext context, int index) {

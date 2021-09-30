@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/widget/loading.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 
@@ -34,11 +35,18 @@ class _KaKaoButtonState extends State<KaKaoButton> {
     });
   }
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   //카카오 설치요청
   _loginWithKakao() async {
     try {
       var code = await AuthCodeClient.instance.request();
-
+      Get.dialog(Loading());
       controller.issueAccessToken(code);
     } catch (e) {
       print(e);
@@ -49,7 +57,7 @@ class _KaKaoButtonState extends State<KaKaoButton> {
   _loginWithTalk() async {
     try {
       var code = await AuthCodeClient.instance.requestWithTalk();
-
+      Get.dialog(Loading());
       controller.issueAccessToken(code);
     } catch (e) {
       print(e);

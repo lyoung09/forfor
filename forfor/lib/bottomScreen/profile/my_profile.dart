@@ -132,114 +132,116 @@ class MyProfile extends GetWidget<AuthController> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Container(
-                                                child: Text(
-                                                    snapshot.user.nickname ??
-                                                        "User",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                    style: TextStyle(
-                                                        fontSize: 33)),
-                                              ),
-                                              Container(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(5),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
                                                   child: Text(
-                                                      snapshot.user.category
-                                                          .toString(),
+                                                      snapshot.user.nickname ??
+                                                          "User",
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       maxLines: 1,
                                                       style: TextStyle(
-                                                          fontSize: 15)),
+                                                          fontSize: 33)),
                                                 ),
                                               ),
-                                              Container(
-                                                height: 50,
-                                                margin:
-                                                    EdgeInsets.only(right: 5),
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                child: FutureBuilder(
-                                                    future: FirebaseFirestore
-                                                        .instance
-                                                        .collection("category")
-                                                        .where("categoryId",
-                                                            whereIn: [
-                                                          for (int i = 0;
-                                                              i <
-                                                                  category
-                                                                      .length;
-                                                              i++)
-                                                            category[i]
-                                                          // 1,
-                                                          // 2,
-                                                          // 3,
-                                                          // 4,
-                                                          // 5,
-                                                        ]).get(),
-                                                    builder: (context,
-                                                        AsyncSnapshot<
-                                                                QuerySnapshot>
-                                                            categoryData) {
-                                                      if (categoryData
-                                                          .hasData) {
-                                                        print(categoryData
-                                                                .data!.docs[0]
-                                                            ['categoryName']);
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    child: Text(
+                                                        snapshot.user.category
+                                                            .toString(),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 1,
+                                                        style: TextStyle(
+                                                            fontSize: 15)),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  height: 50,
+                                                  margin:
+                                                      EdgeInsets.only(right: 5),
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.7,
+                                                  child: FutureBuilder(
+                                                      future: FirebaseFirestore
+                                                          .instance
+                                                          .collection(
+                                                              "category")
+                                                          .where("categoryId",
+                                                              whereIn: [
+                                                            for (int i = 0;
+                                                                i <
+                                                                    category
+                                                                        .length;
+                                                                i++)
+                                                              category[i]
+                                                            // 1,
+                                                            // 2,
+                                                            // 3,
+                                                            // 4,
+                                                            // 5,
+                                                          ]).get(),
+                                                      builder: (context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              categoryData) {
+                                                        if (categoryData
+                                                            .hasData) {
+                                                          print(categoryData
+                                                                  .data!.docs[0]
+                                                              ['categoryName']);
 
-                                                        return GridView.builder(
-                                                            gridDelegate:
-                                                                new SliverGridDelegateWithFixedCrossAxisCount(
-                                                                    crossAxisCount:
-                                                                        3,
+                                                          return GridView.builder(
+                                                              gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                                                                  crossAxisCount: 3,
 
-                                                                    // childAspectRatio: MediaQuery.of(
-                                                                    //             context)
-                                                                    //         .size
-                                                                    //         .width /
-                                                                    //     (MediaQuery.of(
-                                                                    //                 context)
-                                                                    //             .size
-                                                                    //             .height /
-                                                                    //         3),
-                                                                    childAspectRatio:
-                                                                        180 /
-                                                                            100),
-                                                            itemCount:
-                                                                categoryData
-                                                                    .data!.size,
-                                                            itemBuilder:
-                                                                (context,
-                                                                    count) {
-                                                              return Chip(
-                                                                  backgroundColor:
-                                                                      Colors.orange[
-                                                                          50],
-                                                                  // avatar: CircleAvatar(
-                                                                  //     radius:
-                                                                  //         100,
-                                                                  //     backgroundColor:
-                                                                  //         Colors.orange[
-                                                                  //             50],
-                                                                  //     backgroundImage: NetworkImage(categoryData
-                                                                  //             .data!
-                                                                  //             .docs[count]
-                                                                  //         [
-                                                                  //         "categoryImage"])),
-                                                                  label: Text(categoryData
-                                                                          .data!
-                                                                          .docs[count]
-                                                                      [
-                                                                      "categoryName"]));
-                                                            });
-                                                      }
-                                                      return Text("??");
-                                                    }),
+                                                                  // childAspectRatio: MediaQuery.of(
+                                                                  //             context)
+                                                                  //         .size
+                                                                  //         .width /
+                                                                  //     (MediaQuery.of(
+                                                                  //                 context)
+                                                                  //             .size
+                                                                  //             .height /
+                                                                  //         3),
+                                                                  childAspectRatio: 180 / 100),
+                                                              itemCount: categoryData.data!.size,
+                                                              itemBuilder: (context, count) {
+                                                                return Chip(
+                                                                    backgroundColor:
+                                                                        Colors.orange[
+                                                                            50],
+                                                                    // avatar: CircleAvatar(
+                                                                    //     radius:
+                                                                    //         100,
+                                                                    //     backgroundColor:
+                                                                    //         Colors.orange[
+                                                                    //             50],
+                                                                    //     backgroundImage: NetworkImage(categoryData
+                                                                    //             .data!
+                                                                    //             .docs[count]
+                                                                    //         [
+                                                                    //         "categoryImage"])),
+                                                                    label: Text(categoryData
+                                                                            .data!
+                                                                            .docs[count]
+                                                                        [
+                                                                        "categoryName"]));
+                                                              });
+                                                        }
+                                                        return Text("??");
+                                                      }),
+                                                ),
                                               )
                                             ],
                                           ),

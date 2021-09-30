@@ -4,18 +4,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/widget/loading.dart';
 
 import 'package:get/get.dart';
 
-class SignUp extends GetWidget<AuthController> {
+class SignUp extends StatefulWidget {
+  const SignUp({Key? key}) : super(key: key);
+
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
   final _auth = FirebaseAuth.instance;
   final TextEditingController _emailControl = new TextEditingController();
   final TextEditingController _passwordControl = new TextEditingController();
-
+  final controller = Get.put(AuthController());
   final _formKey = GlobalKey<FormState>();
 
+  bool start = false;
   void signUpLoginButton() async {
     if (_formKey.currentState!.validate()) {
+      Get.dialog(Loading());
       controller.createUser(_emailControl.text, _passwordControl.text);
     }
   }
@@ -29,6 +39,7 @@ class SignUp extends GetWidget<AuthController> {
         preferredSize: Size.fromHeight(65.0),
         child: AppBar(
           //automaticallyImplyLeading: false,
+          centerTitle: true,
           backgroundColor: Colors.orange[50],
           title: Text(
             "Account",
@@ -177,19 +188,25 @@ class SignUp extends GetWidget<AuthController> {
             SizedBox(
               height: 50,
             ),
-            Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  // decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(50),
-                  //     border: Border.all(color: Colors.black)),
-                  child: IconButton(
-                    icon: Icon(Icons.navigate_next_rounded),
-                    iconSize: 45,
-                    onPressed: signUpLoginButton,
+            Container(
+              height: 50.0,
+              padding: EdgeInsets.only(left: 40, right: 40),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.orange[200],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                        side: BorderSide(color: Colors.black, width: 1)),
                   ),
-                  margin: EdgeInsets.only(right: 8),
-                )),
+                  child: Text(
+                    "START",
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: signUpLoginButton),
+            ),
           ],
         ),
       ),

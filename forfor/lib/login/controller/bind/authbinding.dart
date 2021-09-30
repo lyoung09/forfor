@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class AuthBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<AuthController>(AuthController(), permanent: true);
-    Get.put<UserController>(UserController(), permanent: true);
+    Get.put<AuthController>(AuthController());
+    Get.put<UserController>(UserController());
   }
 }

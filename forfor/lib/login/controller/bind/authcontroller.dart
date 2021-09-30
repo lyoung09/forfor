@@ -10,6 +10,7 @@ import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/widget/loading.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
@@ -29,7 +30,7 @@ class AuthController extends GetxController {
   late List<dynamic> list;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
-
+  late DocumentSnapshot ds;
   User? get user => _user.value;
   String? errorType;
   @override
@@ -184,7 +185,6 @@ class AuthController extends GetxController {
 
   issueAccessToken(String authCode) async {
     try {
-      print("11");
       var token = await AuthApi.instance.issueAccessToken(authCode);
 
       AccessTokenStore.instance.toStore(token);
@@ -201,7 +201,6 @@ class AuthController extends GetxController {
 
         Get.to(() => BottomNavigation());
       } else {
-        print("44");
         await _auth.createUserWithEmailAndPassword(
             email: userKakao.kakaoAccount?.email ?? "",
             password: "kakaologinuser");
@@ -339,7 +338,7 @@ class AuthController extends GetxController {
   logoutUser() async {
     try {
       await _auth.signOut();
-
+      await googleSignIn.signOut();
       await kakaotalUser.UserApi.instance.logout();
       Get.find<UserController>().clear();
     } catch (e) {}

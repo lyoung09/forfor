@@ -16,6 +16,7 @@ import 'package:forfor/login/controller/bind/authbinding.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
+import 'package:forfor/login/screen/show.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/login/screen/sigup_main.dart';
 import 'package:forfor/model/user.dart';
@@ -114,16 +115,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// class Home extends StatefulWidget {
+//   const Home({Key? key}) : super(key: key);
+
+//   @override
+//   _HomeState createState() => _HomeState();
+// }
+
+// class _HomeState extends State<Home> {
+//   final controller = Get.put(AuthController());
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetX(
+//       initState: (_) async {
+//         Get.put<UserController>(UserController());
+//       },
+//       builder: (_) {
+//         return FutureBuilder(
+//             future:
+//                 UserDatabase().getUserDs(Get.find<AuthController>().user!.uid),
+//             builder: (context, snapshot) {
+//               if (snapshot.hasData) {
+//                 return BottomNavigation();
+//               } else if (!snapshot.hasData) {
+//                 return MainLogin();
+//               }
+//               return CircularProgressIndicator();
+//             });
+//       },
+//     );
+//   }
+// }
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
   initState() {
     super.initState();
+
     startTime();
   }
 
@@ -145,31 +177,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool userData = false;
+  userDb(uid) async {
+    DocumentSnapshot ds = await UserDatabase().getUserDs(uid);
+    print(ds);
+    this.setState(() {
+      userData = ds.exists;
+    });
+  }
 
   checkFirstSeen() async {
-    final controller = Get.put(AuthController());
+    try {
+      final controller = Get.put(AuthController());
 
-    if (controller.user!.uid.isNotEmpty) {
-      DocumentSnapshot ds =
-          await UserDatabase().getUserDs(controller.user!.uid);
-
-      this.setState(() {
-        userData = ds.exists;
-      });
+      await userDb(controller.user!.uid);
 
       if (!userData) {
         controller.deleteUser();
-        Navigator.pushNamed(context, '/login');
+        Get.offAll(MainLogin());
       } else {
-        if (ds.get('deviceId') != controller.getDeviceId()) {
-          Navigator.pushNamed(context, '/login');
-          controller.logoutUser();
-        } else {
-          Navigator.pushNamed(context, '/bottomScreen');
-        }
+        Get.offAll(BottomNavigation());
       }
-    } else {
-      Navigator.pushNamed(context, '/login');
+    } catch (e) {
+      Get.offAll(MainLogin());
     }
     // Navigator.of(context).push(
     //   MaterialPageRoute(
@@ -178,23 +207,44 @@ class _MyHomePageState extends State<MyHomePage> {
     //     },
     //   ),
     // );
+
+    // if (controller.user!.uid.isNotEmpty) {
+    //   DocumentSnapshot ds =
+    //       await UserDatabase().getUserDs(controller.user!.uid);
+
+    //   this.setState(() {
+    //     userData = ds.exists;
+    //   });
+
+    //   if (!userData) {
+    //     controller.deleteUser();
+    //     Navigator.pushNamed(context, '/login');
+    //   } else {
+    //     if (ds.get('deviceId') != await controller.getDeviceId()) {
+    //       Navigator.pushNamed(context, '/login');
+    //     } else {
+    //       Navigator.pushNamed(context, '/bottomScreen');
+    //     }
+    //   }
+    // } else {
+    //   Navigator.pushNamed(context, '/login');
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Text("hello world"),
-            )
-          ],
-        ),
-      ),
-    );
+        appBar: AppBar(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Text("hello user"),
+              )
+            ],
+          ),
+        ));
   }
 }
 

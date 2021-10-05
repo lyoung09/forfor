@@ -33,7 +33,7 @@ class UserDatabase {
         "access": user.access,
         "uid": user.id,
         "timeStamp": user.timeStamp,
-        "introduction": "",
+        "introduction": user.introduction,
         "deviceId": user.deviceId,
         "category": FieldValue.arrayUnion([
           user.category![0],

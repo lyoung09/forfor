@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,8 @@ import 'my_strings.dart';
 import 'my_text.dart';
 
 class CustomDialogBox extends StatefulWidget {
-  final String title, descriptions, text;
+  final String title, text;
+  final List<dynamic> descriptions;
   final String img;
 
   const CustomDialogBox(
@@ -38,11 +40,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
   }
 
   contentBox(context) {
+    final List<int> category = widget.descriptions.cast<int>();
+
     return Stack(
       children: <Widget>[
         Container(
-          padding:
-              EdgeInsets.only(left: 20, top: 45 + 20, right: 20, bottom: 20),
+          padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
           margin: EdgeInsets.only(top: 45),
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
@@ -56,21 +59,109 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5, bottom: 3),
-                    child: ClipOval(
-                      child: Image.network(
-                        widget.img,
-                        fit: BoxFit.cover,
-                        width: 85,
-                        height: 90,
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      height: 90,
+                      width: 100,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 5, bottom: 3, top: 20),
+                          child: ClipRRect(
+                            child: Image.network(
+                              widget.img,
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  Text(
-                    widget.title,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      height: 110,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                widget.title,
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: FutureBuilder(
+                                future: FirebaseFirestore.instance
+                                    .collection("category")
+                                    .where("categoryId", whereIn: [
+                                  for (int i = 0; i < category.length; i++)
+                                    category[i]
+                                  // 1,
+                                  // 2,
+                                  // 3,
+                                  // 4,
+                                  // 5,
+                                ]).get(),
+                                builder: (context,
+                                    AsyncSnapshot<QuerySnapshot> categoryData) {
+                                  if (categoryData.hasData) {
+                                    print(category.length);
+                                    return GridView.builder(
+                                        gridDelegate: category.length != 3
+                                            ? SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3,
+                                                childAspectRatio: 1 / 0.5)
+                                            : SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3,
+                                                childAspectRatio: 1 / 0.75),
+                                        shrinkWrap: false,
+                                        itemCount: categoryData.data!.size,
+                                        itemBuilder: (context, count) {
+                                          return InkWell(
+                                            onTap: () {
+                                              print(categoryData.data!
+                                                  .docs[count]["categoryId"]);
+                                            },
+                                            child: Card(
+                                              color: Colors.orange[50],
+                                              elevation: 4.0,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(3.0),
+                                                child: CircleAvatar(
+                                                  radius: 17,
+                                                  backgroundColor:
+                                                      Colors.orange[50],
+                                                  child: Image.network(
+                                                      categoryData
+                                                              .data!.docs[count]
+                                                          ['categoryImage']),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  }
+                                  return Text("");
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -83,42 +174,46 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               Row(
                 children: [
                   Spacer(),
-                  InkWell(
-                      onTap: () {},
+                  Center(
+                    child: InkWell(
+                        onTap: () {},
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/icon/buddy.png',
+                              width: 35,
+                              height: 30,
+                            ),
+                            Text("buddy", style: TextStyle(fontSize: 20)),
+                          ],
+                        )),
+                  ),
+                  Spacer(),
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return InviteGroupDialog(
+                                text: "Yes",
+                              );
+                            });
+                      },
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/icon/buddy.png',
+                            'assets/icon/invite.png',
                             width: 35,
                             height: 30,
                           ),
-                          Text("buddy", style: TextStyle(fontSize: 20)),
+                          Text(
+                            "inviting",
+                            style: TextStyle(fontSize: 20),
+                          )
                         ],
-                      )),
-                  Spacer(),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return InviteGroupDialog(
-                              text: "Yes",
-                            );
-                          });
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/icon/invite.png',
-                          width: 35,
-                          height: 30,
-                        ),
-                        Text(
-                          "inviting",
-                          style: TextStyle(fontSize: 20),
-                        )
-                      ],
+                      ),
                     ),
                   ),
                   Spacer(),

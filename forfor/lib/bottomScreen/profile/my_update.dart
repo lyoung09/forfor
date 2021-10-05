@@ -9,7 +9,7 @@ import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
-import 'package:forfor/utils/crop.dart';
+
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
@@ -54,7 +54,6 @@ class _UserUpdateState extends State<UserUpdate> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("hello");
   }
 
   void _showPicker(context) {
@@ -102,10 +101,9 @@ class _UserUpdateState extends State<UserUpdate> {
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.camera);
+    _file = imageFile != null ? File(imageFile.path) : null;
+    _cropImage();
 
-    setState(() {
-      _image = imageFile!.path;
-    });
     // showDialog(
     //     context: context,
     //     builder: (BuildContext context) => CupertinoAlertDialog(
@@ -124,34 +122,51 @@ class _UserUpdateState extends State<UserUpdate> {
     //         ));
   }
 
-  _cropImage(filePath) async {
-    print("bye");
-    File? croppedImage = await ImageCropper.cropImage(
-      sourcePath: filePath,
-      maxWidth: 1080,
-      maxHeight: 1080,
-    );
-    if (croppedImage != null) {
-      imageFile = croppedImage;
+  _cropImage() async {
+    var croppedFile = await ImageCropper.cropImage(
+        sourcePath: _file!.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: '',
+            toolbarColor: Colors.orange[50],
+            toolbarWidgetColor: Colors.black,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
 
+    if (croppedFile != null) {
+      _file = croppedFile;
       setState(() {
-        print("hi");
-        _image = imageFile.path;
+        _image = _file!.path;
       });
     }
   }
 
-  var imageFile;
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  File? _file;
+
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
-    imageFile = await imagePicker.getImage(
-      source: ImageSource.gallery,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    _cropImage(imageFile);
 
-    print("hoit ${imageFile!.path}");
+    final imageFile = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    _file = imageFile != null ? File(imageFile.path) : null;
+    _cropImage();
+
     // showSave();
     // showDialog(
     //     context: context,
@@ -195,41 +210,47 @@ class _UserUpdateState extends State<UserUpdate> {
   }
 
   void userUpdate() async {
-    String urlProfileImageApi;
-    if (_image != null) {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child("profile/${controller.user?.uid}");
-
-      await ref.putFile(File(_image));
-
-      urlProfileImageApi = await ref.getDownloadURL().then((value) {
-        var downloadURL = "";
-        setState(() {
-          downloadURL = value;
-        });
-        return downloadURL;
+    if (_usernameControl.text.isEmpty || _usernameControl.text.length < 3)
+      setState(() {
+        checkNickname = false;
       });
-    } else {
-      urlProfileImageApi = user!.url!;
-    }
+    else {
+      String urlProfileImageApi;
+      if (_image != null) {
+        Reference ref = FirebaseStorage.instance
+            .ref()
+            .child("profile/${controller.user?.uid}");
 
-    if (checking.isNotEmpty) {
-      var list = new List.filled(checking.length, 0, growable: false);
-      for (int i = 0; i < checking.length; i++) {
-        list[i] = checking.keys.elementAt(i);
-      }
-      if (categoryNumber != checking.length) {
+        await ref.putFile(File(_image));
+
+        urlProfileImageApi = await ref.getDownloadURL().then((value) {
+          var downloadURL = "";
+          setState(() {
+            downloadURL = value;
+          });
+          return downloadURL;
+        });
       } else {
-        if (_formKey.currentState!.validate() && checking.length > 0) {
-          controller.updateUserDatabase(user!, _usernameControl.text,
-              urlProfileImageApi, _introductionControl.text, list);
-        }
+        urlProfileImageApi = user!.url!;
       }
-    } else {
-      if (_formKey.currentState!.validate()) {
-        controller.updateUserDatabase(user!, _usernameControl.text,
-            urlProfileImageApi, _introductionControl.text, user!.category);
+
+      if (checking.isNotEmpty) {
+        var list = new List.filled(checking.length, 0, growable: false);
+        for (int i = 0; i < checking.length; i++) {
+          list[i] = checking.keys.elementAt(i);
+        }
+        if (categoryNumber != checking.length) {
+        } else {
+          if (_formKey.currentState!.validate() && checking.length > 0) {
+            controller.updateUserDatabase(user!, _usernameControl.text,
+                urlProfileImageApi, _introductionControl.text, list);
+          }
+        }
+      } else {
+        if (_formKey.currentState!.validate()) {
+          controller.updateUserDatabase(user!, _usernameControl.text,
+              urlProfileImageApi, _introductionControl.text, user!.category);
+        }
       }
     }
   }
@@ -691,10 +712,26 @@ class _UserUpdateState extends State<UserUpdate> {
                         //           fit: BoxFit.contain,
                         //         ),
                         Padding(padding: EdgeInsets.all(20)),
+                        checkNickname
+                            ? Container(
+                                height: 0,
+                              )
+                            : Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                      left: width * 0.13, bottom: 8),
+                                  child: Text("at least 3 characters",
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.red,
+                                      )),
+                                ),
+                              ),
                         Container(
                             height: height * 0.1,
                             width: width * 0.8,
-                            child: TextFormField(
+                            child: TextField(
                               autofocus: false,
                               decoration: InputDecoration(
                                 // contentPadding: EdgeInsets.all(10.0),
@@ -714,20 +751,11 @@ class _UserUpdateState extends State<UserUpdate> {
                                       color: Colors.grey[900]!, width: 1),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value!.length > 0 && value.length < 3) {
-                                  return "at least 3 words";
-                                }
-                                _usernameControl.text = value;
-                                // _usernameControl.selection = TextSelection(
-                                //     baseOffset: _usernameControl.text.length,
-                                //     extentOffset: value.length);
-                                return null;
-                              },
                               controller: _usernameControl,
                               maxLines: 1,
                               cursorColor: Colors.amber[500],
                             )),
+
                         Container(
                           height: 150,
                           width: width * 0.8,
@@ -754,6 +782,7 @@ class _UserUpdateState extends State<UserUpdate> {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 _introductionControl.text = value;
+                                print(_introductionControl.text);
                                 return null;
                               }
                               return null;

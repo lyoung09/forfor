@@ -15,7 +15,9 @@ import 'package:forfor/widget/my_text.dart';
 import 'package:gender_picker/source/enums.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,9 +41,11 @@ class _UserInfomationState extends State<UserInfomation>
   bool selectCountry = false;
   bool selectKoreanHopeCountry = false;
   bool selectBirth = false;
-
+  final TextEditingController _introductionControl =
+      new TextEditingController();
   bool checkNickname = true;
   bool nullCheck = true;
+  bool introduceCheck = true;
   List<RadioModel> sampleData = [];
   var userid;
   final controller = Get.put(AuthController());
@@ -51,6 +55,21 @@ class _UserInfomationState extends State<UserInfomation>
     sampleData.add(new RadioModel(false, '남'));
     sampleData.add(new RadioModel(false, '여'));
     WidgetsBinding.instance!.addObserver(this);
+  }
+
+  final FocusNode _nodeText = FocusNode();
+
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+      keyboardBarColor: Colors.grey[200],
+      nextFocus: false,
+      actions: [
+        KeyboardActionsItem(
+          focusNode: _nodeText,
+        ),
+      ],
+    );
   }
 
   @override
@@ -182,13 +201,8 @@ class _UserInfomationState extends State<UserInfomation>
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.camera);
-    if (imageFile != null) {
-      setState(() {
-        _image = imageFile.path;
-      });
-    } else {
-      _image = null;
-    }
+    _file = imageFile != null ? File(imageFile.path) : null;
+    _cropImage();
     // showDialog(
     //     context: context,
     //     builder: (BuildContext context) => CupertinoAlertDialog(
@@ -207,16 +221,50 @@ class _UserInfomationState extends State<UserInfomation>
     //         ));
   }
 
+  File? _file;
+
+  _cropImage() async {
+    var croppedFile = await ImageCropper.cropImage(
+        sourcePath: _file!.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: '',
+            toolbarColor: Colors.orange[50],
+            toolbarWidgetColor: Colors.black,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
+
+    if (croppedFile != null) {
+      _file = croppedFile;
+      setState(() {
+        _image = _file!.path;
+      });
+    }
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  final _formKey = GlobalKey<FormState>();
+
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
-    if (imageFile != null) {
-      setState(() {
-        _image = imageFile.path;
-      });
-    } else {
-      _image = null;
-    }
+    _file = imageFile != null ? File(imageFile.path) : null;
+    _cropImage();
 
     // showSave();
     // showDialog(
@@ -244,15 +292,22 @@ class _UserInfomationState extends State<UserInfomation>
         _gender.toString().isEmpty ||
         _image == null ||
         _countryCode.toString().isEmpty ||
-        _usernameControl.text.length < 3) {
-      print("check");
-
+        _usernameControl.text.length < 3 ||
+        _introductionControl.toString().isEmpty) {
       return true;
     }
     return false;
   }
 
   void userInfomationSave() async {
+    _usernameControl.text.isEmpty || _usernameControl.text.length < 3
+        ? setState(() {
+            checkNickname = false;
+          })
+        : setState(() {
+            checkNickname = true;
+          });
+
     if (checknull()) {
       showDialog(
           context: context,
@@ -283,8 +338,12 @@ class _UserInfomationState extends State<UserInfomation>
         return downloadURL;
       });
 
-      controller.addUserInformation(_gender.toString(), _countryCode.toString(),
-          _usernameControl.text, urlProfileImageApi);
+      controller.addUserInformation(
+          _gender.toString(),
+          _countryCode.toLowerCase(),
+          _usernameControl.text,
+          urlProfileImageApi,
+          _introductionControl.text);
       setState(() {
         isLoading = true;
       });
@@ -324,199 +383,266 @@ class _UserInfomationState extends State<UserInfomation>
                 valueColor: AlwaysStoppedAnimation(Colors.white),
                 backgroundColor: Colors.orange[200],
               ))
-            : ListView(
-                children: [
-                  Container(
-                    width: width,
-                    height: height,
-                    child: Column(
-                      children: [
-                        Padding(padding: EdgeInsets.only(top: 50)),
-                        Container(
-                            height: height * 0.2,
-                            width: height * 0.2,
-                            child: GestureDetector(
-                              onTap: () {
-                                _showPicker(context);
-                                FocusManager.instance.primaryFocus!.unfocus();
-                              },
-                              child: _image != null
-                                  ? Image.file(
-                                      File(_image),
-                                      height: 50,
-                                      width: 50,
-                                      fit: BoxFit.contain,
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.black),
-                                        borderRadius: BorderRadius.circular(10),
+            : KeyboardActions(
+                config: _buildConfig(context),
+                child: ListView(
+                  children: [
+                    Container(
+                      width: width,
+                      height: height,
+                      child: Column(
+                        children: [
+                          Padding(padding: EdgeInsets.only(top: 50)),
+                          Container(
+                              height: height * 0.2,
+                              width: height * 0.2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showPicker(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
+                                },
+                                child: _image != null
+                                    ? Image.file(
+                                        File(_image),
+                                        height: 50,
+                                        width: 50,
+                                        fit: BoxFit.contain,
+                                      )
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.grey[800],
+                                          size: 50,
+                                        ),
                                       ),
-                                      child: Icon(
-                                        Icons.camera_alt,
-                                        color: Colors.grey[800],
-                                        size: 50,
-                                      ),
+                              )),
+                          Padding(padding: EdgeInsets.only(top: 45)),
+
+                          Container(
+                              height: 80,
+                              width: width * 0.85,
+                              child: TextFormField(
+                                autofocus: false,
+                                decoration: InputDecoration(
+                                  // contentPadding: EdgeInsets.all(10.0),
+
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
                                     ),
-                            )),
-                        Padding(padding: EdgeInsets.only(top: 45)),
-
-                        Container(
-                            height: 55,
-                            width: width * 0.85,
-                            child: TextField(
-                              autofocus: false,
-                              decoration: InputDecoration(
-                                // contentPadding: EdgeInsets.all(10.0),
-
-                                errorText: checkNickname
-                                    ? null
-                                    : "at least 3 characters",
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                labelText: "nickname",
-                                // prefixIcon: Icon(
-                                //   Icons.mail_outline,
-                                //   color: Colors.black,
-                                // ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
+                                  labelText: "nickname",
+                                  // prefixIcon: Icon(
+                                  //   Icons.mail_outline,
+                                  //   color: Colors.black,
+                                  // ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                    ),
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  borderRadius: BorderRadius.circular(20.0),
+                                  labelStyle: TextStyle(
+                                    fontSize: 15.0,
+                                    color: Colors.grey[400],
+                                  ),
                                 ),
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  color: Colors.grey[400],
+                                controller: _usernameControl,
+                                maxLines: 1,
+                              )),
+                          checkNickname
+                              ? Container(
+                                  height: 0,
+                                )
+                              : Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: width * 0.09, top: 3),
+                                    child: Text("at least 3 characters",
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          color: Colors.red,
+                                        )),
+                                  ),
                                 ),
-                              ),
-                              controller: _usernameControl,
-                              maxLines: 1,
-                            )),
-                        Padding(padding: EdgeInsets.only(top: 20)),
-                        Container(
-                          child: Divider(
-                            thickness: 1,
-                            color: Colors.grey[400],
+                          Padding(padding: EdgeInsets.only(top: 20)),
+                          Container(
+                            child: Divider(
+                              thickness: 1,
+                              color: Colors.grey[400],
+                            ),
+                            padding: EdgeInsets.only(
+                                left: width * 0.1,
+                                right: width * 0.1,
+                                bottom: 0.0),
                           ),
-                          padding: EdgeInsets.only(
-                              left: width * 0.1,
-                              right: width * 0.1,
-                              bottom: 0.0),
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        //   children: [
-                        //     Container(
-                        //       width: width * 0.2,
-                        //       child: Image.asset(
-                        //         "assets/icon/citizenship.png",
-                        //         height: 35.0,
-                        //         width: 35,
-                        //       ),
-                        //     ),
-                        //     Row(
-                        //       mainAxisAlignment: MainAxisAlignment
-                        //           .center, //Center Row contents horizontally,,
-                        //       crossAxisAlignment: CrossAxisAlignment.center,
-                        //       children: [
-                        //         Container(
-                        //           alignment: Alignment.center,
-                        //           margin: EdgeInsets.only(top: 10, bottom: 10),
-                        //           child: ChoiceChip(
-                        //             label: Text("korean"),
-                        //             selected: koreanSelected,
-                        //             onSelected: (bool value) {
-                        //               setState(() {
-                        //                 koreanSelected = value;
-                        //               });
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //   children: [
+                          //     Container(
+                          //       width: width * 0.2,
+                          //       child: Image.asset(
+                          //         "assets/icon/citizenship.png",
+                          //         height: 35.0,
+                          //         width: 35,
+                          //       ),
+                          //     ),
+                          //     Row(
+                          //       mainAxisAlignment: MainAxisAlignment
+                          //           .center, //Center Row contents horizontally,,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         Container(
+                          //           alignment: Alignment.center,
+                          //           margin: EdgeInsets.only(top: 10, bottom: 10),
+                          //           child: ChoiceChip(
+                          //             label: Text("korean"),
+                          //             selected: koreanSelected,
+                          //             onSelected: (bool value) {
+                          //               setState(() {
+                          //                 koreanSelected = value;
+                          //               });
 
-                        //               //Do whatever you want when the chip is selected
-                        //             },
-                        //             backgroundColor: Colors.transparent,
-                        //             selectedColor: Colors.transparent,
-                        //           ),
-                        //         ),
-                        //         SizedBox(
-                        //           width: width * 0.1,
-                        //         ),
-                        //         Container(
-                        //           alignment: Alignment.center,
-                        //           margin: EdgeInsets.only(top: 10, bottom: 10),
-                        //           child: ChoiceChip(
-                        //             label: Text("not korean"),
-                        //             selected: notKoreanSelected,
-                        //             onSelected: (bool value) {
-                        //               notKoreanSelected = value;
-                        //               setState(() {
-                        //                 notKoreanSelected = value;
-                        //               });
-                        //             },
-                        //             backgroundColor: Colors.transparent,
-                        //             selectedColor: Colors.transparent,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-                        // notKoreanSelected == false
-                        //     ? Container(
-                        //         // height: height * 0.1,
-                        //         width: width * 0.8,
-                        //         height: 0,
-                        //         child: Text(""))
-                        //     : Container(
-                        //         // height: height * 0.1,
-                        //         width: width * 0.8,
-                        //         child: Row(
-                        //           children: [
-                        //             CountryListPick(
-                        //                 theme: CountryTheme(
-                        //                   isShowFlag: true,
-                        //                   isShowTitle: false,
-                        //                   isShowCode: false,
-                        //                   isDownIcon: true,
-                        //                   showEnglishName: true,
-                        //                 ),
-                        //                 onChanged: (CountryCode? code) {
-                        //                   setState(() {
-                        //                     _countryCode = code?.dialCode;
-                        //                     selectCountry = true;
-                        //                     _country = code?.name;
-                        //                   });
-                        //                 },
-                        //                 useUiOverlay: true,
-                        //                 // Whether the country list should be wrapped in a SafeArea
-                        //                 useSafeArea: false),
-                        //             Padding(
-                        //                 padding:
-                        //                     EdgeInsets.only(right: width * 0.05)),
-                        //             selectCountry == true
-                        //                 ? Text(
-                        //                     _country.length > 20
-                        //                         ? ' ${_country.substring(0, 20)}...'
-                        //                         : _country,
-                        //                     style: TextStyle(
-                        //                         color: Colors.black, fontSize: 15))
-                        //                 : Text("your country",
-                        //                     style: TextStyle(
-                        //                         color: Colors.grey[400],
-                        //                         fontSize: 15)),
-                        //           ],
-                        //         )),
+                          //               //Do whatever you want when the chip is selected
+                          //             },
+                          //             backgroundColor: Colors.transparent,
+                          //             selectedColor: Colors.transparent,
+                          //           ),
+                          //         ),
+                          //         SizedBox(
+                          //           width: width * 0.1,
+                          //         ),
+                          //         Container(
+                          //           alignment: Alignment.center,
+                          //           margin: EdgeInsets.only(top: 10, bottom: 10),
+                          //           child: ChoiceChip(
+                          //             label: Text("not korean"),
+                          //             selected: notKoreanSelected,
+                          //             onSelected: (bool value) {
+                          //               notKoreanSelected = value;
+                          //               setState(() {
+                          //                 notKoreanSelected = value;
+                          //               });
+                          //             },
+                          //             backgroundColor: Colors.transparent,
+                          //             selectedColor: Colors.transparent,
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ],
+                          // ),
+                          // notKoreanSelected == false
+                          //     ? Container(
+                          //         // height: height * 0.1,
+                          //         width: width * 0.8,
+                          //         height: 0,
+                          //         child: Text(""))
+                          //     : Container(
+                          //         // height: height * 0.1,
+                          //         width: width * 0.8,
+                          //         child: Row(
+                          //           children: [
+                          //             CountryListPick(
+                          //                 theme: CountryTheme(
+                          //                   isShowFlag: true,
+                          //                   isShowTitle: false,
+                          //                   isShowCode: false,
+                          //                   isDownIcon: true,
+                          //                   showEnglishName: true,
+                          //                 ),
+                          //                 onChanged: (CountryCode? code) {
+                          //                   setState(() {
+                          //                     _countryCode = code?.dialCode;
+                          //                     selectCountry = true;
+                          //                     _country = code?.name;
+                          //                   });
+                          //                 },
+                          //                 useUiOverlay: true,
+                          //                 // Whether the country list should be wrapped in a SafeArea
+                          //                 useSafeArea: false),
+                          //             Padding(
+                          //                 padding:
+                          //                     EdgeInsets.only(right: width * 0.05)),
+                          //             selectCountry == true
+                          //                 ? Text(
+                          //                     _country.length > 20
+                          //                         ? ' ${_country.substring(0, 20)}...'
+                          //                         : _country,
+                          //                     style: TextStyle(
+                          //                         color: Colors.black, fontSize: 15))
+                          //                 : Text("your country",
+                          //                     style: TextStyle(
+                          //                         color: Colors.grey[400],
+                          //                         fontSize: 15)),
+                          //           ],
+                          //         )),
 
-                        Row(
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  width: width * 0.2,
+                                  child: Image.asset(
+                                    "assets/icon/citizenship.png",
+                                    height: 35.0,
+                                    width: 35,
+                                  ),
+                                ),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  alignment: Alignment.centerRight,
+                                  child: CountryListPick(
+                                      theme: CountryTheme(
+                                        isShowFlag: true,
+                                        isShowTitle: false,
+                                        isShowCode: false,
+                                        isDownIcon: true,
+                                        showEnglishName: true,
+                                      ),
+                                      onChanged: (CountryCode? code) {
+                                        setState(() {
+                                          _countryCode = code?.code;
+
+                                          selectCountry = true;
+                                        });
+                                        FocusManager.instance.primaryFocus!
+                                            .unfocus();
+                                      },
+                                      useUiOverlay: true,
+                                      // Whether the country list should be wrapped in a SafeArea
+                                      useSafeArea: false),
+                                )
+                              ]),
+                          Container(
+                            child: Divider(
+                              thickness: 1,
+                              color: Colors.grey[400],
+                            ),
+                            padding: EdgeInsets.only(
+                                left: width * 0.1,
+                                right: width * 0.1,
+                                bottom: 0.0),
+                          ),
+
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Container(
                                 width: width * 0.2,
                                 child: Image.asset(
-                                  "assets/icon/citizenship.png",
+                                  "assets/icon/gender.png",
                                   height: 35.0,
                                   width: 35,
                                 ),
@@ -525,64 +651,34 @@ class _UserInfomationState extends State<UserInfomation>
                                 height:
                                     MediaQuery.of(context).size.height * 0.1,
                                 width: MediaQuery.of(context).size.width * 0.4,
-                                alignment: Alignment.centerRight,
-                                child: CountryListPick(
-                                    theme: CountryTheme(
-                                      isShowFlag: true,
-                                      isShowTitle: false,
-                                      isShowCode: false,
-                                      isDownIcon: true,
-                                      showEnglishName: true,
-                                    ),
-                                    onChanged: (CountryCode? code) {
-                                      setState(() {
-                                        _countryCode = code?.dialCode;
-                                        selectCountry = true;
-                                        _country = code?.name;
-                                      });
-                                      FocusManager.instance.primaryFocus!
-                                          .unfocus();
-                                    },
-                                    useUiOverlay: true,
-                                    // Whether the country list should be wrapped in a SafeArea
-                                    useSafeArea: false),
-                              )
-                            ]),
-                        Container(
-                          child: Divider(
-                            thickness: 1,
-                            color: Colors.grey[400],
-                          ),
-                          padding: EdgeInsets.only(
-                              left: width * 0.1,
-                              right: width * 0.1,
-                              bottom: 0.0),
-                        ),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              width: width * 0.2,
-                              child: Image.asset(
-                                "assets/icon/gender.png",
-                                height: 35.0,
-                                width: 35,
-                              ),
-                            ),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.1,
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              alignment: Alignment.center,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: sampleData.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (_gender == sampleData[index].buttonText) {
-                                    sampleData[index].isSelected = true;
+                                alignment: Alignment.center,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: sampleData.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    if (_gender ==
+                                        sampleData[index].buttonText) {
+                                      sampleData[index].isSelected = true;
+                                      return new InkWell(
+                                        //highlightColor: Colors.red,
+                                        splashColor: Colors.transparent,
+                                        onTap: () {
+                                          setState(() {
+                                            sampleData.forEach((element) =>
+                                                element.isSelected = false);
+                                            sampleData[index].isSelected = true;
+                                            print(sampleData[index].buttonText);
+                                            _gender =
+                                                sampleData[index].buttonText;
+                                          });
+                                        },
+                                        child: new RadioItem(sampleData[index]),
+                                      );
+                                    }
                                     return new InkWell(
                                       //highlightColor: Colors.red,
-                                      splashColor: Colors.transparent,
+                                      splashColor: Colors.blueAccent,
                                       onTap: () {
                                         setState(() {
                                           sampleData.forEach((element) =>
@@ -595,111 +691,111 @@ class _UserInfomationState extends State<UserInfomation>
                                       },
                                       child: new RadioItem(sampleData[index]),
                                     );
-                                  }
-                                  return new InkWell(
-                                    //highlightColor: Colors.red,
-                                    splashColor: Colors.blueAccent,
-                                    onTap: () {
-                                      setState(() {
-                                        sampleData.forEach((element) =>
-                                            element.isSelected = false);
-                                        sampleData[index].isSelected = true;
-                                        print(sampleData[index].buttonText);
-                                        _gender = sampleData[index].buttonText;
-                                      });
-                                    },
-                                    child: new RadioItem(sampleData[index]),
-                                  );
-                                },
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            child: Divider(
+                              thickness: 1,
+                              color: Colors.grey[400],
+                            ),
+                            padding: EdgeInsets.only(
+                                left: width * 0.1,
+                                right: width * 0.1,
+                                bottom: 0.0),
+                          ),
+
+                          Padding(padding: EdgeInsets.only(top: height * 0.02)),
+                          Expanded(
+                            child: Container(
+                              height: 150,
+                              width: width * 0.8,
+                              child: TextField(
+                                keyboardType: TextInputType.multiline,
+                                textInputAction: TextInputAction.newline,
+                                cursorColor: Colors.amber[500],
+                                maxLines: 3,
+                                maxLength: 100,
+                                focusNode: _nodeText,
+                                decoration: InputDecoration(
+                                  labelStyle: TextStyle(
+                                    fontSize: 15.0,
+                                    color: Colors.grey[400],
+                                  ),
+                                  labelText: "introduce",
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                    borderSide: BorderSide(
+                                        color: Colors.grey[900]!, width: 2),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                    borderSide: BorderSide(
+                                        color: Colors.grey[900]!, width: 1),
+                                  ),
+                                ),
+                                controller: _introductionControl,
                               ),
                             ),
-                          ],
-                        ),
-                        Container(
-                          child: Divider(
-                            thickness: 1,
-                            color: Colors.grey[400],
                           ),
-                          padding: EdgeInsets.only(
-                              left: width * 0.1,
-                              right: width * 0.1,
-                              bottom: 0.0),
-                        ),
 
-                        // Padding(padding: EdgeInsets.only(top: height * 0.02)),
-                        // Container(
-                        //   height: height * 0.15,
-                        //   width: width * 0.8,
-                        //   child: TextField(
-                        //     keyboardType: TextInputType.multiline,
-                        //     cursorColor: Colors.amber[500],
-                        //     maxLines: 12,
-                        //     minLines: 7,
-                        //     decoration: InputDecoration(
-                        //       labelText: 'introduction',
-                        //       labelStyle: TextStyle(
-                        //         fontSize: 12.0,
-                        //         color: Colors.grey[400],
-                        //       ),
-                        //       focusedBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(0),
-                        //         borderSide: BorderSide(color: Colors.black, width: 2),
-                        //       ),
-                        //       enabledBorder: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(0),
-                        //         borderSide: BorderSide(color: Colors.black, width: 1),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
-                              child: IconButton(
-                                icon: Icon(Icons.navigate_next_rounded),
-                                iconSize: 45,
-                                onPressed: userInfomationSave,
-                              ),
-                              margin: EdgeInsets.only(right: 30),
-                            )),
-                        // Container(
-                        //   height: 50.0,
-                        //   margin: EdgeInsets.all(10),
-                        //   child: RaisedButton(
-                        //     onPressed: userInfomationSave,
-                        //     shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(80.0)),
-                        //     padding: EdgeInsets.all(0.0),
-                        //     child: Ink(
-                        //       decoration: BoxDecoration(
-                        //           gradient: LinearGradient(
-                        //             colors: [Color(0xff374ABE), Color(0xff64B6FF)],
-                        //             begin: Alignment.centerLeft,
-                        //             end: Alignment.centerRight,
-                        //           ),
-                        //           borderRadius: BorderRadius.circular(30.0)),
-                        //       child: Container(
-                        //         constraints:
-                        //             BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                        //         alignment: Alignment.center,
-                        //         child: Text(
-                        //           "Continue",
-                        //           textAlign: TextAlign.center,
-                        //           style: TextStyle(color: Colors.white, fontSize: 15),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Align(
+                              alignment: Alignment.bottomRight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50)),
+                                    border: Border.all(color: Colors.black)),
+                                child: IconButton(
+                                  icon: Icon(Icons.navigate_next_rounded),
+                                  iconSize: 45,
+                                  onPressed: userInfomationSave,
+                                ),
+                                margin: EdgeInsets.only(right: 30),
+                              )),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          // Container(
+                          //   height: 50.0,
+                          //   margin: EdgeInsets.all(10),
+                          //   child: RaisedButton(
+                          //     onPressed: userInfomationSave,
+                          //     shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(80.0)),
+                          //     padding: EdgeInsets.all(0.0),
+                          //     child: Ink(
+                          //       decoration: BoxDecoration(
+                          //           gradient: LinearGradient(
+                          //             colors: [Color(0xff374ABE), Color(0xff64B6FF)],
+                          //             begin: Alignment.centerLeft,
+                          //             end: Alignment.centerRight,
+                          //           ),
+                          //           borderRadius: BorderRadius.circular(30.0)),
+                          //       child: Container(
+                          //         constraints:
+                          //             BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                          //         alignment: Alignment.center,
+                          //         child: Text(
+                          //           "Continue",
+                          //           textAlign: TextAlign.center,
+                          //           style: TextStyle(color: Colors.white, fontSize: 15),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
       ),
     );

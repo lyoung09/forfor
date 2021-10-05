@@ -27,6 +27,7 @@ class AuthController extends GetxController {
   late String nickname;
   late String url;
   late String timeStamp;
+  late String introduction;
   late List<dynamic> list;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
@@ -120,12 +121,13 @@ class AuthController extends GetxController {
     }
   }
 
-  addUserInformation(
-      String gender, String country, String nickname, String url) {
+  addUserInformation(String gender, String country, String nickname, String url,
+      String introduction) {
     this.gender = gender.trim();
     this.country = country.trim();
     this.nickname = nickname.trim();
     this.url = url.trim();
+    this.introduction = introduction.trim();
 
     Get.to(() => HopeInfomation());
   }
@@ -150,6 +152,7 @@ class AuthController extends GetxController {
           nickname: this.nickname,
           url: this.url,
           deviceId: deviceId,
+          introduction: this.introduction,
           timeStamp: myDateTime.toString(),
           category: list);
 
@@ -163,6 +166,7 @@ class AuthController extends GetxController {
   void updateUserDatabase(UserModel user, String? nickname, String url,
       String? introduction, List<dynamic>? list) async {
     try {
+      print(introduction);
       UserModel _user = UserModel(
           id: user.id,
           email: user.email,

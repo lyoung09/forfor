@@ -231,6 +231,12 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Widget gridviewWidget(string, detail) {
+    print(FirebaseFirestore.instance
+        .collection('users')
+        .where("uid", isNotEqualTo: uid)
+        .get()
+        .runtimeType);
+
     var futureUser;
     if (string == "category") print(detail);
     futureUser = user
@@ -240,8 +246,8 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
     if (string == "new")
       futureUser = user
-          .where("uid", isNotEqualTo: uid)
-          .where("gender", isEqualTo: "남")
+          //.where("uid", isNotEqualTo: uid)
+          .orderBy("timeStamp", descending: true)
           .get();
     if (string == "near")
       futureUser = user
@@ -249,12 +255,12 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           .where("email", isEqualTo: "lyoung09@hanmail.net")
           .get();
     if (string == "gender")
-      futureUser = user.where("gender", isEqualTo: "여").get();
-    if (string == "sameCountry")
-      futureUser = user
-          .where("uid", isNotEqualTo: uid)
-          .where("country", isEqualTo: detail)
-          .get();
+      futureUser = user.where("gender", isEqualTo: detail).get();
+    // if (string == "sameCountry")
+    //   futureUser = user
+    //       .where("uid", isNotEqualTo: uid)
+    //       .where("country", isEqualTo: detail)
+    //       .get();
     if (string == "") futureUser = user.where("uid", isNotEqualTo: uid).get();
     return FutureBuilder(
         future: futureUser,
@@ -262,22 +268,18 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           if (!userData.hasData) {
             return Text("");
           } else {
-            return ListView.builder(
+            return ListView.separated(
+              separatorBuilder: (BuildContext context, int index) => Divider(),
               shrinkWrap: true,
               physics: ClampingScrollPhysics(),
               itemCount: userData.data!.docs.length,
-              // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              //   crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-              //   childAspectRatio: 1 / 1.2, //item 의 가로 1, 세로 2 의 비율
-              //   mainAxisSpacing: 10, //수평 Padding
-              //   crossAxisSpacing: 10, //수직 Padding
-              // ),
               scrollDirection: Axis.vertical,
               padding: EdgeInsets.all(4),
               itemBuilder: (BuildContext context, int index) {
                 // if (userData.data!.docs[index]["uid"] == uid) {
                 //   return Container(height: 0, width: 0, child: Text("hello"));
                 // }
+
                 return InkWell(
                   onTap: () {
                     showDialog(
@@ -285,100 +287,156 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         builder: (BuildContext context) {
                           return CustomDialogBox(
                             title: "${userData.data!.docs[index]["nickname"]}",
-                            descriptions:
-                                "Hii all this is a custom dialog in flutter and  you will be use in your flutter applications",
+                            descriptions: userData.data!.docs[index]
+                                ["category"],
                             img: '${userData.data!.docs[index]["url"]}',
                             text: "Yes",
                           );
                         });
                   },
-                  child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                      elevation: 30,
-                      shadowColor: Colors.grey[100],
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Container(
+                    height: 120,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Stack(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 8.0, left: 5, bottom: 3),
-                                child: ClipOval(
-                                  child: Image.network(
-                                    "${userData.data!.docs[index]['url']}",
-                                    fit: BoxFit.cover,
-                                    width: 60,
-                                    height: 60,
-                                  ),
-                                ),
+                                padding: EdgeInsets.only(left: 5.0),
+                                child: CircleAvatar(
+                                    radius: 55,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: NetworkImage(
+                                        "${userData.data!.docs[index]['url']}")),
                               ),
-                              Column(
-                                children: [
-                                  CountryListPick(
-                                      theme: CountryTheme(
-                                        isShowFlag: true,
-                                        isShowTitle: false,
-                                        isShowCode: false,
-                                        isDownIcon: false,
-                                        showEnglishName: false,
-                                      ),
-                                      initialSelection: "+82",
-                                      onChanged: (CountryCode? code) {},
-
-                                      // Whether the country list should be wrapped in a SafeArea
-                                      useSafeArea: false),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 8.0, top: 3.0),
-                                    child: Text(
-                                      "0.1km",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              Positioned(
+                                bottom: 5,
+                                right: 40,
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                                      package: 'country_icons'),
+                                  backgroundColor: Colors.white,
+                                  radius: 15,
+                                ),
                               ),
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                right: 4, left: 5, bottom: 5, top: 5),
-                            child: Text(
-                              userData.data!.docs[index]['nickname'],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 19.5,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                        ),
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 5, top: 15),
+                                child: Text(
+                                  userData.data!.docs[index]['nickname'],
+
+                                  // userData
+                                  //     .data!.docs[index]['category'].runtimeType
+                                  //     .toString(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 5, right: 4, left: 5, bottom: 5),
-                            child: Text(
-                              userData.data!.docs[index]['email'],
-                              //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 5, left: 5, bottom: 5),
+                                child: Text(
+                                  userData.data!.docs[index]['introduction'] ??
+                                      "",
+                                  // "userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      )),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: AssetImage(
+                                    'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                                    package: 'country_icons'),
+                                backgroundColor: Colors.white,
+                                radius: 17,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 8.0, top: 3.0),
+                                child: Text(
+                                  "0.1km",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             );
           }
         });
   }
+
+  Widget _genderPopup() => PopupMenuButton<int>(
+        child: Container(
+          width: 80,
+          height: 70,
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: Colors.white,
+            elevation: 1,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Center(child: Text("성별")),
+          ),
+        ),
+        onSelected: (value) {
+          print("value:$value");
+          setState(() {
+            value == 1 ? detail = "남" : detail = "여";
+            string = "gender";
+          });
+        },
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            value: 1,
+            child: Text("남성"),
+          ),
+          PopupMenuItem(
+            value: 2,
+            child: Text("여성"),
+          ),
+        ],
+      );
 
   var string = "";
   @override
@@ -525,70 +583,41 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         },
                       ),
                       Container(width: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: genderClick == true
-                                  ? BorderSide(color: Colors.black)
-                                  : BorderSide(color: Colors.white),
-                            ),
-                            primary: Colors.white,
-                            elevation: 1),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("성별",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 14)),
-                        ),
-                        onPressed: () {
-                          //delayShowingContent();
-                          setState(() {
-                            genderClick = !genderClick;
-                            if (genderClick) {
-                              categoryClick = false;
-                              newClick = false;
-                              nearClick = false;
-                              sameCountryClick = false;
-                              string = "gender";
-                            } else
-                              string = "";
-                          });
-                        },
-                      ),
-                      Container(width: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: sameCountryClick == true
-                                  ? BorderSide(color: Colors.black)
-                                  : BorderSide(color: Colors.white),
-                            ),
-                            primary: Colors.white,
-                            elevation: 1),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("내국인",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 14)),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            sameCountryClick = !sameCountryClick;
-                            if (sameCountryClick) {
-                              categoryClick = false;
-                              newClick = false;
-                              nearClick = false;
-                              genderClick = false;
-                              string = "sameCountry";
-                              detail = datas["country"];
-                            } else
-                              string = "";
-                          });
-                          //delayShowingContent();
-                        },
-                      ),
+                      _genderPopup(),
+
+                      // Container(width: 10),
+                      // ElevatedButton(
+                      //   style: ElevatedButton.styleFrom(
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(20),
+                      //         side: sameCountryClick == true
+                      //             ? BorderSide(color: Colors.black)
+                      //             : BorderSide(color: Colors.white),
+                      //       ),
+                      //       primary: Colors.white,
+                      //       elevation: 1),
+                      //   child: Container(
+                      //     padding: EdgeInsets.symmetric(horizontal: 15),
+                      //     child: Text("내국인",
+                      //         style:
+                      //             TextStyle(color: Colors.black, fontSize: 14)),
+                      //   ),
+                      //   onPressed: () {
+                      //     setState(() {
+                      //       sameCountryClick = !sameCountryClick;
+                      //       if (sameCountryClick) {
+                      //         categoryClick = false;
+                      //         newClick = false;
+                      //         nearClick = false;
+                      //         genderClick = false;
+                      //         string = "sameCountry";
+                      //         detail = datas["country"];
+                      //       } else
+                      //         string = "";
+                      //     });
+                      //     //delayShowingContent();
+                      //   },
+                      // ),
                     ]),
                     scrollDirection: Axis.horizontal,
                   ),

@@ -186,27 +186,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   checkFirstSeen() async {
-    try {
-      final controller = Get.put(AuthController());
+    // try {
+    //   final controller = Get.put(AuthController());
 
-      await userDb(controller.user!.uid);
+    //   await userDb(controller.user!.uid);
 
-      if (!userData) {
-        controller.deleteUser();
-        Get.offAll(MainLogin());
-      } else {
-        Get.offAll(BottomNavigation());
-      }
-    } catch (e) {
-      Get.offAll(MainLogin());
-    }
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) {
-    //       return Login();
-    //     },
-    //   ),
-    // );
+    //   if (!userData) {
+    //     controller.deleteUser();
+    //     Get.offAll(MainLogin());
+    //   } else {
+    //     Get.offAll(BottomNavigation());
+    //   }
+    // } catch (e) {
+    //   Get.offAll(MainLogin());
+    // }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return InvitePersonScreen();
+        },
+      ),
+    );
 
     // if (controller.user!.uid.isNotEmpty) {
     //   DocumentSnapshot ds =

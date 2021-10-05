@@ -78,6 +78,7 @@ dependencies:
   device_info: ^2.0.2
   image_cropper: ^1.4.1
   firebase_messaging:
+  country_icons: ^2.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

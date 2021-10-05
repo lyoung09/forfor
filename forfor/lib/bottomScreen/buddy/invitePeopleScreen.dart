@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/model/scientist.dart';
 import 'package:forfor/widget/custom_dialog.dart';
 import 'package:intrinsic_grid_view/intrinsic_grid_view.dart';
@@ -231,37 +232,24 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Widget gridviewWidget(string, detail) {
-    print(FirebaseFirestore.instance
+    var exceptMyself = FirebaseFirestore.instance
         .collection('users')
-        .where("uid", isNotEqualTo: uid)
-        .get()
-        .runtimeType);
+        .where("uid", isNotEqualTo: uid);
 
     var futureUser;
     if (string == "category") print(detail);
-    futureUser = user
-        .where("uid", isNotEqualTo: uid)
-        .where("category", arrayContains: detail)
-        .get();
+    futureUser = exceptMyself.where("category", arrayContains: detail).get();
 
     if (string == "new")
-      futureUser = user
-          //.where("uid", isNotEqualTo: uid)
-          .orderBy("timeStamp", descending: true)
-          .get();
+      futureUser = exceptMyself.orderBy("timeStamp", descending: true).get();
     if (string == "near")
-      futureUser = user
-          .where("uid", isNotEqualTo: uid)
-          .where("email", isEqualTo: "lyoung09@hanmail.net")
-          .get();
+      futureUser =
+          exceptMyself.where("email", isEqualTo: "lyoung09@hanmail.net").get();
     if (string == "gender")
-      futureUser = user.where("gender", isEqualTo: detail).get();
-    // if (string == "sameCountry")
-    //   futureUser = user
-    //       .where("uid", isNotEqualTo: uid)
-    //       .where("country", isEqualTo: detail)
-    //       .get();
-    if (string == "") futureUser = user.where("uid", isNotEqualTo: uid).get();
+      futureUser = exceptMyself.where("gender", isEqualTo: detail).get();
+    if (string == "sameCountry")
+      futureUser = exceptMyself.where("country", isEqualTo: detail).get();
+    if (string == "") futureUser = exceptMyself.get();
     return FutureBuilder(
         future: futureUser,
         builder: (context, AsyncSnapshot<QuerySnapshot> userData) {
@@ -282,17 +270,26 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
                 return InkWell(
                   onTap: () {
-                    showDialog(
-                        context: context,
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
                         builder: (BuildContext context) {
-                          return CustomDialogBox(
-                            title: "${userData.data!.docs[index]["nickname"]}",
-                            descriptions: userData.data!.docs[index]
-                                ["category"],
-                            img: '${userData.data!.docs[index]["url"]}',
-                            text: "Yes",
-                          );
-                        });
+                          return UserProfile(
+                              uid: userData.data!.docs[index]["uid"]);
+                        },
+                      ),
+                    );
+
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (BuildContext context) {
+                    //       return CustomDialogBox(
+                    //         title: "${userData.data!.docs[index]["nickname"]}",
+                    //         descriptions: userData.data!.docs[index]
+                    //             ["category"],
+                    //         img: '${userData.data!.docs[index]["url"]}',
+                    //         text: "Yes",
+                    //       );
+                    //     });
                   },
                   child: Container(
                     height: 120,
@@ -420,10 +417,20 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           ),
         ),
         onSelected: (value) {
-          print("value:$value");
           setState(() {
             value == 1 ? detail = "남" : detail = "여";
-            string = "gender";
+            genderClick = !genderClick;
+            if (genderClick) {
+              string = "gender";
+
+              newClick = false;
+
+              nearClick = false;
+              categoryClick = false;
+
+              sameCountryClick = false;
+            } else
+              string = "";
           });
         },
         itemBuilder: (context) => [

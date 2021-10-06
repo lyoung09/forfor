@@ -39,6 +39,7 @@ import 'bottomScreen/group/group_click.dart';
 import 'bottomScreen/group/groupclick.dart';
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
 import 'bottomScreen/infomation/sayScreen.dart';
+import 'bottomScreen/otherProfile/a.dart';
 import 'bottomScreen/profile/my_profile.dart';
 import 'bottomScreen/profile/my_update.dart';
 import 'home/bottom_navigation.dart';
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        tabBarTheme: TabBarTheme(labelColor: Colors.black)
       ),
       home: MyHomePage(),
       routes: {
@@ -203,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return InvitePersonScreen();
+          return CollapsingTab();
         },
       ),
     );

@@ -364,6 +364,9 @@ PODS:
     - FirebaseAuth (~> 8.6.0)
   - Firebase/CoreOnly (8.6.0):
     - FirebaseCore (= 8.6.0)
+  - Firebase/Database (8.6.0):
+    - Firebase/CoreOnly
+    - FirebaseDatabase (~> 8.6.0)
   - Firebase/Firestore (8.6.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 8.6.0)
@@ -382,6 +385,10 @@ PODS:
     - Flutter
   - firebase_core (1.6.0):
     - Firebase/CoreOnly (= 8.6.0)
+    - Flutter
+  - firebase_database (8.0.0):
+    - Firebase/Database (= 8.6.0)
+    - firebase_core
     - Flutter
   - firebase_messaging (10.0.7):
     - Firebase/Messaging (= 8.6.0)
@@ -405,6 +412,9 @@ PODS:
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
     - nanopb (~> 2.30908.0)
+  - FirebaseDatabase (8.6.0):
+    - FirebaseCore (~> 8.0)
+    - leveldb-library (~> 1.22)
   - FirebaseFirestore (8.6.0):
     - abseil/algorithm (= 0.20200225.0)
     - abseil/base (= 0.20200225.0)
@@ -510,6 +520,8 @@ PODS:
   - kakao_flutter_sdk (0.6.4):
     - Flutter
   - leveldb-library (1.22.1)
+  - location (0.0.1):
+    - Flutter
   - multi_select_item (0.0.1):
     - Flutter
   - nanopb (2.30908.0):
@@ -537,6 +549,7 @@ DEPENDENCIES:
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
@@ -546,6 +559,7 @@ DEPENDENCIES:
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - kakao_flutter_sdk (from `.symlinks/plugins/kakao_flutter_sdk/ios`)
+  - location (from `.symlinks/plugins/location/ios`)
   - multi_select_item (from `.symlinks/plugins/multi_select_item/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -562,6 +576,7 @@ SPEC REPOS:
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseDatabase
     - FirebaseFirestore
     - FirebaseFunctions
     - FirebaseInstallations
@@ -591,6 +606,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_database:
+    :path: ".symlinks/plugins/firebase_database/ios"
   firebase_messaging:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   firebase_storage:
@@ -609,6 +626,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker/ios"
   kakao_flutter_sdk:
     :path: ".symlinks/plugins/kakao_flutter_sdk/ios"
+  location:
+    :path: ".symlinks/plugins/location/ios"
   multi_select_item:
     :path: ".symlinks/plugins/multi_select_item/ios"
   package_info:
@@ -632,11 +651,13 @@ SPEC CHECKSUMS:
   Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
   firebase_auth: 2dfa8e886191c24ddcf4da34463d47b72e6d19dc
   firebase_core: c21ac09a8d23afd3594b56ed786bad12e5266bba
+  firebase_database: 019540b8b46654926d742c8eb1a3f54e6dc93a9f
   firebase_messaging: 0fddeca6fcfee0bed23c66210391d782af8f8d0e
   firebase_storage: 441e58dd48f7c6147ba65d0b60c38c01cfa197f5
   FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
   FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
   FirebaseCoreDiagnostics: b63732f581a1c6a453ec7241f9ab60b3a5bd3450
+  FirebaseDatabase: 917fbeed577a68eb1ba0eb48c52a3aa10ac13f92
   FirebaseFirestore: 7b8bd72aff4d3ad91498343e81fdbaa994ce8abe
   FirebaseFunctions: 7639390ac39a914ab7a137fd162956b99cba59a7
   FirebaseInstallations: ede6fb72bb6337914e5888b399271259d0c4910c
@@ -658,6 +679,7 @@ SPEC CHECKSUMS:
   image_picker: e06f7a68f000bd36f552c1847e33cda96ed31f1f
   kakao_flutter_sdk: 90f18c09513cfaaa6af63214617ceb696878fc09
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
+  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   multi_select_item: b70b78aac4d208141e5d7de8640655570fb40e90
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62

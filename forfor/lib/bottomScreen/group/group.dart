@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/model/userLocation.dart';
 import 'package:get/get.dart';
 
 import 'package:forfor/data/user.dart';
@@ -13,6 +14,7 @@ import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:provider/provider.dart';
 
 import 'addGroup.dart';
 import 'addGroupStepper.dart';
@@ -491,6 +493,8 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
   bool settingGroup = false;
   @override
   Widget build(BuildContext context) {
+    var userLocation = Provider.of<UserLocation>(context);
+    userLocation.saveUserLocation(auth.currentUser!.uid);
     return Scaffold(
       backgroundColor: Colors.white,
 

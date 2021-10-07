@@ -6,6 +6,10 @@ class UserLocation {
 
   UserLocation({required this.latitude, required this.longtitude});
 
+  saveUserLocation(uid) {
+    if (uid != null) {}
+  }
+
   Future<Address> locationName() async {
     final coordinates = new Coordinates(this.latitude, this.longtitude);
     var addresses =

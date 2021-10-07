@@ -220,9 +220,9 @@ class _UserProfileState extends State<UserProfile>
                                                                   //             .length;
                                                                   //     i++)
                                                                   //   category[i]
-                                                                  1,
-                                                                  2,
-                                                                  3,
+                                                                  // 1,
+                                                                  // 2,
+                                                                  // 3,
                                                                   // 4,
                                                                   // 5,
                                                                 ]).get(),

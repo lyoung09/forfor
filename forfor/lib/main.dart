@@ -20,11 +20,15 @@ import 'package:forfor/login/screen/show.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/login/screen/sigup_main.dart';
 import 'package:forfor/model/user.dart';
+import 'package:forfor/service/location_service.dart';
 import 'package:forfor/service/userdatabase.dart';
+
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:kakao_flutter_sdk/all.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,6 +51,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login/controller/bind/authcontroller.dart';
 import 'login/controller/bind/usercontroller.dart';
+import 'model/userLocation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,55 +69,58 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return GetMaterialApp(
-      initialBinding: AuthBinding(),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        backgroundColor: Colors.white,
-        appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        tabBarTheme: TabBarTheme(labelColor: Colors.black)
-      ),
-      home: MyHomePage(),
-      routes: {
-        '/groupPage': (context) {
-          return SimpleHiddenDrawer(
-            menu: Menu(),
-            screenSelectedBuilder: (position, controller) {
-              Widget screenCurrent = GroupHome(controller: controller);
-              switch (position) {
-                case 0:
-                  screenCurrent = GroupHome(controller: controller);
-                  break;
-                case 1:
-                  screenCurrent = GroupQnA(controller: controller);
-                  break;
-                case 2:
-                  screenCurrent = GroupPosting(controller: controller);
-                  break;
-                case 3:
-                  screenCurrent = GroupChatting(controller: controller);
-                  break;
-                case 4:
-                  screenCurrent = GroupFriend(controller: controller);
-                  break;
-                case 5:
-                  screenCurrent = GroupSearch(controller: controller);
-                  break;
-              }
+    return StreamProvider<UserLocation>(
+      initialData: UserLocation(latitude: 0, longtitude: 0),
+      create: (context) => LocationService().locationStream,
+      child: GetMaterialApp(
+        initialBinding: AuthBinding(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            backgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            tabBarTheme: TabBarTheme(labelColor: Colors.black)),
+        home: MyHomePage(),
+        routes: {
+          '/groupPage': (context) {
+            return SimpleHiddenDrawer(
+              menu: Menu(),
+              screenSelectedBuilder: (position, controller) {
+                Widget screenCurrent = GroupHome(controller: controller);
+                switch (position) {
+                  case 0:
+                    screenCurrent = GroupHome(controller: controller);
+                    break;
+                  case 1:
+                    screenCurrent = GroupQnA(controller: controller);
+                    break;
+                  case 2:
+                    screenCurrent = GroupPosting(controller: controller);
+                    break;
+                  case 3:
+                    screenCurrent = GroupChatting(controller: controller);
+                    break;
+                  case 4:
+                    screenCurrent = GroupFriend(controller: controller);
+                    break;
+                  case 5:
+                    screenCurrent = GroupSearch(controller: controller);
+                    break;
+                }
 
-              return Scaffold(
-                body: screenCurrent,
-              );
-            },
-          );
+                return Scaffold(
+                  body: screenCurrent,
+                );
+              },
+            );
+          },
+          '/bottomScreen': (context) => BottomNavigation(),
+          '/login': (context) => Login(),
+          '/userInfomation': (context) => UserInfomation(),
+          '/hopeInformation': (context) => HopeInfomation(),
+          '/writingpage': (context) => WritingPage(),
         },
-        '/bottomScreen': (context) => BottomNavigation(),
-        '/login': (context) => Login(),
-        '/userInfomation': (context) => UserInfomation(),
-        '/hopeInformation': (context) => HopeInfomation(),
-        '/writingpage': (context) => WritingPage(),
-      },
+      ),
     );
   }
 }
@@ -157,8 +165,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
-
     startTime();
+
+    //permission();
   }
 
   startTime() async {
@@ -188,27 +197,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   checkFirstSeen() async {
-    // try {
-    //   final controller = Get.put(AuthController());
+    try {
+      final controller = Get.put(AuthController());
 
-    //   await userDb(controller.user!.uid);
+      await userDb(controller.user!.uid);
 
-    //   if (!userData) {
-    //     controller.deleteUser();
-    //     Get.offAll(MainLogin());
-    //   } else {
-    //     Get.offAll(BottomNavigation());
-    //   }
-    // } catch (e) {
-    //   Get.offAll(MainLogin());
-    // }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return CollapsingTab();
-        },
-      ),
-    );
+      if (!userData) {
+        controller.deleteUser();
+        Get.offAll(MainLogin());
+      } else {
+        Get.offAll(BottomNavigation());
+      }
+    } catch (e) {
+      Get.offAll(MainLogin());
+    }
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return BottomNavigation();
+    //     },
+    //   ),
+    // );
 
     // if (controller.user!.uid.isNotEmpty) {
     //   DocumentSnapshot ds =
@@ -235,6 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var userLocation = Provider.of<UserLocation>(context);
     return Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -242,14 +252,13 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Center(
-                child: Text("hello user"),
+                child: Text(userLocation.latitude.toString()),
               )
             ],
           ),
         ));
   }
 }
-
 
 // import 'package:flutter/material.dart';
 // import 'package:firebase_core/firebase_core.dart';

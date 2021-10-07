@@ -131,7 +131,7 @@ class _CollapsingTabState extends State<CollapsingTab> {
 
     return Scaffold(
       body: new DefaultTabController(
-        length: 3,
+        length: 2,
         child: NestedScrollView(
           controller: scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -143,12 +143,8 @@ class _CollapsingTabState extends State<CollapsingTab> {
                     labelColor: Colors.black87,
                     unselectedLabelColor: Colors.black26,
                     tabs: [
-                      Tab(
-                        icon: Icon(Icons.account_box),
-                        text: "Detail",
-                      ),
-                      Tab(icon: Icon(Icons.add_location), text: "Address"),
-                      Tab(icon: Icon(Icons.monetization_on), text: "Earning"),
+                      Tab(icon: Icon(Icons.add_location), text: "Group"),
+                      Tab(icon: Icon(Icons.monetization_on), text: "QnA"),
                     ],
                   ),
                 ),
@@ -160,7 +156,6 @@ class _CollapsingTabState extends State<CollapsingTab> {
             children: <Widget>[
               new Text("Detail"),
               new Text("Address"),
-              new Text("Earning"),
             ],
           ),
         ),

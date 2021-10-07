@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/model/scientist.dart';
+import 'package:forfor/model/userLocation.dart';
 import 'package:forfor/widget/custom_dialog.dart';
 import 'package:intrinsic_grid_view/intrinsic_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class InvitePersonScreen extends StatefulWidget {
   const InvitePersonScreen({Key? key}) : super(key: key);
@@ -15,14 +18,17 @@ class InvitePersonScreen extends StatefulWidget {
 }
 
 class _InvitePersonScreenState extends State<InvitePersonScreen> {
-  int? _index;
+  String radioButtonItem = 'ONE';
 
+  // Group Value for Radio Button.
+  int id = 1;
+  int val = -1;
   bool click = false;
   bool categoryClick = false;
   bool newClick = false;
   bool nearClick = false;
   bool genderClick = false;
-  bool sameCountryClick = false;
+  bool countryClick = false;
   FirebaseAuth auth = FirebaseAuth.instance;
   var detail;
   var uid;
@@ -138,116 +144,74 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     // ]);
   }
 
-  Widget _buildGridView(AsyncSnapshot<Object> userList) {
-    double radius = 5.0;
-    return InkWell(
-      onTap: () {
-        // showDialog(
-        //     context: context,
-        //     builder: (BuildContext context) {
-        //       return CustomDialogBox(
-        //         title: "${userList.data!.docs[position]["categoryId"]}",
-        //         descriptions:
-        //             "Hii all this is a custom dialog in flutter and  you will be use in your flutter applications",
-        //         img: Image.network('${userList.image}'),
-        //         text: "Yes",
-        //       );
-        //     });
-      },
-      child: Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(radius))),
-          elevation: 30,
-          shadowColor: Colors.grey[100],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 8.0, left: 8, bottom: 2),
-                    child: ClipOval(
-                      child: Image.network(
-                        "${userList.data!}",
-                        fit: BoxFit.cover,
-                        width: 60,
-                        height: 60,
-                      ),
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0, top: 8.0),
-                        child: Text(
-                          "국기",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0, top: 8.0),
-                        child: Text(
-                          "0.1km",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    right: 4, left: 15, bottom: 8, top: 8),
-                child: Text(
-                  // scientist.name,
-                  "1",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4, left: 8, bottom: 8),
-                child: Text(
-                  // scientist.desc,
-                  "1",
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ],
-          )),
+  Widget _radio(country) {
+    return Container(
+      height: 50,
+      width: 600,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Radio(
+            value: 1,
+            groupValue: id,
+            onChanged: (val) {
+              setState(() {
+                radioButtonItem = 'ONE';
+                id = 1;
+                detail = "${country}";
+              });
+            },
+          ),
+          CircleAvatar(
+            backgroundImage: AssetImage('icons/flags/png/${country}.png',
+                package: 'country_icons'),
+            backgroundColor: Colors.white,
+            radius: 15,
+          ),
+          Radio(
+            value: 2,
+            groupValue: id,
+            onChanged: (val) {
+              setState(() {
+                radioButtonItem = 'TWO';
+                id = 2;
+                detail = "${country}";
+              });
+            },
+          ),
+          Text(
+            'other',
+            style: new TextStyle(
+              fontSize: 17.0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  CollectionReference user = FirebaseFirestore.instance.collection('users');
   Widget gridviewWidget(string, detail) {
     var exceptMyself = FirebaseFirestore.instance
         .collection('users')
         .where("uid", isNotEqualTo: uid);
 
     var futureUser;
-    if (string == "category") print(detail);
-    futureUser = exceptMyself.where("category", arrayContains: detail).get();
+    if (string == "category")
+      futureUser = exceptMyself.where("category", arrayContains: detail).get();
 
-    if (string == "new")
-      futureUser = exceptMyself.orderBy("timeStamp", descending: true).get();
+    // if (string == "new")
+    //   futureUser = exceptMyself.orderBy("timeStamp", descending: true).get();
     if (string == "near")
       futureUser =
           exceptMyself.where("email", isEqualTo: "lyoung09@hanmail.net").get();
     if (string == "gender")
       futureUser = exceptMyself.where("gender", isEqualTo: detail).get();
-    if (string == "sameCountry")
+    if (string == "country" && id == 2)
+      futureUser = FirebaseFirestore.instance
+          .collection('users')
+          .where("country", isNotEqualTo: detail)
+          .get();
+    if (string == "country" && id == 1)
       futureUser = exceptMyself.where("country", isEqualTo: detail).get();
     if (string == "") futureUser = exceptMyself.get();
     return FutureBuilder(
@@ -267,14 +231,20 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                 // if (userData.data!.docs[index]["uid"] == uid) {
                 //   return Container(height: 0, width: 0, child: Text("hello"));
                 // }
+                final List<int> category =
+                    userData.data!.docs[index]["category"].cast<int>();
 
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) {
-                          return UserProfile(
-                              uid: userData.data!.docs[index]["uid"]);
+                          return OtherProfile(
+                              uid: userData.data!.docs[index]["uid"],
+                              userName: userData.data!.docs[index]["nickname"],
+                              userImage: userData.data!.docs[index]["url"],
+                              introduction: userData.data!.docs[index]
+                                  ["introduction"]);
                         },
                       ),
                     );
@@ -292,7 +262,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                     //     });
                   },
                   child: Container(
-                    height: 120,
+                    height: 140,
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -331,34 +301,83 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(bottom: 5, top: 15),
-                                child: Text(
-                                  userData.data!.docs[index]['nickname'],
+                              Expanded(
+                                flex: 3,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 5, top: 8),
+                                  child: Text(
+                                    userData.data!.docs[index]['nickname'],
+                                    // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
 
-                                  // userData
-                                  //     .data!.docs[index]['category'].runtimeType
-                                  //     .toString(),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                    ),
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 5, left: 5, bottom: 5),
-                                child: Text(
-                                  userData.data!.docs[index]['introduction'] ??
-                                      "",
-                                  // "userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
-                                  maxLines: 4,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 15,
+                              Expanded(
+                                  flex: 2,
+                                  child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('category')
+                                          .where('categoryId', whereIn: [
+                                        for (int i = 0;
+                                            i <
+                                                userData
+                                                    .data!
+                                                    .docs[index]['category']
+                                                    .length;
+                                            i++)
+                                          category[i]
+                                      ]).snapshots(),
+                                      builder: (context,
+                                          AsyncSnapshot<QuerySnapshot>
+                                              categorySnapshot) {
+                                        if (!categorySnapshot.hasData) {
+                                          return Text("");
+                                        }
+                                        return ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount:
+                                                categorySnapshot.data!.size,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Transform(
+                                                transform:
+                                                    new Matrix4.identity()
+                                                      ..scale(0.8),
+                                                child: Chip(
+                                                  backgroundColor:
+                                                      Colors.orange[50],
+                                                  label: Text(
+                                                      categorySnapshot
+                                                              .data!.docs[index]
+                                                          ["categoryName"],
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                ),
+                                              );
+                                            });
+                                      })),
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 2, left: 5, bottom: 2),
+                                  child: Text(
+                                    userData.data!.docs[index]
+                                            ['introduction'] ??
+                                        "",
+                                    //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
+                                    maxLines: 4,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -372,13 +391,13 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           flex: 2,
                           child: Column(
                             children: [
-                              CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'icons/flags/png/${userData.data!.docs[index]['country']}.png',
-                                    package: 'country_icons'),
-                                backgroundColor: Colors.white,
-                                radius: 17,
-                              ),
+                              // CircleAvatar(
+                              //   backgroundImage: AssetImage(
+                              //       'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                              //       package: 'country_icons'),
+                              //   backgroundColor: Colors.white,
+                              //   radius: 17,
+                              // ),
                               Padding(
                                 padding:
                                     const EdgeInsets.only(right: 8.0, top: 3.0),
@@ -428,7 +447,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
               nearClick = false;
               categoryClick = false;
 
-              sameCountryClick = false;
+              countryClick = false;
             } else
               string = "";
           });
@@ -450,6 +469,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+    var userLocation = Provider.of<UserLocation>(context);
     return FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('users')
@@ -473,7 +493,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: Text("초대하기",
+                      child: Text("${userLocation.latitude.toString()}",
                           style: TextStyle(color: Colors.black, fontSize: 30)),
                     ),
                     Spacer(),
@@ -519,7 +539,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
                               nearClick = false;
                               genderClick = false;
-                              sameCountryClick = false;
+                              countryClick = false;
                             } else
                               string = "";
                           });
@@ -530,7 +550,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
-                              side: newClick == true
+                              side: countryClick == true
                                   ? BorderSide(color: Colors.black)
                                   : BorderSide(color: Colors.white),
                             ),
@@ -538,20 +558,22 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                             elevation: 1),
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("new",
+                          child: Text("country",
                               style:
                                   TextStyle(color: Colors.black, fontSize: 14)),
                         ),
                         onPressed: () {
                           //delayShowingContent();
                           setState(() {
-                            newClick = !newClick;
-                            if (newClick) {
+                            countryClick = !countryClick;
+                            if (countryClick) {
                               categoryClick = false;
                               nearClick = false;
                               genderClick = false;
-                              sameCountryClick = false;
-                              string = "new";
+                              newClick = false;
+                              string = "country";
+                              id = 1;
+                              detail = "${snapshot.data!["country"]}";
                             } else
                               string = "";
                           });
@@ -581,7 +603,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               categoryClick = false;
                               newClick = false;
                               genderClick = false;
-                              sameCountryClick = false;
+                              countryClick = false;
                               string = "near";
                             } else
                               string = "";
@@ -591,40 +613,6 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                       ),
                       Container(width: 10),
                       _genderPopup(),
-
-                      // Container(width: 10),
-                      // ElevatedButton(
-                      //   style: ElevatedButton.styleFrom(
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(20),
-                      //         side: sameCountryClick == true
-                      //             ? BorderSide(color: Colors.black)
-                      //             : BorderSide(color: Colors.white),
-                      //       ),
-                      //       primary: Colors.white,
-                      //       elevation: 1),
-                      //   child: Container(
-                      //     padding: EdgeInsets.symmetric(horizontal: 15),
-                      //     child: Text("내국인",
-                      //         style:
-                      //             TextStyle(color: Colors.black, fontSize: 14)),
-                      //   ),
-                      //   onPressed: () {
-                      //     setState(() {
-                      //       sameCountryClick = !sameCountryClick;
-                      //       if (sameCountryClick) {
-                      //         categoryClick = false;
-                      //         newClick = false;
-                      //         nearClick = false;
-                      //         genderClick = false;
-                      //         string = "sameCountry";
-                      //         detail = datas["country"];
-                      //       } else
-                      //         string = "";
-                      //     });
-                      //     //delayShowingContent();
-                      //   },
-                      // ),
                     ]),
                     scrollDirection: Axis.horizontal,
                   ),
@@ -636,6 +624,11 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           child: category(snapshot.data),
                           scrollDirection: Axis.horizontal,
                         ))
+                    : Container(
+                        height: 0,
+                      ),
+                countryClick == true
+                    ? _radio(snapshot.data!["country"])
                     : Container(
                         height: 0,
                       ),

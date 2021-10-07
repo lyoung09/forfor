@@ -113,7 +113,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     width: 25,
                     height: 25,
                   ),
-                  label: "세이"),
+                  label: "QnA"),
               BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   "assets/svg/profileBottom.svg",

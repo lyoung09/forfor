@@ -14,6 +14,8 @@ class LocationService {
   Stream<UserLocation> get locationStream => _locationController.stream;
 
   LocationService() {
+    print(location.requestPermission());
+
     location.requestPermission().then((granted) {
       if (granted == PermissionStatus.granted) {
         location.onLocationChanged.listen((event) {
@@ -21,6 +23,8 @@ class LocationService {
               latitude: event.latitude!.toDouble(),
               longtitude: event.longitude!.toDouble()));
         });
+      } else {
+        print("not allow userLocation");
       }
     });
   }

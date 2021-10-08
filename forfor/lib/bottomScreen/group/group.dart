@@ -493,8 +493,6 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
   bool settingGroup = false;
   @override
   Widget build(BuildContext context) {
-    var userLocation = Provider.of<UserLocation>(context);
-    userLocation.saveUserLocation(auth.currentUser!.uid);
     return Scaffold(
       backgroundColor: Colors.white,
 

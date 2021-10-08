@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserDatabase {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,6 +24,8 @@ class UserDatabase {
   // }
 
   Future<bool> addDataUser(UserModel user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       await _firestore.collection("users").doc(user.id).set({
         "gender": user.gender,
@@ -35,6 +38,8 @@ class UserDatabase {
         "timeStamp": user.timeStamp,
         "introduction": user.introduction,
         "deviceId": user.deviceId,
+        "lat": prefs.getDouble("lat"),
+        "lng": prefs.getDouble("lng"),
         "category": FieldValue.arrayUnion([
           user.category![0],
           user.category![1],

@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forfor/bottomScreen/buddy/nearUser.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
@@ -27,6 +28,7 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:kakao_flutter_sdk/all.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,93 +70,63 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return StreamProvider<UserLocation>(
-      initialData: UserLocation(latitude: 0, longtitude: 0),
-      create: (context) => LocationService().locationStream,
-      child: GetMaterialApp(
-        initialBinding: AuthBinding(),
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            backgroundColor: Colors.white,
-            appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            tabBarTheme: TabBarTheme(labelColor: Colors.black)),
-        home: MyHomePage(),
-        routes: {
-          '/groupPage': (context) {
-            return SimpleHiddenDrawer(
-              menu: Menu(),
-              screenSelectedBuilder: (position, controller) {
-                Widget screenCurrent = GroupHome(controller: controller);
-                switch (position) {
-                  case 0:
-                    screenCurrent = GroupHome(controller: controller);
-                    break;
-                  case 1:
-                    screenCurrent = GroupQnA(controller: controller);
-                    break;
-                  case 2:
-                    screenCurrent = GroupPosting(controller: controller);
-                    break;
-                  case 3:
-                    screenCurrent = GroupChatting(controller: controller);
-                    break;
-                  case 4:
-                    screenCurrent = GroupFriend(controller: controller);
-                    break;
-                  case 5:
-                    screenCurrent = GroupSearch(controller: controller);
-                    break;
-                }
+    return
+        // StreamProvider<UserLocation>(
+        //   initialData: UserLocation(latitude: 0, longtitude: 0),
+        //   create: (context) => LocationService().locationStream,
+        //   child:
+        GetMaterialApp(
+      initialBinding: AuthBinding(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          backgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          tabBarTheme: TabBarTheme(labelColor: Colors.black)),
+      home: MyHomePage(),
+      routes: {
+        '/groupPage': (context) {
+          return SimpleHiddenDrawer(
+            menu: Menu(),
+            screenSelectedBuilder: (position, controller) {
+              Widget screenCurrent = GroupHome(controller: controller);
+              switch (position) {
+                case 0:
+                  screenCurrent = GroupHome(controller: controller);
+                  break;
+                case 1:
+                  screenCurrent = GroupQnA(controller: controller);
+                  break;
+                case 2:
+                  screenCurrent = GroupPosting(controller: controller);
+                  break;
+                case 3:
+                  screenCurrent = GroupChatting(controller: controller);
+                  break;
+                case 4:
+                  screenCurrent = GroupFriend(controller: controller);
+                  break;
+                case 5:
+                  screenCurrent = GroupSearch(controller: controller);
+                  break;
+              }
 
-                return Scaffold(
-                  body: screenCurrent,
-                );
-              },
-            );
-          },
-          '/bottomScreen': (context) => BottomNavigation(),
-          '/login': (context) => Login(),
-          '/userInfomation': (context) => UserInfomation(),
-          '/hopeInformation': (context) => HopeInfomation(),
-          '/writingpage': (context) => WritingPage(),
+              return Scaffold(
+                body: screenCurrent,
+              );
+            },
+          );
         },
-      ),
+        '/bottomScreen': (context) => BottomNavigation(),
+        '/login': (context) => Login(),
+        '/userInfomation': (context) => UserInfomation(),
+        '/hopeInformation': (context) => HopeInfomation(),
+        '/writingpage': (context) => WritingPage(),
+      },
+      //),
     );
   }
 }
-
-// class Home extends StatefulWidget {
-//   const Home({Key? key}) : super(key: key);
-
-//   @override
-//   _HomeState createState() => _HomeState();
-// }
-
-// class _HomeState extends State<Home> {
-//   final controller = Get.put(AuthController());
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetX(
-//       initState: (_) async {
-//         Get.put<UserController>(UserController());
-//       },
-//       builder: (_) {
-//         return FutureBuilder(
-//             future:
-//                 UserDatabase().getUserDs(Get.find<AuthController>().user!.uid),
-//             builder: (context, snapshot) {
-//               if (snapshot.hasData) {
-//                 return BottomNavigation();
-//               } else if (!snapshot.hasData) {
-//                 return MainLogin();
-//               }
-//               return CircularProgressIndicator();
-//             });
-//       },
-//     );
-//   }
-// }
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -164,9 +136,67 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
+    getLoc();
     startTime();
 
     //permission();
+  }
+
+  final Location location = Location();
+  late LocationData _currentPosition;
+
+  PermissionStatus? _permissionGranted;
+  var latitude, longtitude;
+  getLoc() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+
+    // location.onLocationChanged.listen((LocationData currentLocation) {
+    //   setState(() {
+
+    UserLocation(
+            latitude: _currentPosition.latitude!.toDouble(),
+            longtitude: _currentPosition.longitude!.toDouble())
+        .locationName();
+
+    print(latitude);
+    print(longtitude);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (_currentPosition.latitude == null) {
+      setState(() {
+        prefs.setDouble("lat", 0.0);
+        prefs.setDouble("lng", 0.0);
+      });
+    } else {
+      setState(() {
+        prefs.setDouble("lat", _currentPosition.latitude!.toDouble());
+        prefs.setDouble("lng", _currentPosition.longitude!.toDouble());
+      });
+    }
+    //   });
+    //   _firestore.collection('locations').doc(widget.uid).update({
+    //     'latitude': myLocation.latitude,
+    //     'longtitude': myLocation.longitude
+    //   });
+    // });
   }
 
   startTime() async {
@@ -195,25 +225,40 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   checkFirstSeen() async {
-    try {
-      final controller = Get.put(AuthController());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      await userDb(controller.user!.uid);
+    bool _seen = (prefs.getBool('seen') ?? false);
+    if (_seen) {
+      try {
+        final controller = Get.put(AuthController());
 
-      if (!userData) {
-        controller.deleteUser();
+        await userDb(controller.user!.uid);
+
+        if (!userData) {
+          controller.deleteUser();
+          Get.offAll(MainLogin());
+        } else {
+          Get.offAll(BottomNavigation());
+        }
+      } catch (e) {
         Get.offAll(MainLogin());
-      } else {
-        Get.offAll(BottomNavigation());
       }
-    } catch (e) {
-      Get.offAll(MainLogin());
+    } else {
+      prefs.setBool('seen', true);
+      print("introduction");
     }
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return BottomNavigation();
+    //       return InvitePersonScreen();
     //     },
     //   ),
     // );
@@ -243,8 +288,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var userLocation = Provider.of<UserLocation>(context);
-    print(userLocation.locationName());
+    // var userLocation = Provider.of<UserLocation>(context);
+
     return Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -252,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Center(
-                child: Text(userLocation.latitude.toString()),
+                child: Text("userLocation.latitude.toString()"),
               )
             ],
           ),

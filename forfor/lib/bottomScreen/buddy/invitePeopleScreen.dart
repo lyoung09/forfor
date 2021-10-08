@@ -8,7 +8,9 @@ import 'package:forfor/model/scientist.dart';
 import 'package:forfor/model/userLocation.dart';
 import 'package:forfor/widget/custom_dialog.dart';
 import 'package:intrinsic_grid_view/intrinsic_grid_view.dart';
-import 'package:provider/provider.dart';
+import 'package:location/location.dart';
+
+import 'nearUser.dart';
 
 class InvitePersonScreen extends StatefulWidget {
   const InvitePersonScreen({Key? key}) : super(key: key);
@@ -469,7 +471,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    var userLocation = Provider.of<UserLocation>(context);
+
     return FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('users')
@@ -493,16 +495,23 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: Text("${userLocation.latitude.toString()}",
+                      child: Text("Buddy",
                           style: TextStyle(color: Colors.black, fontSize: 30)),
                     ),
                     Spacer(),
-                    Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          icon: Icon(Icons.search),
-                          onPressed: () {},
-                        )),
+                    string == "near"
+                        ? Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: Icon(Icons.ac_unit_outlined),
+                              onPressed: () {},
+                            ))
+                        : Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: Icon(Icons.search),
+                              onPressed: () {},
+                            )),
                   ],
                 ),
                 Padding(padding: EdgeInsets.only(top: 15)),
@@ -634,7 +643,15 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                       ),
                 Padding(padding: EdgeInsets.only(top: 15)),
                 if (string == "category" && detail == null)
-                  gridviewWidget(string, datas["category"][0])
+                  gridviewWidget(string, datas["category"][0]),
+                if (string == "near")
+                  // DistanceUser(
+                  //   uid: snapshot.data!["uid"],
+                  // )
+                  // DistanceUser(
+                  //   uid: snapshot.data!['uid'],
+                  // )
+                  DistanceUser(uid: snapshot.data!['uid'])
                 else
                   gridviewWidget(string, detail)
               ],

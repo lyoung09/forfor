@@ -68,6 +68,22 @@ class UserDatabase {
       return false;
     }
   }
+  Future<bool> updateLocationUser(String uid,double lat,double lng) async {
+    try {
+      await _firestore.collection("users").doc(uid).update({
+        "lat": lat,
+        "lng": lng,
+        
+      });
+
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  
 
   Future<bool> currentUserChange(String uid, String deviceId) async {
     try {

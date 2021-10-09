@@ -4,9 +4,11 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
+import 'package:forfor/model/userLocation.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:rxdart/rxdart.dart';
 
@@ -285,21 +287,14 @@ class DistanceUser extends StatefulWidget {
 }
 
 class DistancerUserState extends State<DistanceUser> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getLoc();
-  }
-
   late List<int> sortedKeys;
   late LinkedHashMap sortedMap;
   Location location = Location();
   final geo = Geoflutterfire();
   final _firestore = FirebaseFirestore.instance;
   Map<String, int> distanceUser = new Map();
-  late LocationData _currentPosition;
   late GeoFirePoint myLocation;
+
   //현재 위치와 가게 위치 거리 구하는메소드
   String _coordinateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
@@ -311,40 +306,18 @@ class DistancerUserState extends State<DistanceUser> {
     return ((12742 * asin(sqrt(a)) * 1000)).toStringAsFixed(0);
   }
 
-  getLoc() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
+  late LatLng latlng;
+  @override
+  // ignore: must_call_super
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    try {
+      latlng = Provider.of<LatLng>(context, listen: true);
+      print(latlng);
+      print('hello');
+    } catch (e) {
+      print(e);
     }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-    _currentPosition = await location.getLocation();
-    if (_currentPosition.latitude == null) {
-    } else {
-      _firestore.collection('users').doc(widget.uid).update({
-        'lat': _currentPosition.latitude,
-        'lng': _currentPosition.longitude
-      });
-    }
-    // location.onLocationChanged.listen((LocationData currentLocation) {
-    //   setState(() {
-    //     myLocation = geo.point(
-    //         latitude: currentLocation.latitude!.toDouble(),
-    //         longitude: currentLocation.longitude!.toDouble());
-    //   });
-    // });
   }
 
   final userDistance = FirebaseFirestore.instance.collection('users');
@@ -363,6 +336,8 @@ class DistancerUserState extends State<DistanceUser> {
   }
 
   getUserDistancefuture() async {
+    var userLocation = Provider.of<UserLocation>(context);
+    print(userLocation.latitude);
     final distance = await FirebaseFirestore.instance
         .collection('users')
         .where("uid", isNotEqualTo: widget.uid)

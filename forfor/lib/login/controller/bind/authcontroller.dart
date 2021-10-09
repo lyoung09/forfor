@@ -28,6 +28,8 @@ class AuthController extends GetxController {
   late String url;
   late String timeStamp;
   late String introduction;
+  late double lat;
+  late double lng;
   late List<dynamic> list;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
@@ -40,6 +42,14 @@ class AuthController extends GetxController {
   void onInit() {
     _user.bindStream(_auth.authStateChanges());
   }
+
+  saveLocation(double latitude, double longitude) {
+    this.lat = latitude;
+    this.lng = longitude;
+  }
+
+  double get getLat => this.lat;
+  double get getLng => this.lng;
 
   Future<String> getDeviceId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -153,6 +163,8 @@ class AuthController extends GetxController {
           url: this.url,
           deviceId: deviceId,
           introduction: this.introduction,
+          lat: this.lat,
+          lng: this.lng,
           timeStamp: myDateTime.toString(),
           category: list);
 
@@ -184,6 +196,17 @@ class AuthController extends GetxController {
       }
 
       Get.offAll(() => BottomNavigation(index: 4));
+    } catch (e) {}
+  }
+
+  void updateUserLocatioin(double lat, double lng) async {
+    try {
+      print(introduction);
+
+      if (await UserDatabase().updateLocationUser(uid, lat, lng)) {
+        Get.put(UserController()).user.lat = lat;
+        Get.put(UserController()).user.lng = lng;
+      }
     } catch (e) {}
   }
 

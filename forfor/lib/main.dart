@@ -70,60 +70,58 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return
-        // StreamProvider<UserLocation>(
-        //   initialData: UserLocation(latitude: 0, longtitude: 0),
-        //   create: (context) => LocationService().locationStream,
-        //   child:
-        GetMaterialApp(
-      initialBinding: AuthBinding(),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          backgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          tabBarTheme: TabBarTheme(labelColor: Colors.black)),
-      home: MyHomePage(),
-      routes: {
-        '/groupPage': (context) {
-          return SimpleHiddenDrawer(
-            menu: Menu(),
-            screenSelectedBuilder: (position, controller) {
-              Widget screenCurrent = GroupHome(controller: controller);
-              switch (position) {
-                case 0:
-                  screenCurrent = GroupHome(controller: controller);
-                  break;
-                case 1:
-                  screenCurrent = GroupQnA(controller: controller);
-                  break;
-                case 2:
-                  screenCurrent = GroupPosting(controller: controller);
-                  break;
-                case 3:
-                  screenCurrent = GroupChatting(controller: controller);
-                  break;
-                case 4:
-                  screenCurrent = GroupFriend(controller: controller);
-                  break;
-                case 5:
-                  screenCurrent = GroupSearch(controller: controller);
-                  break;
-              }
+    return StreamProvider<UserLocation>(
+      initialData: UserLocation(latitude: null, longtitude: null),
+      create: (context) => LocationService().locationStream,
+      child: GetMaterialApp(
+        initialBinding: AuthBinding(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            backgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            tabBarTheme: TabBarTheme(labelColor: Colors.black)),
+        home: MyHomePage(),
+        routes: {
+          '/groupPage': (context) {
+            return SimpleHiddenDrawer(
+              menu: Menu(),
+              screenSelectedBuilder: (position, controller) {
+                Widget screenCurrent = GroupHome(controller: controller);
+                switch (position) {
+                  case 0:
+                    screenCurrent = GroupHome(controller: controller);
+                    break;
+                  case 1:
+                    screenCurrent = GroupQnA(controller: controller);
+                    break;
+                  case 2:
+                    screenCurrent = GroupPosting(controller: controller);
+                    break;
+                  case 3:
+                    screenCurrent = GroupChatting(controller: controller);
+                    break;
+                  case 4:
+                    screenCurrent = GroupFriend(controller: controller);
+                    break;
+                  case 5:
+                    screenCurrent = GroupSearch(controller: controller);
+                    break;
+                }
 
-              return Scaffold(
-                body: screenCurrent,
-              );
-            },
-          );
+                return Scaffold(
+                  body: screenCurrent,
+                );
+              },
+            );
+          },
+          '/bottomScreen': (context) => BottomNavigation(),
+          '/login': (context) => Login(),
+          '/userInfomation': (context) => UserInfomation(),
+          '/hopeInformation': (context) => HopeInfomation(),
+          '/writingpage': (context) => WritingPage(),
         },
-        '/bottomScreen': (context) => BottomNavigation(),
-        '/login': (context) => Login(),
-        '/userInfomation': (context) => UserInfomation(),
-        '/hopeInformation': (context) => HopeInfomation(),
-        '/writingpage': (context) => WritingPage(),
-      },
-      //),
+      ),
     );
   }
 }
@@ -137,7 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
     getLoc();
-    startTime();
 
     //permission();
   }
@@ -177,20 +174,20 @@ class _MyHomePageState extends State<MyHomePage> {
             longtitude: _currentPosition.longitude!.toDouble())
         .locationName();
 
-    print(latitude);
-    print(longtitude);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (_currentPosition.latitude == null) {
-      setState(() {
-        prefs.setDouble("lat", 0.0);
-        prefs.setDouble("lng", 0.0);
-      });
-    } else {
-      setState(() {
-        prefs.setDouble("lat", _currentPosition.latitude!.toDouble());
-        prefs.setDouble("lng", _currentPosition.longitude!.toDouble());
+    AuthController().saveLocation(_currentPosition.latitude!.toDouble(),
+        _currentPosition.latitude!.toDouble());
+
+    if (controller.user!.uid.isNotEmpty) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(controller.user!.uid)
+          .update({
+        "lat": _currentPosition.latitude!.toDouble(),
+        "lng": _currentPosition.longitude!.toDouble(),
       });
     }
+
+    startTime();
     //   });
     //   _firestore.collection('locations').doc(widget.uid).update({
     //     'latitude': myLocation.latitude,
@@ -232,14 +229,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  final controller = Get.put(AuthController());
   checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
     if (_seen) {
       try {
-        final controller = Get.put(AuthController());
-
         await userDb(controller.user!.uid);
 
         if (!userData) {
@@ -288,8 +284,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // var userLocation = Provider.of<UserLocation>(context);
-
     return Scaffold(
         appBar: AppBar(),
         body: Center(

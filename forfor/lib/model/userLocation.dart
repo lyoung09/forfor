@@ -1,10 +1,10 @@
 import 'package:geocoder/geocoder.dart';
 
 class UserLocation {
-  final double latitude;
-  final double longtitude;
+  double? latitude;
+  double? longtitude;
 
-  UserLocation({required this.latitude, required this.longtitude});
+  UserLocation({this.latitude, this.longtitude});
 
   saveUserLocation(uid) {
     if (uid != null) {}

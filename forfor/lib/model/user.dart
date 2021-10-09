@@ -11,6 +11,8 @@ class UserModel {
   String? timeStamp;
   String? introduction;
   String? deviceId;
+  double? lat;
+  double? lng;
   List<dynamic>? category;
 
   UserModel(
@@ -24,7 +26,9 @@ class UserModel {
       this.access,
       this.category,
       this.timeStamp,
-      this.introduction});
+      this.introduction,
+      this.lat,
+      this.lng});
 
   UserModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     id = documentSnapshot.id;
@@ -38,5 +42,7 @@ class UserModel {
     timeStamp = documentSnapshot["timeStamp"];
     introduction = documentSnapshot["introduction"];
     deviceId = documentSnapshot["deviceId"];
+    lat = documentSnapshot["lat"];
+    lng = documentSnapshot["lng"];
   }
 }

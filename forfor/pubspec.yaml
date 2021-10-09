@@ -84,6 +84,7 @@ dependencies:
   firebase_database: ^8.0.0
   geocoder: ^0.2.1
   geoflutterfire: ^3.0.1
+  gallery_saver: ^0.0,5
   google_maps_flutter: ^2.0.1
 dev_dependencies:
   flutter_test:

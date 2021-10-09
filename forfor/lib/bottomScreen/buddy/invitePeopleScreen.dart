@@ -4,11 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/model/scientist.dart';
+import 'package:forfor/model/user.dart';
 import 'package:forfor/model/userLocation.dart';
 import 'package:forfor/widget/custom_dialog.dart';
+import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intrinsic_grid_view/intrinsic_grid_view.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 import 'nearUser.dart';
 
@@ -32,13 +38,20 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   bool genderClick = false;
   bool countryClick = false;
   FirebaseAuth auth = FirebaseAuth.instance;
+
   var detail;
   var uid;
+  final controller = Get.put(AuthController());
+  final userController = Get.put(UserController());
+  LatLng? latlng;
 
+  @override
   initState() {
     super.initState();
-    uid = auth.currentUser?.uid;
-    print(uid);
+    uid = controller.user!.uid;
+    print(userController.user.lat);
+    latlng =
+        LatLng(userController.user.lat ?? -1, userController.user.lng ?? -1);
   }
 
   @override
@@ -46,6 +59,46 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     if (mounted) {
       super.setState(fn);
     }
+  }
+
+  late LocationData _currentPosition;
+  final Location location = Location();
+
+  getLoc() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+
+    // location.onLocationChanged.listen((LocationData currentLocation) {
+    //   setState(() {
+
+    AuthController().saveLocation(_currentPosition.latitude!.toDouble(),
+        _currentPosition.latitude!.toDouble());
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(controller.user!.uid)
+        .update({
+      "lat": _currentPosition.latitude!.toDouble(),
+      "lng": _currentPosition.longitude!.toDouble(),
+    });
   }
 
   late int selectedIndex;
@@ -484,177 +537,182 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
           Map<String, dynamic> datas =
               snapshot.data!.data() as Map<String, dynamic>;
           return Scaffold(
-              body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 50),
-                ),
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text("Buddy",
-                          style: TextStyle(color: Colors.black, fontSize: 30)),
-                    ),
-                    Spacer(),
-                    string == "near"
-                        ? Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              icon: Icon(Icons.ac_unit_outlined),
-                              onPressed: () {},
-                            ))
-                        : Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              icon: Icon(Icons.search),
-                              onPressed: () {},
-                            )),
-                  ],
-                ),
-                Padding(padding: EdgeInsets.only(top: 15)),
-                Divider(color: Colors.black, height: 1),
-                Padding(padding: EdgeInsets.only(top: 15)),
-                Container(
-                  height: 50,
-                  child: SingleChildScrollView(
-                    child: Row(children: [
-                      Container(width: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: categoryClick == true
-                                  ? BorderSide(color: Colors.black)
-                                  : BorderSide(color: Colors.white),
-                            ),
-                            primary: Colors.white,
-                            elevation: 1),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("카테고리",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 14)),
-                        ),
-                        onPressed: () {
-                          //delayShowingContent();
-                          setState(() {
-                            categoryClick = !categoryClick;
-                            if (categoryClick) {
-                              string = "category";
-                              newClick = false;
-
-                              nearClick = false;
-                              genderClick = false;
-                              countryClick = false;
-                            } else
-                              string = "";
-                          });
-                        },
-                      ),
-                      Container(width: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: countryClick == true
-                                  ? BorderSide(color: Colors.black)
-                                  : BorderSide(color: Colors.white),
-                            ),
-                            primary: Colors.white,
-                            elevation: 1),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("country",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 14)),
-                        ),
-                        onPressed: () {
-                          //delayShowingContent();
-                          setState(() {
-                            countryClick = !countryClick;
-                            if (countryClick) {
-                              categoryClick = false;
-                              nearClick = false;
-                              genderClick = false;
-                              newClick = false;
-                              string = "country";
-                              id = 1;
-                              detail = "${snapshot.data!["country"]}";
-                            } else
-                              string = "";
-                          });
-                        },
-                      ),
-                      Container(width: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: nearClick == true
-                                  ? BorderSide(color: Colors.black)
-                                  : BorderSide(color: Colors.white),
-                            ),
-                            primary: Colors.white,
-                            elevation: 1),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text("주변",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 14)),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            nearClick = !nearClick;
-                            if (nearClick) {
-                              categoryClick = false;
-                              newClick = false;
-                              genderClick = false;
-                              countryClick = false;
-                              string = "near";
-                            } else
-                              string = "";
-                          });
-                          //delayShowingContent();
-                        },
-                      ),
-                      Container(width: 10),
-                      _genderPopup(),
-                    ]),
-                    scrollDirection: Axis.horizontal,
+              body: Provider.value(
+            value: latlng,
+            updateShouldNotify: (oldValue, newValue) => newValue != oldValue,
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 50),
                   ),
-                ),
-                categoryClick == true
-                    ? Container(
-                        height: 50,
-                        child: SingleChildScrollView(
-                          child: category(snapshot.data),
-                          scrollDirection: Axis.horizontal,
-                        ))
-                    : Container(
-                        height: 0,
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text("Buddy",
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 30)),
                       ),
-                countryClick == true
-                    ? _radio(snapshot.data!["country"])
-                    : Container(
-                        height: 0,
-                      ),
-                Padding(padding: EdgeInsets.only(top: 15)),
-                if (string == "category" && detail == null)
-                  gridviewWidget(string, datas["category"][0]),
-                if (string == "near")
-                  // DistanceUser(
-                  //   uid: snapshot.data!["uid"],
-                  // )
-                  // DistanceUser(
-                  //   uid: snapshot.data!['uid'],
-                  // )
-                  DistanceUser(uid: snapshot.data!['uid'])
-                else
-                  gridviewWidget(string, detail)
-              ],
+                      Spacer(),
+                      string == "near"
+                          ? Align(
+                              alignment: Alignment.topRight,
+                              child: IconButton(
+                                icon: Icon(Icons.ac_unit_outlined),
+                                onPressed: getLoc,
+                              ))
+                          : Align(
+                              alignment: Alignment.topRight,
+                              child: IconButton(
+                                icon: Icon(Icons.search),
+                                onPressed: () {},
+                              )),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 15)),
+                  Divider(color: Colors.black, height: 1),
+                  Padding(padding: EdgeInsets.only(top: 15)),
+                  Container(
+                    height: 50,
+                    child: SingleChildScrollView(
+                      child: Row(children: [
+                        Container(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: categoryClick == true
+                                    ? BorderSide(color: Colors.black)
+                                    : BorderSide(color: Colors.white),
+                              ),
+                              primary: Colors.white,
+                              elevation: 1),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text("카테고리",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14)),
+                          ),
+                          onPressed: () {
+                            //delayShowingContent();
+                            setState(() {
+                              categoryClick = !categoryClick;
+                              if (categoryClick) {
+                                string = "category";
+                                newClick = false;
+
+                                nearClick = false;
+                                genderClick = false;
+                                countryClick = false;
+                              } else
+                                string = "";
+                            });
+                          },
+                        ),
+                        Container(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: countryClick == true
+                                    ? BorderSide(color: Colors.black)
+                                    : BorderSide(color: Colors.white),
+                              ),
+                              primary: Colors.white,
+                              elevation: 1),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text("country",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14)),
+                          ),
+                          onPressed: () {
+                            //delayShowingContent();
+                            setState(() {
+                              countryClick = !countryClick;
+                              if (countryClick) {
+                                categoryClick = false;
+                                nearClick = false;
+                                genderClick = false;
+                                newClick = false;
+                                string = "country";
+                                id = 1;
+                                detail = "${snapshot.data!["country"]}";
+                              } else
+                                string = "";
+                            });
+                          },
+                        ),
+                        Container(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: nearClick == true
+                                    ? BorderSide(color: Colors.black)
+                                    : BorderSide(color: Colors.white),
+                              ),
+                              primary: Colors.white,
+                              elevation: 1),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text("주변",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14)),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              nearClick = !nearClick;
+                              if (nearClick) {
+                                categoryClick = false;
+                                newClick = false;
+                                genderClick = false;
+                                countryClick = false;
+                                string = "near";
+                              } else
+                                string = "";
+                            });
+                            //delayShowingContent();
+                          },
+                        ),
+                        Container(width: 10),
+                        _genderPopup(),
+                      ]),
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                  categoryClick == true
+                      ? Container(
+                          height: 50,
+                          child: SingleChildScrollView(
+                            child: category(snapshot.data),
+                            scrollDirection: Axis.horizontal,
+                          ))
+                      : Container(
+                          height: 0,
+                        ),
+                  countryClick == true
+                      ? _radio(snapshot.data!["country"])
+                      : Container(
+                          height: 0,
+                        ),
+                  Padding(padding: EdgeInsets.only(top: 15)),
+                  if (string == "category" && detail == null)
+                    gridviewWidget(string, datas["category"][0]),
+                  if (string == "near")
+                    // DistanceUser(
+                    //   uid: snapshot.data!["uid"],
+                    // )
+                    // DistanceUser(
+                    //   uid: snapshot.data!['uid'],
+                    // )
+                    DistanceUser(uid: snapshot.data!['uid'])
+                  else
+                    gridviewWidget(string, detail)
+                ],
+              ),
             ),
           ));
         });

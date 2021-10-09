@@ -28,10 +28,7 @@ class LocationService {
           _locationController.add(UserLocation(
               latitude: event.latitude!.toDouble(),
               longtitude: event.longitude!.toDouble()));
-          // print(controller.user!.uid);
-          GeoFirePoint myLocation = geo.point(
-              latitude: event.latitude!.toDouble(),
-              longitude: event.longitude!.toDouble());
+         
         });
       } else {
         print("not allow userLocation");

@@ -12,273 +12,273 @@ import 'package:provider/provider.dart';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:rxdart/rxdart.dart';
 
-class NearUser extends StatefulWidget {
-  final String uid;
-  final double lat;
-  final double lng;
-  NearUser({required this.uid, required this.lat, required this.lng});
-  @override
-  _NearUserState createState() => _NearUserState();
-}
+// class NearUser extends StatefulWidget {
+//   final String uid;
+//   final double lat;
+//   final double lng;
+//   NearUser({required this.uid, required this.lat, required this.lng});
+//   @override
+//   _NearUserState createState() => _NearUserState();
+// }
 
-class _NearUserState extends State<NearUser> {
-  late TextEditingController _latitudeController, _longitudeController;
-  Location location = Location();
+// class _NearUserState extends State<NearUser> {
+//   late TextEditingController _latitudeController, _longitudeController;
+//   Location location = Location();
 
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
+//   @override
+//   void setState(fn) {
+//     if (mounted) {
+//       super.setState(fn);
+//     }
+//   }
 
-  // firestore init
-  final _firestore = FirebaseFirestore.instance;
-  late Geoflutterfire geo;
-  late Stream<List<DocumentSnapshot>> stream;
-  final radius = BehaviorSubject<double>.seeded(1.0);
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  GoogleMapController? _mapController;
-  late LocationData _currentPosition;
-  late GeoFirePoint myLocation;
-  late GeoFirePoint center;
-  getLoc() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+//   // firestore init
+//   final _firestore = FirebaseFirestore.instance;
+//   late Geoflutterfire geo;
+//   late Stream<List<DocumentSnapshot>> stream;
+//   final radius = BehaviorSubject<double>.seeded(1.0);
+//   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+//   GoogleMapController? _mapController;
+//   late LocationData _currentPosition;
+//   late GeoFirePoint myLocation;
+//   late GeoFirePoint center;
+//   getLoc() async {
+//     bool _serviceEnabled;
+//     PermissionStatus _permissionGranted;
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
+//     _serviceEnabled = await location.serviceEnabled();
+//     if (!_serviceEnabled) {
+//       _serviceEnabled = await location.requestService();
+//       if (!_serviceEnabled) {
+//         return;
+//       }
+//     }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-    _currentPosition = await location.getLocation();
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      setState(() {
-        myLocation = geo.point(
-            latitude: currentLocation.latitude!.toDouble(),
-            longitude: currentLocation.longitude!.toDouble());
-      });
-      _firestore.collection('locations').doc(widget.uid).update({
-        'latitude': myLocation.latitude,
-        'longtitude': myLocation.longitude
-      });
-    });
-  }
+//     _permissionGranted = await location.hasPermission();
+//     if (_permissionGranted == PermissionStatus.denied) {
+//       _permissionGranted = await location.requestPermission();
+//       if (_permissionGranted != PermissionStatus.granted) {
+//         return;
+//       }
+//     }
+//     _currentPosition = await location.getLocation();
+//     location.onLocationChanged.listen((LocationData currentLocation) {
+//       setState(() {
+//         myLocation = geo.point(
+//             latitude: currentLocation.latitude!.toDouble(),
+//             longitude: currentLocation.longitude!.toDouble());
+//       });
+//       _firestore.collection('locations').doc(widget.uid).update({
+//         'latitude': myLocation.latitude,
+//         'longtitude': myLocation.longitude
+//       });
+//     });
+//   }
 
-  @override
-  void initState() {
-    super.initState();
-    _latitudeController = TextEditingController();
-    _longitudeController = TextEditingController();
+//   @override
+//   void initState() {
+//     super.initState();
+//     _latitudeController = TextEditingController();
+//     _longitudeController = TextEditingController();
 
-    getLoc();
-    geo = Geoflutterfire();
-    if (myLocation.data == null) {
-    } else {
-      GeoFirePoint center = geo.point(
-          latitude: myLocation.latitude, longitude: myLocation.longitude);
-      stream = radius.switchMap((rad) {
-        var collectionReference = _firestore.collection('locations');
-//          .where('name', isEqualTo: 'darshan');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: rad, field: 'position', strictMode: true);
-      });
-    }
-  }
+//     getLoc();
+//     geo = Geoflutterfire();
+//     if (myLocation.data == null) {
+//     } else {
+//       GeoFirePoint center = geo.point(
+//           latitude: myLocation.latitude, longitude: myLocation.longitude);
+//       stream = radius.switchMap((rad) {
+//         var collectionReference = _firestore.collection('locations');
+// //          .where('name', isEqualTo: 'darshan');
+//         return geo.collection(collectionRef: collectionReference).within(
+//             center: center, radius: rad, field: 'position', strictMode: true);
+//       });
+//     }
+//   }
 
-  @override
-  void dispose() {
-    _latitudeController.dispose();
-    _longitudeController.dispose();
-    radius.close();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     _latitudeController.dispose();
+//     _longitudeController.dispose();
+//     radius.close();
+//     super.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Card(
-              elevation: 4,
-              margin: EdgeInsets.symmetric(vertical: 8),
-              child: SizedBox(
-                width: mediaQuery.size.width - 30,
-                height: mediaQuery.size.height * (1 / 3),
-                child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(12.960632, 77.641603),
-                    zoom: 15.0,
-                  ),
-                  markers: Set<Marker>.of(markers.values),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Slider(
-              min: 1,
-              max: 200,
-              divisions: 4,
-              value: _value,
-              label: _label,
-              activeColor: Colors.blue,
-              inactiveColor: Colors.blue.withOpacity(0.2),
-              onChanged: (double value) => changed(value),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                width: 100,
-                child: TextField(
-                  controller: _latitudeController,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                      labelText: 'lat',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      )),
-                ),
-              ),
-              Container(
-                width: 100,
-                child: TextField(
-                  controller: _longitudeController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      labelText: 'lng',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      )),
-                ),
-              ),
-              MaterialButton(
-                color: Colors.blue,
-                onPressed: () {
-                  final lat = double.parse(_latitudeController.text);
-                  final lng = double.parse(_longitudeController.text);
-                  _addPoint(lat, lng);
-                },
-                child: const Text(
-                  'ADD',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
-          ),
-          MaterialButton(
-            color: Colors.amber,
-            child: const Text(
-              'Add nested ',
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              final lat = double.parse(_latitudeController.text);
-              final lng = double.parse(_longitudeController.text);
-              _addNestedPoint(lat, lng);
-            },
-          )
-        ],
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     final mediaQuery = MediaQuery.of(context);
+//     return Container(
+//       height: MediaQuery.of(context).size.height * 0.8,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: <Widget>[
+//           Center(
+//             child: Card(
+//               elevation: 4,
+//               margin: EdgeInsets.symmetric(vertical: 8),
+//               child: SizedBox(
+//                 width: mediaQuery.size.width - 30,
+//                 height: mediaQuery.size.height * (1 / 3),
+//                 child: GoogleMap(
+//                   onMapCreated: _onMapCreated,
+//                   initialCameraPosition: const CameraPosition(
+//                     target: LatLng(12.960632, 77.641603),
+//                     zoom: 15.0,
+//                   ),
+//                   markers: Set<Marker>.of(markers.values),
+//                 ),
+//               ),
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.only(top: 8.0),
+//             child: Slider(
+//               min: 1,
+//               max: 200,
+//               divisions: 4,
+//               value: _value,
+//               label: _label,
+//               activeColor: Colors.blue,
+//               inactiveColor: Colors.blue.withOpacity(0.2),
+//               onChanged: (double value) => changed(value),
+//             ),
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//             children: <Widget>[
+//               Container(
+//                 width: 100,
+//                 child: TextField(
+//                   controller: _latitudeController,
+//                   keyboardType: TextInputType.number,
+//                   textInputAction: TextInputAction.next,
+//                   decoration: InputDecoration(
+//                       labelText: 'lat',
+//                       border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.circular(8),
+//                       )),
+//                 ),
+//               ),
+//               Container(
+//                 width: 100,
+//                 child: TextField(
+//                   controller: _longitudeController,
+//                   keyboardType: TextInputType.number,
+//                   decoration: InputDecoration(
+//                       labelText: 'lng',
+//                       border: OutlineInputBorder(
+//                         borderRadius: BorderRadius.circular(8),
+//                       )),
+//                 ),
+//               ),
+//               MaterialButton(
+//                 color: Colors.blue,
+//                 onPressed: () {
+//                   final lat = double.parse(_latitudeController.text);
+//                   final lng = double.parse(_longitudeController.text);
+//                   _addPoint(lat, lng);
+//                 },
+//                 child: const Text(
+//                   'ADD',
+//                   style: TextStyle(color: Colors.white),
+//                 ),
+//               )
+//             ],
+//           ),
+//           MaterialButton(
+//             color: Colors.amber,
+//             child: const Text(
+//               'Add nested ',
+//               style: TextStyle(color: Colors.white),
+//             ),
+//             onPressed: () {
+//               final lat = double.parse(_latitudeController.text);
+//               final lng = double.parse(_longitudeController.text);
+//               _addNestedPoint(lat, lng);
+//             },
+//           )
+//         ],
+//       ),
+//     );
+//   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      _mapController = controller;
-//      _showHome();
-      //start listening after map is created
-      stream.listen((List<DocumentSnapshot> documentList) {
-        _updateMarkers(documentList);
-      });
-    });
-  }
+//   void _onMapCreated(GoogleMapController controller) {
+//     setState(() {
+//       _mapController = controller;
+// //      _showHome();
+//       //start listening after map is created
+//       stream.listen((List<DocumentSnapshot> documentList) {
+//         _updateMarkers(documentList);
+//       });
+//     });
+//   }
 
-  void _showHome() {
-    _mapController!.animateCamera(CameraUpdate.newCameraPosition(
-      const CameraPosition(
-        target: LatLng(12.960632, 77.641603),
-        zoom: 15.0,
-      ),
-    ));
-  }
+//   void _showHome() {
+//     _mapController!.animateCamera(CameraUpdate.newCameraPosition(
+//       const CameraPosition(
+//         target: LatLng(12.960632, 77.641603),
+//         zoom: 15.0,
+//       ),
+//     ));
+//   }
 
-  void _addPoint(double lat, double lng) {
-    GeoFirePoint geoFirePoint = geo.point(latitude: lat, longitude: lng);
-    _firestore
-        .collection('locations')
-        .add({'name': 'random name', 'position': geoFirePoint.data}).then((_) {
-      print('added ${geoFirePoint.hash} successfully');
-    });
-  }
+//   void _addPoint(double lat, double lng) {
+//     GeoFirePoint geoFirePoint = geo.point(latitude: lat, longitude: lng);
+//     _firestore
+//         .collection('locations')
+//         .add({'name': 'random name', 'position': geoFirePoint.data}).then((_) {
+//       print('added ${geoFirePoint.hash} successfully');
+//     });
+//   }
 
-  //example to add geoFirePoint inside nested object
-  void _addNestedPoint(double lat, double lng) {
-    GeoFirePoint geoFirePoint = geo.point(latitude: lat, longitude: lng);
-    _firestore.collection('nestedLocations').add({
-      'name': 'random name',
-      'address': {
-        'location': {'position': geoFirePoint.data}
-      }
-    }).then((_) {
-      print('added ${geoFirePoint.hash} successfully');
-    });
-  }
+//   //example to add geoFirePoint inside nested object
+//   void _addNestedPoint(double lat, double lng) {
+//     GeoFirePoint geoFirePoint = geo.point(latitude: lat, longitude: lng);
+//     _firestore.collection('nestedLocations').add({
+//       'name': 'random name',
+//       'address': {
+//         'location': {'position': geoFirePoint.data}
+//       }
+//     }).then((_) {
+//       print('added ${geoFirePoint.hash} successfully');
+//     });
+//   }
 
-  void _addMarker(double lat, double lng) {
-    final id = MarkerId(lat.toString() + lng.toString());
-    final _marker = Marker(
-      markerId: id,
-      position: LatLng(lat, lng),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
-      infoWindow: InfoWindow(title: 'latLng', snippet: '$lat,$lng'),
-    );
-    setState(() {
-      markers[id] = _marker;
-    });
-  }
+//   void _addMarker(double lat, double lng) {
+//     final id = MarkerId(lat.toString() + lng.toString());
+//     final _marker = Marker(
+//       markerId: id,
+//       position: LatLng(lat, lng),
+//       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+//       infoWindow: InfoWindow(title: 'latLng', snippet: '$lat,$lng'),
+//     );
+//     setState(() {
+//       markers[id] = _marker;
+//     });
+//   }
 
-  void _updateMarkers(List<DocumentSnapshot> documentList) {
-    documentList.forEach((DocumentSnapshot document) {
-      //var latitude =document.data()['position']['geopoint'] ;
+//   void _updateMarkers(List<DocumentSnapshot> documentList) {
+//     documentList.forEach((DocumentSnapshot document) {
+//       //var latitude =document.data()['position']['geopoint'] ;
 
-      //final GeoPoint point = document.data()["distance"];
+//       //final GeoPoint point = document.data()["distance"];
 
-      //_addMarker(point.latitude, point.longitude);
-    });
-  }
+//       //_addMarker(point.latitude, point.longitude);
+//     });
+//   }
 
-  double _value = 20.0;
-  String _label = '';
+//   double _value = 20.0;
+//   String _label = '';
 
-  changed(value) {
-    setState(() {
-      _value = value;
-      _label = '${_value.toInt().toString()} kms';
-      markers.clear();
-    });
-    radius.add(value);
-  }
-}
+//   changed(value) {
+//     setState(() {
+//       _value = value;
+//       _label = '${_value.toInt().toString()} kms';
+//       markers.clear();
+//     });
+//     radius.add(value);
+//   }
+// }
 
 class DistanceUser extends StatefulWidget {
   final String uid;
@@ -325,14 +325,12 @@ class DistancerUserState extends State<DistanceUser> {
   }
 
   Future<QuerySnapshot> getUserDistancefuture() async {
-    final distance = await FirebaseFirestore.instance
-        .collection('users')
-        .where("lat", isNotEqualTo: -1)
-        .where("uid", isEqualTo: widget.uid)
-        .get();
+    final distance = await FirebaseFirestore.instance.collection('users')
+        //.where("uid", isNotEqualTo: widget.uid)
+        .where("lat", whereNotIn: [-1, widget.lat]).get();
 
     for (int i = 0; i < distance.docs.length; i++) {
-      if (widget.uid == distance.docs[i]["uid"]) continue;
+      // if (widget.uid == distance.docs[i]["uid"]) continue;
       if (distance.docs[i]["lat"] == -1) continue;
       distanceUser[distance.docs[i]["uid"]] = _coordinateDistance(widget.lat,
           widget.lng, distance.docs[i]["lat"], distance.docs[i]["lng"]);
@@ -367,7 +365,7 @@ class DistancerUserState extends State<DistanceUser> {
                 // }
                 final List<int> category =
                     userData.data!.docs[index]["category"].cast<int>();
-                print(sortedMap);
+                print(sortedMap.values);
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
@@ -536,7 +534,7 @@ class DistancerUserState extends State<DistanceUser> {
                                 padding:
                                     const EdgeInsets.only(right: 8.0, top: 3.0),
                                 child: Text(
-                                  "0.1km",
+                                  "${userData.data!.docs[index]["lat"]}",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,

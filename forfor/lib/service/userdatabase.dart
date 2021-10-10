@@ -24,8 +24,6 @@ class UserDatabase {
   // }
 
   Future<bool> addDataUser(UserModel user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
     try {
       await _firestore.collection("users").doc(user.id).set({
         "gender": user.gender,
@@ -38,8 +36,9 @@ class UserDatabase {
         "timeStamp": user.timeStamp,
         "introduction": user.introduction,
         "deviceId": user.deviceId,
-        "lat": prefs.getDouble("lat"),
-        "lng": prefs.getDouble("lng"),
+        "address": user.address,
+        "lat": user.lat,
+        "lng": user.lng,
         "category": FieldValue.arrayUnion([
           user.category![0],
           user.category![1],
@@ -68,22 +67,23 @@ class UserDatabase {
       return false;
     }
   }
-  Future<bool> updateLocationUser(String uid,double lat,double lng) async {
+
+  Future<bool> updateLocationUser(
+      String uid, double lat, double lng, String address) async {
     try {
+      print("why");
       await _firestore.collection("users").doc(uid).update({
         "lat": lat,
         "lng": lng,
-        
+        "address": address,
       });
-
+      print("why!");
       return true;
     } catch (e) {
       print(e);
       return false;
     }
   }
-
-  
 
   Future<bool> currentUserChange(String uid, String deviceId) async {
     try {

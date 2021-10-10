@@ -23,6 +23,7 @@ import 'package:forfor/login/screen/sigup_main.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/location_service.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:geocoder/geocoder.dart';
 
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -70,58 +71,54 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return StreamProvider<UserLocation>(
-      initialData: UserLocation(latitude: null, longtitude: null),
-      create: (context) => LocationService().locationStream,
-      child: GetMaterialApp(
-        initialBinding: AuthBinding(),
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            backgroundColor: Colors.white,
-            appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            tabBarTheme: TabBarTheme(labelColor: Colors.black)),
-        home: MyHomePage(),
-        routes: {
-          '/groupPage': (context) {
-            return SimpleHiddenDrawer(
-              menu: Menu(),
-              screenSelectedBuilder: (position, controller) {
-                Widget screenCurrent = GroupHome(controller: controller);
-                switch (position) {
-                  case 0:
-                    screenCurrent = GroupHome(controller: controller);
-                    break;
-                  case 1:
-                    screenCurrent = GroupQnA(controller: controller);
-                    break;
-                  case 2:
-                    screenCurrent = GroupPosting(controller: controller);
-                    break;
-                  case 3:
-                    screenCurrent = GroupChatting(controller: controller);
-                    break;
-                  case 4:
-                    screenCurrent = GroupFriend(controller: controller);
-                    break;
-                  case 5:
-                    screenCurrent = GroupSearch(controller: controller);
-                    break;
-                }
+    return GetMaterialApp(
+      initialBinding: AuthBinding(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          backgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(color: Colors.transparent, elevation: 0),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          tabBarTheme: TabBarTheme(labelColor: Colors.black)),
+      home: MyHomePage(),
+      routes: {
+        '/groupPage': (context) {
+          return SimpleHiddenDrawer(
+            menu: Menu(),
+            screenSelectedBuilder: (position, controller) {
+              Widget screenCurrent = GroupHome(controller: controller);
+              switch (position) {
+                case 0:
+                  screenCurrent = GroupHome(controller: controller);
+                  break;
+                case 1:
+                  screenCurrent = GroupQnA(controller: controller);
+                  break;
+                case 2:
+                  screenCurrent = GroupPosting(controller: controller);
+                  break;
+                case 3:
+                  screenCurrent = GroupChatting(controller: controller);
+                  break;
+                case 4:
+                  screenCurrent = GroupFriend(controller: controller);
+                  break;
+                case 5:
+                  screenCurrent = GroupSearch(controller: controller);
+                  break;
+              }
 
-                return Scaffold(
-                  body: screenCurrent,
-                );
-              },
-            );
-          },
-          '/bottomScreen': (context) => BottomNavigation(),
-          '/login': (context) => Login(),
-          '/userInfomation': (context) => UserInfomation(),
-          '/hopeInformation': (context) => HopeInfomation(),
-          '/writingpage': (context) => WritingPage(),
+              return Scaffold(
+                body: screenCurrent,
+              );
+            },
+          );
         },
-      ),
+        '/bottomScreen': (context) => BottomNavigation(),
+        '/login': (context) => Login(),
+        '/userInfomation': (context) => UserInfomation(),
+        '/hopeInformation': (context) => HopeInfomation(),
+        '/writingpage': (context) => WritingPage(),
+      },
     );
   }
 }
@@ -134,7 +131,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
-    getLoc();
+    startTime();
 
     //permission();
   }
@@ -166,34 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _currentPosition = await location.getLocation();
 
-    // location.onLocationChanged.listen((LocationData currentLocation) {
-    //   setState(() {
+    AuthController()
+        .initLoc(_currentPosition.latitude, _currentPosition.latitude);
 
-    UserLocation(
-            latitude: _currentPosition.latitude!.toDouble(),
-            longtitude: _currentPosition.longitude!.toDouble())
-        .locationName();
+    hello();
+  }
 
-    AuthController().saveLocation(_currentPosition.latitude!.toDouble(),
-        _currentPosition.latitude!.toDouble());
-
-    if (controller.user!.uid.isNotEmpty) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(controller.user!.uid)
-          .update({
-        "lat": _currentPosition.latitude!.toDouble(),
-        "lng": _currentPosition.longitude!.toDouble(),
-      });
-    }
-
-    startTime();
-    //   });
-    //   _firestore.collection('locations').doc(widget.uid).update({
-    //     'latitude': myLocation.latitude,
-    //     'longtitude': myLocation.longitude
-    //   });
-    // });
+  hello() {
+    print("introduciton");
   }
 
   startTime() async {
@@ -248,8 +225,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Get.offAll(MainLogin());
       }
     } else {
+      await getLoc();
       prefs.setBool('seen', true);
-      print("introduction");
     }
     // Navigator.of(context).push(
     //   MaterialPageRoute(

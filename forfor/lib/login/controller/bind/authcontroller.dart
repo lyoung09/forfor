@@ -11,6 +11,7 @@ import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/loading.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
@@ -30,6 +31,7 @@ class AuthController extends GetxController {
   late String introduction;
   late double lat;
   late double lng;
+  late String address;
   late List<dynamic> list;
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   Rxn<User> _user = Rxn<User>();
@@ -39,17 +41,43 @@ class AuthController extends GetxController {
   @override
 
   // ignore: must_call_super
-  void onInit() {
+  void onInit() async {
     _user.bindStream(_auth.authStateChanges());
   }
 
-  saveLocation(double latitude, double longitude) {
-    this.lat = latitude;
-    this.lng = longitude;
+  initLoc(double? latitude, double? longitude) async {
+    latitude == null ? this.lat = -1 : this.lat = latitude;
+    longitude == null ? this.lng = -1 : this.lng = longitude;
+
+    if (this.lat == -1) {
+      this.address = "";
+    } else {
+      final coordinates = new Coordinates(this.lat, this.lng);
+      var addresses =
+          await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var first = addresses.first;
+
+      this.address = '${first.locality} ${first.countryName}';
+    }
   }
 
-  double get getLat => this.lat;
-  double get getLng => this.lng;
+  saveLocation(String uid, double? latitude, double? longitude) async {
+    latitude == null ? this.lat = -1 : this.lat = latitude;
+    longitude == null ? this.lng = -1 : this.lng = longitude;
+
+    if (this.lat == -1) {
+      updateUserLocatioin(-1, -1, "");
+    } else {
+      final coordinates = new Coordinates(this.lat, this.lng);
+      var addresses =
+          await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var first = addresses.first;
+
+      this.address = '${first.locality} ${first.countryName}';
+      updateUserLocatioin(this.lat, this.lng, this.address);
+    }
+    // this.address=first.
+  }
 
   Future<String> getDeviceId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -199,13 +227,13 @@ class AuthController extends GetxController {
     } catch (e) {}
   }
 
-  void updateUserLocatioin(double lat, double lng) async {
+  void updateUserLocatioin(double lat, double lng, String addr) async {
     try {
-      print(introduction);
-
-      if (await UserDatabase().updateLocationUser(uid, lat, lng)) {
+      if (await UserDatabase()
+          .updateLocationUser(_auth.currentUser!.uid, lat, lng, addr)) {
         Get.put(UserController()).user.lat = lat;
         Get.put(UserController()).user.lng = lng;
+        Get.put(UserController()).user.address = addr;
       }
     } catch (e) {}
   }

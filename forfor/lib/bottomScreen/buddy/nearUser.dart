@@ -14,7 +14,9 @@ import 'package:rxdart/rxdart.dart';
 
 class NearUser extends StatefulWidget {
   final String uid;
-  NearUser({required this.uid});
+  final double lat;
+  final double lng;
+  NearUser({required this.uid, required this.lat, required this.lng});
   @override
   _NearUserState createState() => _NearUserState();
 }
@@ -280,7 +282,11 @@ class _NearUserState extends State<NearUser> {
 
 class DistanceUser extends StatefulWidget {
   final String uid;
-  const DistanceUser({Key? key, required this.uid}) : super(key: key);
+  final double lat;
+  final double lng;
+  const DistanceUser(
+      {Key? key, required this.uid, required this.lat, required this.lng})
+      : super(key: key);
 
   @override
   DistancerUserState createState() => DistancerUserState();
@@ -292,7 +298,7 @@ class DistancerUserState extends State<DistanceUser> {
   Location location = Location();
   final geo = Geoflutterfire();
   final _firestore = FirebaseFirestore.instance;
-  Map<String, int> distanceUser = new Map();
+  Map<String, String> distanceUser = new Map();
   late GeoFirePoint myLocation;
 
   //현재 위치와 가게 위치 거리 구하는메소드
@@ -306,20 +312,6 @@ class DistancerUserState extends State<DistanceUser> {
     return ((12742 * asin(sqrt(a)) * 1000)).toStringAsFixed(0);
   }
 
-  late LatLng latlng;
-  @override
-  // ignore: must_call_super
-  void didUpdateWidget(oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    try {
-      latlng = Provider.of<LatLng>(context, listen: true);
-      print(latlng);
-      print('hello');
-    } catch (e) {
-      print(e);
-    }
-  }
-
   final userDistance = FirebaseFirestore.instance.collection('users');
   late Stream<List<DocumentSnapshot>> stream;
   getUserDistance() async {
@@ -327,246 +319,239 @@ class DistancerUserState extends State<DistanceUser> {
         .collection(collectionRef: userDistance)
         .within(center: myLocation, radius: 10, field: "postition");
 
-    stream.listen((List<DocumentSnapshot> documentList) {
-      print(documentList.runtimeType);
-      print(documentList);
-    });
+    stream.listen((List<DocumentSnapshot> documentList) {});
 
     return stream;
   }
 
-  getUserDistancefuture() async {
-    var userLocation = Provider.of<UserLocation>(context);
-    print(userLocation.latitude);
+  Future<QuerySnapshot> getUserDistancefuture() async {
     final distance = await FirebaseFirestore.instance
         .collection('users')
-        .where("uid", isNotEqualTo: widget.uid)
+        .where("lat", isNotEqualTo: -1)
+        .where("uid", isEqualTo: widget.uid)
         .get();
 
     for (int i = 0; i < distance.docs.length; i++) {
-      // print(_coordinateDistance(
-      //     _currentPosition.latitude,
-      //     _currentPosition.longitude,
-      //     distance.docs[i]["lat"],
-      //     distance.docs[i]["lng"]));
-      print("hi ${i}");
-      distanceUser[distance.docs[i]["uid"]] = distance.docs[i]["lat"];
-      // distanceUser[distance.docs[i]["uid"]] = _coordinateDistance(
-      //     _currentPosition.latitude,
-      //     _currentPosition.longitude,
-      //     distance.docs[i]["lat"],
-      //     distance.docs[i]["lng"]);
-      print(distanceUser);
+      if (widget.uid == distance.docs[i]["uid"]) continue;
+      if (distance.docs[i]["lat"] == -1) continue;
+      distanceUser[distance.docs[i]["uid"]] = _coordinateDistance(widget.lat,
+          widget.lng, distance.docs[i]["lat"], distance.docs[i]["lng"]);
     }
+    var sortedKeys = distanceUser.keys.toList(growable: false)
+      ..sort((k1, k2) =>
+          int.parse(distanceUser[k1]!).compareTo(int.parse(distanceUser[k2]!)));
+    sortedMap = new LinkedHashMap.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => distanceUser[k]);
+
+    return distance;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: getUserDistancefuture(),
-        builder: (context, userData) {
+        builder: (context, AsyncSnapshot<QuerySnapshot> userData) {
           if (!userData.hasData) {
             return Text("");
           } else {
-            return Text("${userData.data!}");
-            // return ListView.separated(
-            //   separatorBuilder: (BuildContext context, int index) => Divider(),
-            //   shrinkWrap: true,
-            //   physics: ClampingScrollPhysics(),
-            //   itemCount: userData.data!.docs.length,
-            //   scrollDirection: Axis.vertical,
-            //   padding: EdgeInsets.all(4),
-            //   itemBuilder: (BuildContext context, int index) {
-            //     // if (userData.data!.docs[index]["uid"] == uid) {
-            //     //   return Container(height: 0, width: 0, child: Text("hello"));
-            //     // }
-            //     final List<int> category =
-            //         userData.data!.docs[index]["category"].cast<int>();
+            return ListView.separated(
+              separatorBuilder: (BuildContext context, int index) => Divider(),
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              itemCount: userData.data!.size,
+              scrollDirection: Axis.vertical,
+              padding: EdgeInsets.all(4),
+              itemBuilder: (BuildContext context, int index) {
+                // if (userData.data!.docs[index]["uid"] == uid) {
+                //   return Container(height: 0, width: 0, child: Text("hello"));
+                // }
+                final List<int> category =
+                    userData.data!.docs[index]["category"].cast<int>();
+                print(sortedMap);
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return OtherProfile(
+                              uid: userData.data!.docs[index]["uid"],
+                              userName: userData.data!.docs[index]["nickname"],
+                              userImage: userData.data!.docs[index]["url"],
+                              introduction: userData.data!.docs[index]
+                                  ["introduction"]);
+                        },
+                      ),
+                    );
 
-            //     return InkWell(
-            //       onTap: () {
-            //         Navigator.of(context).push(
-            //           MaterialPageRoute(
-            //             builder: (BuildContext context) {
-            //               return OtherProfile(
-            //                   uid: userData.data!.docs[index]["uid"],
-            //                   userName: userData.data!.docs[index]["nickname"],
-            //                   userImage: userData.data!.docs[index]["url"],
-            //                   introduction: userData.data!.docs[index]
-            //                       ["introduction"]);
-            //             },
-            //           ),
-            //         );
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (BuildContext context) {
+                    //       return CustomDialogBox(
+                    //         title: "${userData.data!.docs[index]["nickname"]}",
+                    //         descriptions: userData.data!.docs[index]
+                    //             ["category"],
+                    //         img: '${userData.data!.docs[index]["url"]}',
+                    //         text: "Yes",
+                    //       );
+                    //     });
+                  },
+                  child: Container(
+                    height: 140,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 5.0),
+                                child: CircleAvatar(
+                                    radius: 55,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: NetworkImage(
+                                        "${userData.data!.docs[index]['url']}")),
+                              ),
+                              Positioned(
+                                bottom: 5,
+                                right: 40,
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                                      package: 'country_icons'),
+                                  backgroundColor: Colors.white,
+                                  radius: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                        ),
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 5, top: 8),
+                                  child: Text(
+                                    userData.data!.docs[index]['nickname'],
+                                    // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
 
-            //         // showDialog(
-            //         //     context: context,
-            //         //     builder: (BuildContext context) {
-            //         //       return CustomDialogBox(
-            //         //         title: "${userData.data!.docs[index]["nickname"]}",
-            //         //         descriptions: userData.data!.docs[index]
-            //         //             ["category"],
-            //         //         img: '${userData.data!.docs[index]["url"]}',
-            //         //         text: "Yes",
-            //         //       );
-            //         //     });
-            //       },
-            //       child: Container(
-            //         height: 140,
-            //         width: MediaQuery.of(context).size.width * 0.8,
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.start,
-            //           children: [
-            //             Expanded(
-            //               flex: 3,
-            //               child: Stack(
-            //                 children: [
-            //                   Padding(
-            //                     padding: EdgeInsets.only(left: 5.0),
-            //                     child: CircleAvatar(
-            //                         radius: 55,
-            //                         backgroundColor: Colors.white,
-            //                         backgroundImage: NetworkImage(
-            //                             "${userData.data!.docs[index]['url']}")),
-            //                   ),
-            //                   Positioned(
-            //                     bottom: 5,
-            //                     right: 40,
-            //                     child: CircleAvatar(
-            //                       backgroundImage: AssetImage(
-            //                           'icons/flags/png/${userData.data!.docs[index]['country']}.png',
-            //                           package: 'country_icons'),
-            //                       backgroundColor: Colors.white,
-            //                       radius: 15,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //             Padding(
-            //               padding: EdgeInsets.all(10),
-            //             ),
-            //             Expanded(
-            //               flex: 9,
-            //               child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Expanded(
-            //                     flex: 3,
-            //                     child: Padding(
-            //                       padding:
-            //                           const EdgeInsets.only(bottom: 5, top: 8),
-            //                       child: Text(
-            //                         userData.data!.docs[index]['nickname'],
-            //                         // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
-
-            //                         maxLines: 1,
-            //                         overflow: TextOverflow.ellipsis,
-            //                         style: TextStyle(
-            //                           fontWeight: FontWeight.bold,
-            //                           fontSize: 22,
-            //                         ),
-            //                       ),
-            //                     ),
-            //                   ),
-            //                   Expanded(
-            //                       flex: 2,
-            //                       child: StreamBuilder<QuerySnapshot>(
-            //                           stream: FirebaseFirestore.instance
-            //                               .collection('category')
-            //                               .where('categoryId', whereIn: [
-            //                             for (int i = 0;
-            //                                 i <
-            //                                     userData
-            //                                         .data!
-            //                                         .docs[index]['category']
-            //                                         .length;
-            //                                 i++)
-            //                               category[i]
-            //                           ]).snapshots(),
-            //                           builder: (context,
-            //                               AsyncSnapshot<QuerySnapshot>
-            //                                   categorySnapshot) {
-            //                             if (!categorySnapshot.hasData) {
-            //                               return Text("");
-            //                             }
-            //                             return ListView.builder(
-            //                                 scrollDirection: Axis.horizontal,
-            //                                 itemCount:
-            //                                     categorySnapshot.data!.size,
-            //                                 itemBuilder: (BuildContext context,
-            //                                     int index) {
-            //                                   return Transform(
-            //                                     transform:
-            //                                         new Matrix4.identity()
-            //                                           ..scale(0.8),
-            //                                     child: Chip(
-            //                                       backgroundColor:
-            //                                           Colors.orange[50],
-            //                                       label: Text(
-            //                                           categorySnapshot
-            //                                                   .data!.docs[index]
-            //                                               ["categoryName"],
-            //                                           style: TextStyle(
-            //                                               fontSize: 12)),
-            //                                     ),
-            //                                   );
-            //                                 });
-            //                           })),
-            //                   Expanded(
-            //                     flex: 5,
-            //                     child: Padding(
-            //                       padding: const EdgeInsets.only(
-            //                           top: 2, left: 5, bottom: 2),
-            //                       child: Text(
-            //                         userData.data!.docs[index]
-            //                                 ['introduction'] ??
-            //                             "",
-            //                         //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
-            //                         maxLines: 4,
-            //                         overflow: TextOverflow.ellipsis,
-            //                         style: TextStyle(
-            //                           fontSize: 15,
-            //                         ),
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //             Padding(
-            //               padding: EdgeInsets.all(10),
-            //             ),
-            //             Expanded(
-            //               flex: 2,
-            //               child: Column(
-            //                 children: [
-            //                   // CircleAvatar(
-            //                   //   backgroundImage: AssetImage(
-            //                   //       'icons/flags/png/${userData.data!.docs[index]['country']}.png',
-            //                   //       package: 'country_icons'),
-            //                   //   backgroundColor: Colors.white,
-            //                   //   radius: 17,
-            //                   // ),
-            //                   Padding(
-            //                     padding:
-            //                         const EdgeInsets.only(right: 8.0, top: 3.0),
-            //                     child: Text(
-            //                       "0.1km",
-            //                       style: TextStyle(
-            //                         fontWeight: FontWeight.bold,
-            //                         fontSize: 13,
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // );
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  flex: 2,
+                                  child: StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('category')
+                                          .where('categoryId', whereIn: [
+                                        for (int i = 0;
+                                            i <
+                                                userData
+                                                    .data!
+                                                    .docs[index]['category']
+                                                    .length;
+                                            i++)
+                                          category[i]
+                                      ]).snapshots(),
+                                      builder: (context,
+                                          AsyncSnapshot<QuerySnapshot>
+                                              categorySnapshot) {
+                                        if (!categorySnapshot.hasData) {
+                                          return Text("");
+                                        }
+                                        return ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount:
+                                                categorySnapshot.data!.size,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Transform(
+                                                transform:
+                                                    new Matrix4.identity()
+                                                      ..scale(0.8),
+                                                child: Chip(
+                                                  backgroundColor:
+                                                      Colors.orange[50],
+                                                  label: Text(
+                                                      categorySnapshot
+                                                              .data!.docs[index]
+                                                          ["categoryName"],
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                ),
+                                              );
+                                            });
+                                      })),
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 2, left: 5, bottom: 2),
+                                  child: Text(
+                                    userData.data!.docs[index]
+                                            ['introduction'] ??
+                                        "",
+                                    //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
+                                    maxLines: 4,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              // CircleAvatar(
+                              //   backgroundImage: AssetImage(
+                              //       'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                              //       package: 'country_icons'),
+                              //   backgroundColor: Colors.white,
+                              //   radius: 17,
+                              // ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 8.0, top: 3.0),
+                                child: Text(
+                                  "0.1km",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
           }
         });
   }

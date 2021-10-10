@@ -11,6 +11,7 @@ class UserModel {
   String? timeStamp;
   String? introduction;
   String? deviceId;
+  String? address;
   double? lat;
   double? lng;
   List<dynamic>? category;
@@ -27,6 +28,7 @@ class UserModel {
       this.category,
       this.timeStamp,
       this.introduction,
+      this.address,
       this.lat,
       this.lng});
 
@@ -44,5 +46,6 @@ class UserModel {
     deviceId = documentSnapshot["deviceId"];
     lat = documentSnapshot["lat"];
     lng = documentSnapshot["lng"];
+    address = documentSnapshot["address"];
   }
 }

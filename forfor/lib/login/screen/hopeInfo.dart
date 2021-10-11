@@ -56,6 +56,7 @@ class _HopeInfomationState extends State<HopeInfomation>
       list1[0] = checking.keys.elementAt(0);
       list1[1] = checking.keys.elementAt(1);
       list1[2] = checking.keys.elementAt(2);
+      print("wh");
       controller.setUserDatabase(list1);
 
       Navigator.pushNamed(context, '/bottomScreen');

@@ -298,8 +298,14 @@ class DistancerUserState extends State<DistanceUser> {
   Location location = Location();
   final geo = Geoflutterfire();
   final _firestore = FirebaseFirestore.instance;
-  Map<String, String> distanceUser = new Map();
+  Map<int, String> distanceUser = new Map();
   late GeoFirePoint myLocation;
+
+  initState() {
+    super.initState();
+    print(widget.lat);
+    print(widget.lng);
+  }
 
   //현재 위치와 가게 위치 거리 구하는메소드
   String _coordinateDistance(lat1, lon1, lat2, lon2) {
@@ -329,17 +335,14 @@ class DistancerUserState extends State<DistanceUser> {
         //.where("uid", isNotEqualTo: widget.uid)
         .where("lat", whereNotIn: [-1, widget.lat]).get();
 
-    for (int i = 0; i < distance.docs.length; i++) {
-      // if (widget.uid == distance.docs[i]["uid"]) continue;
-      if (distance.docs[i]["lat"] == -1) continue;
-      distanceUser[distance.docs[i]["uid"]] = _coordinateDistance(widget.lat,
-          widget.lng, distance.docs[i]["lat"], distance.docs[i]["lng"]);
-    }
-    var sortedKeys = distanceUser.keys.toList(growable: false)
-      ..sort((k1, k2) =>
-          int.parse(distanceUser[k1]!).compareTo(int.parse(distanceUser[k2]!)));
-    sortedMap = new LinkedHashMap.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => distanceUser[k]);
+    ////////////streambuilder example/////
+    // print(distance.runtimeType);
+    // print(distance.forEach((QuerySnapshot element) {
+    //   for (int i = 0; i < element.size;i++)
+    //     distanceUser[element.docs[i]["uid"]] = _coordinateDistance(widget.lat,
+    //         widget.lng, element.docs[i]["lat"], element.docs[i]["lng"]);
+    //   print(element.docs[0]["uid"]);
+    // }));
 
     return distance;
   }
@@ -363,20 +366,39 @@ class DistancerUserState extends State<DistanceUser> {
                 // if (userData.data!.docs[index]["uid"] == uid) {
                 //   return Container(height: 0, width: 0, child: Text("hello"));
                 // }
-                final List<int> category =
-                    userData.data!.docs[index]["category"].cast<int>();
-                print(sortedMap.values);
+
+                for (int i = 0; i < userData.data!.size; i++) {
+                  distanceUser[i] = _coordinateDistance(
+                      widget.lat,
+                      widget.lng,
+                      userData.data!.docs[i]["lat"],
+                      userData.data!.docs[i]["lng"]);
+                }
+
+                var sortedKeys = distanceUser.keys.toList(growable: false)
+                  ..sort((k1, k2) => int.parse(distanceUser[k1]!)
+                      .compareTo(int.parse(distanceUser[k2]!)));
+                final List<int> category = userData
+                    .data!.docs[sortedKeys[index]]["category"]
+                    .cast<int>();
+
+                sortedMap = new LinkedHashMap.fromIterable(sortedKeys,
+                    key: (k) => k, value: (k) => distanceUser[k]);
+
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) {
                           return OtherProfile(
-                              uid: userData.data!.docs[index]["uid"],
-                              userName: userData.data!.docs[index]["nickname"],
-                              userImage: userData.data!.docs[index]["url"],
-                              introduction: userData.data!.docs[index]
-                                  ["introduction"]);
+                              uid: userData.data!.docs[sortedKeys[index]]
+                                  ["uid"],
+                              userName: userData.data!.docs[sortedKeys[index]]
+                                  ["nickname"],
+                              userImage: userData.data!.docs[sortedKeys[index]]
+                                  ["url"],
+                              introduction: userData.data!
+                                  .docs[sortedKeys[index]]["introduction"]);
                         },
                       ),
                     );
@@ -409,14 +431,14 @@ class DistancerUserState extends State<DistanceUser> {
                                     radius: 55,
                                     backgroundColor: Colors.white,
                                     backgroundImage: NetworkImage(
-                                        "${userData.data!.docs[index]['url']}")),
+                                        "${userData.data!.docs[sortedKeys[index]]['url']}")),
                               ),
                               Positioned(
                                 bottom: 5,
                                 right: 40,
                                 child: CircleAvatar(
                                   backgroundImage: AssetImage(
-                                      'icons/flags/png/${userData.data!.docs[index]['country']}.png',
+                                      'icons/flags/png/${userData.data!.docs[sortedKeys[index]]['country']}.png',
                                       package: 'country_icons'),
                                   backgroundColor: Colors.white,
                                   radius: 15,
@@ -439,7 +461,8 @@ class DistancerUserState extends State<DistanceUser> {
                                   padding:
                                       const EdgeInsets.only(bottom: 5, top: 8),
                                   child: Text(
-                                    userData.data!.docs[index]['nickname'],
+                                    userData.data!.docs[sortedKeys[index]]
+                                        ['nickname'],
                                     // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
 
                                     maxLines: 1,
@@ -461,7 +484,8 @@ class DistancerUserState extends State<DistanceUser> {
                                             i <
                                                 userData
                                                     .data!
-                                                    .docs[index]['category']
+                                                    .docs[sortedKeys[index]]
+                                                        ['category']
                                                     .length;
                                             i++)
                                           category[i]
@@ -501,14 +525,14 @@ class DistancerUserState extends State<DistanceUser> {
                                   padding: const EdgeInsets.only(
                                       top: 2, left: 5, bottom: 2),
                                   child: Text(
-                                    userData.data!.docs[index]
+                                    userData.data!.docs[sortedKeys[index]]
                                             ['introduction'] ??
                                         "",
                                     //"userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],userData.data!.docs[index]['email'],",
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 13,
                                     ),
                                   ),
                                 ),
@@ -520,24 +544,46 @@ class DistancerUserState extends State<DistanceUser> {
                           padding: EdgeInsets.all(10),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
-                              // CircleAvatar(
-                              //   backgroundImage: AssetImage(
-                              //       'icons/flags/png/${userData.data!.docs[index]['country']}.png',
-                              //       package: 'country_icons'),
-                              //   backgroundColor: Colors.white,
-                              //   radius: 17,
-                              // ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 8.0, top: 3.0),
-                                child: Text(
-                                  "${userData.data!.docs[index]["lat"]}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    userData.data!.docs[sortedKeys[index]]
+                                        ['address'],
+                                    // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
+
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8.0, top: 3.0),
+                                  child: Text(
+                                    double.parse(sortedMap[sortedKeys[index]]) >
+                                            100000
+                                        ? ""
+                                        : double.parse(sortedMap[
+                                                        sortedKeys[index]]) *
+                                                    0.001 <
+                                                100.0
+                                            ? "바로 주변"
+                                            : "${(double.parse(sortedMap[sortedKeys[index]]) * 0.001).toStringAsFixed(1)}km",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.5,
+                                    ),
                                   ),
                                 ),
                               ),

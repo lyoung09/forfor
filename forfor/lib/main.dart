@@ -161,19 +161,18 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    _currentPosition = await location.getLocation();
-
-    AuthController()
-        .initLoc(_currentPosition.latitude, _currentPosition.latitude);
-
-    hello();
-  }
-
-  hello() {
-    print("introduciton");
+    // _currentPosition = await location.getLocation();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // setState(() {
+    //   prefs.setDouble("lat", _currentPosition.latitude!.toDouble());
+    //   prefs.setDouble("lng", _currentPosition.longitude!.toDouble());
+    // });
+    // AuthController().initLoc(
+    //     _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
   }
 
   startTime() async {
+    getLoc();
     return new Timer(Duration(milliseconds: 500), () {
       checkFirstSeen();
     });
@@ -217,6 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (!userData) {
           controller.deleteUser();
+
           Get.offAll(MainLogin());
         } else {
           Get.offAll(BottomNavigation());
@@ -225,7 +225,6 @@ class _MyHomePageState extends State<MyHomePage> {
         Get.offAll(MainLogin());
       }
     } else {
-      await getLoc();
       prefs.setBool('seen', true);
     }
     // Navigator.of(context).push(

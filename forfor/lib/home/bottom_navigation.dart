@@ -59,7 +59,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
     if (_permissionGranted == PermissionStatus.granted) {
       _currentPosition = await location.getLocation();
       AuthController().saveLocation(controller.user!.uid,
-          _currentPosition.latitude, _currentPosition.longitude);
+          _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
+    } else if (_permissionGranted == PermissionStatus.denied) {
+      AuthController().saveLocation(controller.user!.uid, -1, -1);
+    } else {
+      AuthController().saveLocation(controller.user!.uid, -1, -1);
     }
   }
 

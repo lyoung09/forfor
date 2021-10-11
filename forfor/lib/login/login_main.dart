@@ -182,7 +182,6 @@ class _LoginState extends State<Login> {
     print("hihi");
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
-    print("zz");
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     final GoogleSignInAccount? googleSignInAccount =

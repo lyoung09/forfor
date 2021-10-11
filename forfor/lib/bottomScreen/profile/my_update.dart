@@ -761,7 +761,7 @@ class _UserUpdateState extends State<UserUpdate> {
                           width: width * 0.8,
                           child: TextFormField(
                             keyboardType: TextInputType.multiline,
-                            textInputAction: TextInputAction.done,
+                            //textInputAction: TextInputAction.done,
                             cursorColor: Colors.amber[500],
                             maxLines: 7,
                             focusNode: _nodeText,

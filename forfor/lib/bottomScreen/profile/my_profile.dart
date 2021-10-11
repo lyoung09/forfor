@@ -152,8 +152,8 @@ class MyProfile extends GetWidget<AuthController> {
                                                     padding:
                                                         const EdgeInsets.all(5),
                                                     child: Text(
-                                                        snapshot.user.category
-                                                            .toString(),
+                                                        snapshot.user.address ??
+                                                            "",
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                         maxLines: 1,

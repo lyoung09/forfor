@@ -122,6 +122,7 @@ flutter:
     - assets/icon/national.png
     - assets/icon/citizenship.png
     - assets/icon/buddy.png
+    - assets/icon/location.png
     - assets/icon/chat.png
     - assets/icon/padlock.png
     - assets/icon/unlock.png

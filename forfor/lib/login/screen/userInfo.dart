@@ -338,12 +338,15 @@ class _UserInfomationState extends State<UserInfomation>
         return downloadURL;
       });
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
       controller.addUserInformation(
-          _gender.toString(),
-          _countryCode.toLowerCase(),
-          _usernameControl.text,
-          urlProfileImageApi,
-          _introductionControl.text);
+        _gender.toString(),
+        _countryCode.toLowerCase(),
+        _usernameControl.text,
+        urlProfileImageApi,
+        _introductionControl.text,
+      );
       setState(() {
         isLoading = true;
       });

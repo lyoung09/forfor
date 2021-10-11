@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/buddy/searchPage.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
@@ -38,7 +39,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   bool genderClick = false;
   bool countryClick = false;
   FirebaseAuth auth = FirebaseAuth.instance;
-
+  bool searchButton = false;
   var detail;
   var uid;
   final controller = Get.put(AuthController());
@@ -87,7 +88,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
     //   setState(() {
 
     AuthController().saveLocation(controller.user!.uid,
-        _currentPosition.latitude, _currentPosition.latitude);
+        _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
   }
 
   late int selectedIndex;
@@ -420,7 +421,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 13,
                                     ),
                                   ),
                                 ),
@@ -432,7 +433,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           padding: EdgeInsets.all(10),
                         ),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Column(
                             children: [
                               // CircleAvatar(
@@ -442,14 +443,17 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               //   backgroundColor: Colors.white,
                               //   radius: 17,
                               // ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 8.0, top: 3.0),
-                                child: Text(
-                                  "0.1km",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8.0, top: 3.0),
+                                  child: Text(
+                                    "${userData.data!.docs[index]['address']}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.5,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -509,6 +513,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
       );
 
   var string = "";
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -542,11 +547,15 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                           style: TextStyle(color: Colors.black, fontSize: 30)),
                     ),
                     Spacer(),
-                    string == "near" && snapshot.data!["lat"] == -1
+                    string == "near" && snapshot.data!["lat"] == -1.2
                         ? Align(
                             alignment: Alignment.topRight,
                             child: IconButton(
-                              icon: Icon(Icons.ac_unit_outlined),
+                              icon: Image.asset(
+                                'assets/icon/location.png',
+                                width: 20.0,
+                                height: 20.0,
+                              ),
                               onPressed: getLoc,
                             ))
                         : Text(""),
@@ -554,7 +563,25 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                         alignment: Alignment.topRight,
                         child: IconButton(
                           icon: Icon(Icons.search),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              searchButton = true;
+                              newClick = false;
+                              categoryClick = false;
+                              nearClick = false;
+                              genderClick = false;
+                              countryClick = false;
+                              string = "";
+                            });
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return SearchPage();
+                                },
+                              ),
+                            );
+                            //Get.put(SearchPage());
+                          },
                         )),
                   ],
                 ),

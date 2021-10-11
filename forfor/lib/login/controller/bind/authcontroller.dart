@@ -45,36 +45,45 @@ class AuthController extends GetxController {
     _user.bindStream(_auth.authStateChanges());
   }
 
-  initLoc(double? latitude, double? longitude) async {
-    latitude == null ? this.lat = -1 : this.lat = latitude;
-    longitude == null ? this.lng = -1 : this.lng = longitude;
+  initLoc(double latitude, double longitude) async {
+    this.lat = latitude;
+    this.lng = longitude;
+
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // this.lat = prefs.getDouble("lat") ?? -1;
+    // this.lng = prefs.getDouble("lng") ?? -1;
 
     if (this.lat == -1) {
       this.address = "";
     } else {
+      print(this.lat);
       final coordinates = new Coordinates(this.lat, this.lng);
       var addresses =
           await Geocoder.local.findAddressesFromCoordinates(coordinates);
       var first = addresses.first;
 
       this.address = '${first.locality} ${first.countryName}';
+      print(this.address);
     }
   }
 
-  saveLocation(String uid, double? latitude, double? longitude) async {
-    latitude == null ? this.lat = -1 : this.lat = latitude;
-    longitude == null ? this.lng = -1 : this.lng = longitude;
+  saveLocation(String uid, double latitude, double longitude) async {
+    this.lat = latitude;
+    this.lng = longitude;
 
     if (this.lat == -1) {
-      updateUserLocatioin(-1, -1, "");
+      updateUserLocatioin(uid, -1.2, -1.2, "");
     } else {
       final coordinates = new Coordinates(this.lat, this.lng);
       var addresses =
           await Geocoder.local.findAddressesFromCoordinates(coordinates);
       var first = addresses.first;
 
-      this.address = '${first.locality} ${first.countryName}';
-      updateUserLocatioin(this.lat, this.lng, this.address);
+      this.address = '${first.adminArea.capitalize}';
+      // print(
+      //     '${first.adminArea.capitalize}, ${first.coordinates} ${first.countryCode} ${first.countryName} ${first.featureName} ${first.subAdminArea} ${first.subLocality} ${first.subThoroughfare} ${first.thoroughfare}');
+      updateUserLocatioin(uid, this.lat, this.lng, this.address);
     }
     // this.address=first.
   }
@@ -120,6 +129,12 @@ class AuthController extends GetxController {
         backgroundColor: Colors.white,
         middleTextStyle: TextStyle(color: Colors.black),
         textCancel: "ok",
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
         buttonColor: Colors.white,
         cancelTextColor: Colors.black,
       );
@@ -153,6 +168,9 @@ class AuthController extends GetxController {
         backgroundColor: Colors.white,
         middleTextStyle: TextStyle(color: Colors.black),
         textCancel: "ok",
+        onCancel: () {
+          Get.back();
+        },
         buttonColor: Colors.white,
         cancelTextColor: Colors.black,
       );
@@ -172,6 +190,9 @@ class AuthController extends GetxController {
 
   void setUserDatabase(List<dynamic> list) async {
     try {
+      print("hello");
+      print(this.gender);
+
       String deviceId = await getDeviceId();
       DateTime currentPhoneDate = DateTime.now(); //DateTime
 
@@ -181,6 +202,7 @@ class AuthController extends GetxController {
       DateTime myDateTime = myTimeStamp.toDate();
       this.list = list;
       this.timeStamp = myDateTime.toString();
+
       UserModel _user = UserModel(
           id: this.uid,
           email: this.email,
@@ -191,8 +213,9 @@ class AuthController extends GetxController {
           url: this.url,
           deviceId: deviceId,
           introduction: this.introduction,
-          lat: this.lat,
-          lng: this.lng,
+          // address: this.address,
+          // lat: this.lat,
+          // lng: this.lng,
           timeStamp: myDateTime.toString(),
           category: list);
 
@@ -227,7 +250,8 @@ class AuthController extends GetxController {
     } catch (e) {}
   }
 
-  void updateUserLocatioin(double lat, double lng, String addr) async {
+  void updateUserLocatioin(
+      String uid, double lat, double lng, String addr) async {
     try {
       if (await UserDatabase()
           .updateLocationUser(_auth.currentUser!.uid, lat, lng, addr)) {
@@ -375,6 +399,12 @@ class AuthController extends GetxController {
         backgroundColor: Colors.white,
         middleTextStyle: TextStyle(color: Colors.black),
         textCancel: "ok",
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
         buttonColor: Colors.white,
         cancelTextColor: Colors.black,
       );

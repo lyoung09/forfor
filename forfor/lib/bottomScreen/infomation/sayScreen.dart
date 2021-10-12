@@ -13,6 +13,7 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
+import 'package:like_button/like_button.dart';
 import 'dart:math' as math;
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -365,7 +366,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     return x;
   }
 
-  Widget otherUserQnA(posting, index) {
+  Widget otherUserQnA(posting, index, favorite) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
@@ -461,11 +462,59 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         Spacer(),
                         IconButton(
                           iconSize: 12,
-                          icon: Icon(Icons.favorite_border_outlined),
-                          onPressed: () {},
+                          icon: Icon(
+                            Icons.favorite,
+                            color: favorite[index] == true
+                                ? Colors.red[400]
+                                : Colors.grey[300],
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              favorite[index] = !favorite[index];
+                              if (favorite[index] ?? false) {
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update({
+                                  "count": FieldValue.increment(1),
+                                  "likes": FieldValue.arrayUnion([
+                                    {"uid": controller.user!.uid}
+                                  ])
+
+                                  // "likes": {
+                                  //   "count": FieldValue.increment(1),
+                                  //   "uid": controller.user!.uid,
+                                  //   "userNickname": uName,
+                                  //   "userImage": uImageUrl,
+                                  //   "userCoutnry": uCountry
+                                  //}
+                                });
+                              } else {
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update(
+                                  {
+                                    "count": FieldValue.increment(0),
+                                    'likes': FieldValue.arrayRemove([
+                                      {"uid": controller.user!.uid}
+                                    ])
+
+                                    // "uid": FieldValue.delete(),
+                                    // "userNickname": FieldValue.delete(),
+                                    // "userImage": FieldValue.delete(),
+                                    // "userCoutnry": FieldValue.delete()
+                                  },
+                                );
+                              }
+                            });
+                          },
                         ),
                         Text(
-                          "12",
+                          posting[index]["count"] == null ||
+                                  posting[index]["count"] < 1
+                              ? ""
+                              : "${posting[index]["count"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
                         Container(
@@ -495,7 +544,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget myQnA(posting, index) {
+  bool like = false;
+
+  Widget myQnA(posting, index, favorite) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
@@ -554,9 +605,16 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             style: TextStyle(fontSize: 13)),
                         Spacer(),
                         IconButton(
-                          iconSize: 12,
-                          icon: Icon(Icons.favorite_border_outlined),
-                          onPressed: () {},
+                          icon: Icon(
+                            Icons.favorite_border,
+                            color: favorite[index] == true
+                                ? Colors.red
+                                : Colors.white,
+                          ),
+                          onPressed: () {
+                            favorite[index] = !favorite[index];
+                            setState(() {});
+                          },
                         ),
                         Text(
                           "12",
@@ -571,7 +629,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         IconButton(
                           iconSize: 12,
                           icon: Icon(Icons.reply_all_outlined),
-                          onPressed: () {},
+                          onPressed: () {
+                            print("1234");
+                          },
                         ),
                         Text(
                           "1",
@@ -682,10 +742,21 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                       physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data!.size,
                       itemBuilder: (context, index) {
+                        Map<int, bool> favorite = new Map<int, bool>();
+                        print('123456 ${snapshot.data!.docs[index]["likes"]}');
+                        print(snapshot.data!.docs[index]["likes"].runtimeType);
+
+                        snapshot.data!.docs[index]["likes"][0]
+                                    ['7Ldq42bdxmbqQIp1PG2Mxii6MnF3'] ==
+                                controller.user!.uid
+                            ? favorite[index] = true
+                            : favorite[index] = false;
+
                         return controller.user!.uid ==
                                 snapshot.data!.docs[index]["authorId"]
-                            ? myQnA(snapshot.data!.docs, index)
-                            : otherUserQnA(snapshot.data!.docs, index);
+                            ? myQnA(snapshot.data!.docs, index, favorite)
+                            : otherUserQnA(
+                                snapshot.data!.docs, index, favorite);
                       },
                     ),
                   ],

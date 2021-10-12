@@ -71,14 +71,13 @@ class UserDatabase {
   Future<bool> updateLocationUser(
       String uid, double lat, double lng, String address) async {
     try {
-      print("why");
       await _firestore.collection("users").doc(uid).update({
         "lat": lat,
         "lng": lng,
         //"postion": GeoPoint(lat, lng),
         "address": address,
       });
-      print("why!");
+
       return true;
     } catch (e) {
       print(e);

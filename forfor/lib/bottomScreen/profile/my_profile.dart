@@ -25,7 +25,7 @@ import 'change_category.dart';
 // }
 
 class MyProfile extends GetWidget<AuthController> {
-  updateUser() {
+  updateUser(nickname, image, introduction, category) {
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
@@ -33,7 +33,12 @@ class MyProfile extends GetWidget<AuthController> {
     //     },
     //   ),
     // );
-    Get.to(() => UserUpdate());
+    Get.to(() => UserUpdate(
+        category: category,
+        image: image,
+        nickname: nickname,
+        introduction: introduction,
+        uid: controller.user!.uid));
   }
 
   @override
@@ -76,7 +81,13 @@ class MyProfile extends GetWidget<AuthController> {
                         children: [
                           // Container(height: 10),
                           InkWell(
-                              onTap: updateUser,
+                              onTap: () {
+                                updateUser(
+                                    snapshot.user.nickname,
+                                    snapshot.user.url,
+                                    snapshot.user.introduction,
+                                    snapshot.user.category);
+                              },
                               child: Column(
                                 children: [
                                   Row(

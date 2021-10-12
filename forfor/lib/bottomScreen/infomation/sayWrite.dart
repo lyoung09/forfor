@@ -1,27 +1,113 @@
 import 'package:bubble/bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/widget/loading.dart';
 import 'package:forfor/widget/my_text.dart';
+import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 class SayWriting extends StatefulWidget {
-  const SayWriting({Key? key}) : super(key: key);
+  final String uid;
+  final String username;
+  final String userImage;
+  final String userCountry;
+  const SayWriting(
+      {Key? key,
+      required this.uid,
+      required this.username,
+      required this.userImage,
+      required this.userCountry})
+      : super(key: key);
 
   @override
   _SayWritingState createState() => _SayWritingState();
 }
 
 class _SayWritingState extends State<SayWriting> {
+  TextEditingController _storycontroller = new TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
+  saveposting() async {
+    print(_storycontroller.text);
+    if (_storycontroller.text.isEmpty) {
+      Get.defaultDialog(
+        title: "Error",
+        middleText: "사진 또는 글이 있어야합니다",
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        onCancel: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+
+          // Get.back();
+        },
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
+    } else {
+      DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+      Timestamp myTimeStamp =
+          Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+      DateTime myDateTime = myTimeStamp.toDate(); //
+      await FirebaseFirestore.instance.collection('posting').add({
+        "story": _storycontroller.text,
+        "author": widget.username,
+        "authorImage": widget.userImage,
+        "authorId": widget.uid,
+        "timestamp": myDateTime,
+        "authorCountry": widget.userCountry,
+        "address": address ?? ""
+      });
+      Get.back();
+    }
+  }
+
+  String? address;
+  getLoc() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    final controller = Get.put(AuthController());
+    late LocationData _currentPosition;
+    final Location location = Location();
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+
+    // location.onLocationChanged.listen((LocationData currentLocation) {
+    //   setState(() {
+
+    address = await controller.saveLocation(controller.user!.uid,
+        _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
+  }
+
   Widget bottom() {
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Container(
-        decoration: BoxDecoration(color: Colors.grey[50]),
+        decoration: BoxDecoration(color: Colors.orange[50]),
         child: Row(
           children: [
             Padding(padding: EdgeInsets.only(right: 30)),
@@ -33,7 +119,29 @@ class _SayWritingState extends State<SayWriting> {
                     size: 25,
                   )),
             ),
-
+            Padding(padding: EdgeInsets.only(right: 30)),
+            Container(
+              child: IconButton(
+                icon: Image.asset(
+                  'assets/icon/location.png',
+                  width: 20.0,
+                  height: 20.0,
+                ),
+                onPressed: getLoc,
+              ),
+            ),
+            Spacer(),
+            InkWell(
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+              },
+              child: Container(
+                child: Text("Done"),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+            )
             //IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit)),
           ],
         ),
@@ -45,11 +153,6 @@ class _SayWritingState extends State<SayWriting> {
   Widget build(BuildContext context) {
     TextStyle textStyle =
         TextStyle(color: Colors.black, height: 1.4, fontSize: 16);
-    TextStyle labelStyle = TextStyle(color: Colors.white);
-    UnderlineInputBorder lineStyle1 = UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.white, width: 1));
-    UnderlineInputBorder lineStyle2 = UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.amber[500]!, width: 2));
 
     return Scaffold(
       appBar: AppBar(
@@ -83,7 +186,7 @@ class _SayWritingState extends State<SayWriting> {
                 size: 25,
                 color: Colors.grey[900],
               ),
-              onPressed: () {},
+              onPressed: saveposting,
             ),
           ]),
       body: SingleChildScrollView(
@@ -96,8 +199,16 @@ class _SayWritingState extends State<SayWriting> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(height: 20),
-                TextField(
+                TextFormField(
                   style: textStyle,
+                  controller: _storycontroller,
+                  validator: (value) {
+                    if (value!.isNotEmpty) {
+                      _storycontroller.text = value;
+                      return null;
+                    }
+                    return null;
+                  },
                   keyboardType: TextInputType.multiline,
                   cursorColor: Colors.black26,
                   maxLines: 15,
@@ -123,6 +234,7 @@ class _SayWritingState extends State<SayWriting> {
           ),
         ),
       ),
+      bottomSheet: bottom(),
     );
   }
 }

@@ -112,7 +112,9 @@ class _SearchPageState extends State<SearchPage> {
                                     uid: data["uid"],
                                     userName: data["nickname"],
                                     userImage: data["url"],
-                                    introduction: data["introduction"]);
+                                    introduction: data["introduction"],
+                                    country: data["country"],
+                                    address: data["address"]);
                               },
                             ),
                           );

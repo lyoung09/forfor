@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/buddy/searchPage.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
-import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/model/scientist.dart';
@@ -289,7 +288,9 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                               userName: userData.data!.docs[index]["nickname"],
                               userImage: userData.data!.docs[index]["url"],
                               introduction: userData.data!.docs[index]
-                                  ["introduction"]);
+                                  ["introduction"],
+                              country: userData.data!.docs[index]["country"],
+                              address: userData.data!.docs[index]["address"]);
                         },
                       ),
                     );

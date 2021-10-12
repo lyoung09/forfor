@@ -398,7 +398,11 @@ class DistancerUserState extends State<DistanceUser> {
                               userImage: userData.data!.docs[sortedKeys[index]]
                                   ["url"],
                               introduction: userData.data!
-                                  .docs[sortedKeys[index]]["introduction"]);
+                                  .docs[sortedKeys[index]]["introduction"],
+                              country: userData.data!.docs[sortedKeys[index]]
+                                  ["country"],
+                              address: userData.data!.docs[sortedKeys[index]]
+                                  ["address"]);
                         },
                       ),
                     );

@@ -12,7 +12,6 @@ import 'package:forfor/bottomScreen/buddy/nearUser.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
-import 'package:forfor/bottomScreen/otherProfile/userProfile.dart';
 import 'package:forfor/login/controller/bind/authbinding.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
@@ -131,7 +130,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
-    startTime();
+    getLoc();
 
     //permission();
   }
@@ -160,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
     }
-
+    startTime();
     // _currentPosition = await location.getLocation();
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     // setState(() {
@@ -172,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   startTime() async {
-    getLoc();
     return new Timer(Duration(milliseconds: 500), () {
       checkFirstSeen();
     });
@@ -230,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Navigator.of(context).push(
     //   MaterialPageRoute(
     //     builder: (BuildContext context) {
-    //       return InvitePersonScreen();
+    //       return SayScreen();
     //     },
     //   ),
     // );

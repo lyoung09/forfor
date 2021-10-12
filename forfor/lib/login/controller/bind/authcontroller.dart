@@ -85,6 +85,7 @@ class AuthController extends GetxController {
       //     '${first.adminArea.capitalize}, ${first.coordinates} ${first.countryCode} ${first.countryName} ${first.featureName} ${first.subAdminArea} ${first.subLocality} ${first.subThoroughfare} ${first.thoroughfare}');
       updateUserLocatioin(uid, this.lat, this.lng, this.address);
     }
+    return this.address;
     // this.address=first.
   }
 
@@ -190,9 +191,6 @@ class AuthController extends GetxController {
 
   void setUserDatabase(List<dynamic> list) async {
     try {
-      print("hello");
-      print(this.gender);
-
       String deviceId = await getDeviceId();
       DateTime currentPhoneDate = DateTime.now(); //DateTime
 

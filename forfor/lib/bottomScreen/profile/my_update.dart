@@ -18,7 +18,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
 class UserUpdate extends StatefulWidget {
-  const UserUpdate({Key? key}) : super(key: key);
+  final String uid;
+  final String image;
+  final String nickname;
+  final String introduction;
+  final List category;
+  const UserUpdate(
+      {Key? key,
+      required this.uid,
+      required this.image,
+      required this.nickname,
+      required this.introduction,
+      required this.category})
+      : super(key: key);
 
   @override
   _UserUpdateState createState() => _UserUpdateState();
@@ -27,9 +39,8 @@ class UserUpdate extends StatefulWidget {
 class _UserUpdateState extends State<UserUpdate> {
   final AuthController controller = Get.put(AuthController());
   var _image;
-  final TextEditingController _usernameControl = new TextEditingController();
-  final TextEditingController _introductionControl =
-      new TextEditingController();
+  TextEditingController? _usernameControl;
+  TextEditingController? _introductionControl;
   bool checkNickname = true;
   bool categoryButtonClick = false;
   var list1;
@@ -54,6 +65,8 @@ class _UserUpdateState extends State<UserUpdate> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _usernameControl = new TextEditingController(text: widget.nickname);
+    _introductionControl = new TextEditingController(text: widget.introduction);
   }
 
   void _showPicker(context) {
@@ -210,7 +223,7 @@ class _UserUpdateState extends State<UserUpdate> {
   }
 
   void userUpdate() async {
-    if (_usernameControl.text.isEmpty || _usernameControl.text.length < 3)
+    if (_usernameControl!.text.isEmpty || _usernameControl!.text.length < 3)
       setState(() {
         checkNickname = false;
       });
@@ -242,14 +255,14 @@ class _UserUpdateState extends State<UserUpdate> {
         if (categoryNumber != checking.length) {
         } else {
           if (_formKey.currentState!.validate() && checking.length > 0) {
-            controller.updateUserDatabase(user!, _usernameControl.text,
-                urlProfileImageApi, _introductionControl.text, list);
+            controller.updateUserDatabase(user!, _usernameControl!.text,
+                urlProfileImageApi, _introductionControl!.text, list);
           }
         }
       } else {
         if (_formKey.currentState!.validate()) {
-          controller.updateUserDatabase(user!, _usernameControl.text,
-              urlProfileImageApi, _introductionControl.text, user!.category);
+          controller.updateUserDatabase(user!, _usernameControl!.text,
+              urlProfileImageApi, _introductionControl!.text, user!.category);
         }
       }
     }
@@ -613,15 +626,12 @@ class _UserUpdateState extends State<UserUpdate> {
       }, builder: (snapshot) {
         if (snapshot.user.id != null) {
           user = snapshot.user;
-          _usernameControl.text = user!.nickname!;
-          _usernameControl.selection = TextSelection(
-              baseOffset: user!.nickname!.length,
-              extentOffset: user!.nickname!.length);
-          _introductionControl.text = user!.introduction!;
+          // _usernameControl.text = user!.nickname!;
+          // _usernameControl.selection = TextSelection(
+          //     baseOffset: user!.nickname!.length,
+          //     extentOffset: user!.nickname!.length);
+          // _introductionControl.text = user!.introduction!;
 
-          _introductionControl.selection = TextSelection(
-              baseOffset: user!.introduction!.length,
-              extentOffset: user!.introduction!.length);
 //          user!.vip == true ? categoryNumber = 6 : categoryNumber = 3;
           categoryNumber = 3;
 
@@ -668,8 +678,8 @@ class _UserUpdateState extends State<UserUpdate> {
                                               ),
                                             ),
                                             radius: 70.0,
-                                            backgroundImage: NetworkImage(
-                                                snapshot.user.url ?? "")),
+                                            backgroundImage:
+                                                NetworkImage(widget.image)),
                                       ),
                                     )),
                               )
@@ -761,7 +771,7 @@ class _UserUpdateState extends State<UserUpdate> {
                           width: width * 0.8,
                           child: TextFormField(
                             keyboardType: TextInputType.multiline,
-                            //textInputAction: TextInputAction.done,
+                            textInputAction: TextInputAction.newline,
                             cursorColor: Colors.amber[500],
                             maxLines: 7,
                             focusNode: _nodeText,
@@ -781,8 +791,7 @@ class _UserUpdateState extends State<UserUpdate> {
                             controller: _introductionControl,
                             validator: (value) {
                               if (value!.isNotEmpty) {
-                                _introductionControl.text = value;
-                                print(_introductionControl.text);
+                                _introductionControl!.text = value;
                                 return null;
                               }
                               return null;

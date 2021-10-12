@@ -86,6 +86,7 @@ dependencies:
   geoflutterfire: ^3.0.1
   gallery_saver: ^0.0,5
   google_maps_flutter: ^2.0.1
+  timeago: ^3.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

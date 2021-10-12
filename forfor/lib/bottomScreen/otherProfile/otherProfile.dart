@@ -6,6 +6,8 @@ class OtherProfile extends StatefulWidget {
   final String uid;
   final String userName;
   final String userImage;
+  final String country;
+  final String address;
 
   final String introduction;
   const OtherProfile(
@@ -13,7 +15,9 @@ class OtherProfile extends StatefulWidget {
       required this.uid,
       required this.userImage,
       required this.userName,
-      required this.introduction})
+      required this.introduction,
+      required this.country,
+      required this.address})
       : super(key: key);
 
   @override
@@ -165,12 +169,16 @@ class _OtherProfileState extends State<OtherProfile> {
       expandedHeight: 300.0,
       pinned: true,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        color: Colors.black,
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          iconSize: 22,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          color: Colors.black,
+        ),
       ),
       flexibleSpace: FlexibleSpaceBar(
           centerTitle: true,
@@ -182,33 +190,60 @@ class _OtherProfileState extends State<OtherProfile> {
                 SizedBox(
                   height: 100,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Spacer(),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: CircleAvatar(
-                        radius: 45,
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage(widget.userImage),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Spacer(),
+                  Stack(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(widget.userImage),
+                        ),
                       ),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width * 0.02,
-                    )),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Text(widget.userName,
-                          //"1widget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userName",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 20)),
-                    ),
-                    Spacer()
-                  ],
-                ),
+                      Positioned(
+                        bottom: 5,
+                        left: 10,
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(
+                              'icons/flags/png/${widget.country}.png',
+                              package: 'country_icons'),
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                      padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.02,
+                  )),
+                  Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Text(widget.userName,
+                            //"1widget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userName",
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                                fontSize: 22.5, fontWeight: FontWeight.w600)),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(widget.address,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 15)),
+                        ),
+                      )
+                    ],
+                  ),
+                  Spacer()
+                ]),
                 SizedBox(
                   height: 30,
                 ),

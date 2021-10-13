@@ -208,30 +208,30 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
-    // if (_seen) {
-    //   try {
-    //     await userDb(controller.user!.uid);
+    if (_seen) {
+      try {
+        await userDb(controller.user!.uid);
 
-    //     if (!userData) {
-    //       controller.deleteUser();
+        if (!userData) {
+          controller.deleteUser();
 
-    //       Get.offAll(MainLogin());
-    //     } else {
-    //       Get.offAll(BottomNavigation());
-    //     }
-    //   } catch (e) {
-    //     Get.offAll(MainLogin());
-    //   }
-    // } else {
-    //   prefs.setBool('seen', true);
-    // }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return SayScreen();
-        },
-      ),
-    );
+          Get.offAll(() => MainLogin());
+        } else {
+          Get.offAll(() => BottomNavigation());
+        }
+      } catch (e) {
+        Get.offAll(() => MainLogin());
+      }
+    } else {
+      prefs.setBool('seen', true);
+    }
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return SayScreen();
+    //     },
+    //   ),
+    // );
 
     // if (controller.user!.uid.isNotEmpty) {
     //   DocumentSnapshot ds =

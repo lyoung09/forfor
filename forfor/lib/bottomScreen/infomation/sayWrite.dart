@@ -64,7 +64,10 @@ class _SayWritingState extends State<SayWriting> {
         "authorId": widget.uid,
         "timestamp": myDateTime,
         "authorCountry": widget.userCountry,
-        "address": address ?? ""
+        "address": address ?? "",
+        "count": 0,
+        "replyCount": 0,
+        "likes": [],
       });
       Get.back();
     }

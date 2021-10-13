@@ -19,54 +19,46 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          actions: [
-            Expanded(
-              flex: 2,
-              child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                      icon: Icon(Icons.arrow_back_ios),
-                      color: Colors.black,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      })),
-            ),
-            Expanded(
-                flex: 8,
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: ThemeData().colorScheme.copyWith(
-                          primary: Colors.black,
-                        ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (val) {
-                          setState(() {
-                            name = val;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          // prefixIcon: IconButton(
-                          //   icon: Icon(Icons.search),
-                          //   onPressed: () {
-                          //     print(_searchController.text);
-                          //   },
-                          // ),
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[400]!),
-                          ),
-                          hintText: 'Search People',
-                          hintStyle: TextStyle(
-                              fontSize: 16.0, color: Colors.grey[400]),
-                        ),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
+          actions: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              alignment: Alignment.centerLeft,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ThemeData().colorScheme.copyWith(
+                        primary: Colors.black,
                       ),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) {
+                    setState(() {
+                      name = val;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    // prefixIcon: IconButton(
+                    //   icon: Icon(Icons.search),
+                    //   onPressed: () {
+                    //     print(_searchController.text);
+                    //   },
+                    // ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey[400]!),
                     ),
+                    hintText: 'Search People',
+                    hintStyle:
+                        TextStyle(fontSize: 16.0, color: Colors.grey[400]),
                   ),
-                )),
+                ),
+              ),
+            ),
             // Expanded(
             //   flex: 2,
             //   child: Align(

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
+import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/service/userdatabase.dart';
@@ -13,9 +15,9 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
-import 'package:like_button/like_button.dart';
 import 'dart:math' as math;
 import 'package:timeago/timeago.dart' as timeago;
+import 'dart:convert';
 
 import 'infomationDetail/WritingPage.dart';
 
@@ -304,12 +306,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     );
   }
 
-  List list = [
-    "Flutter",
-    "Angular",
-    "Node js",
-  ];
-
   Widget exapnded() {
     return Row(
       children: [
@@ -377,35 +373,52 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
           Container(width: 5),
           Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: Container(
-                            width: 85,
-                            height: 85,
-                            child: Image.network(
-                              '${posting[index]["authorImage"]}',
-                              fit: BoxFit.fitWidth,
-                            )),
+              InkWell(
+                onTap: () async {
+                  var author = await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(posting[index]["authorId"])
+                      .get();
+
+                  Get.to(() => OtherProfile(
+                        uid: posting[index]["authorId"],
+                        userName: posting[index]["author"],
+                        userImage: posting[index]["authorImage"],
+                        country: posting[index]["authorCountry"],
+                        introduction: author["introduction"],
+                        address: author["address"],
+                      ));
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: Container(
+                              width: 85,
+                              height: 85,
+                              child: Image.network(
+                                '${posting[index]["authorImage"]}',
+                                fit: BoxFit.fitWidth,
+                              )),
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: -5,
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage(
-                            'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                            package: 'country_icons'),
-                        backgroundColor: Colors.white,
-                        radius: 15,
-                      ),
-                    )
-                  ],
+                      Positioned(
+                        bottom: 0,
+                        right: -5,
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(
+                              'icons/flags/png/${posting[index]["authorCountry"]}.png',
+                              package: 'country_icons'),
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -461,7 +474,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             style: TextStyle(fontSize: 13)),
                         Spacer(),
                         IconButton(
-                          iconSize: 12,
+                          iconSize: 17.5,
                           icon: Icon(
                             Icons.favorite,
                             color: favorite[index] == true
@@ -471,23 +484,16 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           onPressed: () {
                             setState(() {
                               favorite[index] = !favorite[index];
-                              if (favorite[index] ?? false) {
+
+                              if (favorite[index]) {
+                                // if (!user.contains(controller.user!.uid))
                                 FirebaseFirestore.instance
                                     .collection('posting')
                                     .doc('${posting[index].id}')
                                     .update({
                                   "count": FieldValue.increment(1),
-                                  "likes": FieldValue.arrayUnion([
-                                    {"uid": controller.user!.uid}
-                                  ])
-
-                                  // "likes": {
-                                  //   "count": FieldValue.increment(1),
-                                  //   "uid": controller.user!.uid,
-                                  //   "userNickname": uName,
-                                  //   "userImage": uImageUrl,
-                                  //   "userCoutnry": uCountry
-                                  //}
+                                  "likes": FieldValue.arrayUnion(
+                                      [controller.user!.uid])
                                 });
                               } else {
                                 FirebaseFirestore.instance
@@ -495,10 +501,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     .doc('${posting[index].id}')
                                     .update(
                                   {
-                                    "count": FieldValue.increment(0),
-                                    'likes': FieldValue.arrayRemove([
-                                      {"uid": controller.user!.uid}
-                                    ])
+                                    "count": FieldValue.increment(-1),
+                                    'likes': FieldValue.arrayRemove(
+                                        [controller.user!.uid])
 
                                     // "uid": FieldValue.delete(),
                                     // "userNickname": FieldValue.delete(),
@@ -517,19 +522,33 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               : "${posting[index]["count"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
-                        Container(
-                          padding: EdgeInsets.only(right: 4),
-                          child: Divider(
-                            thickness: 0.2,
-                          ),
-                        ),
                         IconButton(
-                          iconSize: 12,
-                          icon: Icon(Icons.reply_all_outlined),
-                          onPressed: () {},
+                          iconSize: 17.5,
+                          icon: Icon(Icons.chat_bubble_outline_outlined),
+                          onPressed: () {
+                            Get.to(() => SayReply(
+                                postingId: posting[index].id,
+                                userId: controller.user!.uid,
+                                userName: uName,
+                                userImage: uImageUrl,
+                                userCountry: uCountry,
+                                author: posting[index]["author"],
+                                authorCountry: posting[index]["authorCountry"],
+                                authorId: posting[index]["authorId"],
+                                authorImage: posting[index]["authorImage"],
+                                count: posting[index]["count"],
+                                favorite: favorite[index],
+                                time: ago[index]!,
+                                replyCount: posting[index]["replyCount"],
+                                story: posting[index]["story"],
+                                likes: posting[index]["likes"]));
+                          },
                         ),
                         Text(
-                          "1",
+                          posting[index]["replyCount"] == null ||
+                                  posting[index]["replyCount"] < 1
+                              ? ""
+                              : "${posting[index]["replyCount"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
@@ -605,19 +624,52 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             style: TextStyle(fontSize: 13)),
                         Spacer(),
                         IconButton(
+                          iconSize: 17.5,
                           icon: Icon(
-                            Icons.favorite_border,
+                            Icons.favorite,
                             color: favorite[index] == true
-                                ? Colors.red
-                                : Colors.white,
+                                ? Colors.red[400]
+                                : Colors.grey[300],
                           ),
                           onPressed: () {
-                            favorite[index] = !favorite[index];
-                            setState(() {});
+                            setState(() {
+                              favorite[index] = !favorite[index];
+
+                              if (favorite[index]) {
+                                // if (!user.contains(controller.user!.uid))
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update({
+                                  "count": FieldValue.increment(1),
+                                  "likes": FieldValue.arrayUnion(
+                                      [controller.user!.uid])
+                                });
+                              } else {
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update(
+                                  {
+                                    "count": FieldValue.increment(-1),
+                                    'likes': FieldValue.arrayRemove(
+                                        [controller.user!.uid])
+
+                                    // "uid": FieldValue.delete(),
+                                    // "userNickname": FieldValue.delete(),
+                                    // "userImage": FieldValue.delete(),
+                                    // "userCoutnry": FieldValue.delete()
+                                  },
+                                );
+                              }
+                            });
                           },
                         ),
                         Text(
-                          "12",
+                          posting[index]["count"] == null ||
+                                  posting[index]["count"] < 1
+                              ? ""
+                              : "${posting[index]["count"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
                         Container(
@@ -627,14 +679,32 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           ),
                         ),
                         IconButton(
-                          iconSize: 12,
-                          icon: Icon(Icons.reply_all_outlined),
+                          iconSize: 17.5,
+                          icon: Icon(Icons.chat_bubble_outline_outlined),
                           onPressed: () {
-                            print("1234");
+                            Get.to(() => SayReply(
+                                postingId: posting[index].id,
+                                userId: controller.user!.uid,
+                                userName: uName,
+                                userImage: uImageUrl,
+                                userCountry: uCountry,
+                                author: posting[index]["author"],
+                                authorCountry: posting[index]["authorCountry"],
+                                authorId: posting[index]["authorId"],
+                                authorImage: posting[index]["authorImage"],
+                                count: posting[index]["count"],
+                                favorite: favorite[index],
+                                time: ago[index]!,
+                                replyCount: posting[index]["replyCount"],
+                                story: posting[index]["story"],
+                                likes: posting[index]["likes"]));
                           },
                         ),
                         Text(
-                          "1",
+                          posting[index]["replyCount"] == null ||
+                                  posting[index]["replyCount"] < 1
+                              ? ""
+                              : "${posting[index]["replyCount"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
@@ -645,41 +715,41 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
             ),
           ),
           Container(width: 5),
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: Container(
-                            width: 85,
-                            height: 85,
-                            child: Image.network(
-                              '${posting[index]["authorImage"]}',
-                              fit: BoxFit.fitWidth,
-                            )),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: -5,
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage(
-                            'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                            package: 'country_icons'),
-                        backgroundColor: Colors.white,
-                        radius: 15,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
+          // Column(
+          //   children: [
+          //     Padding(
+          //       padding: EdgeInsets.only(left: 8.0),
+          //       child: Stack(
+          //         children: [
+          //           Align(
+          //             alignment: Alignment.topLeft,
+          //             child: ClipRRect(
+          //               borderRadius: BorderRadius.all(Radius.circular(10)),
+          //               child: Container(
+          //                   width: 85,
+          //                   height: 85,
+          //                   child: Image.network(
+          //                     '${posting[index]["authorImage"]}',
+          //                     fit: BoxFit.fitWidth,
+          //                   )),
+          //             ),
+          //           ),
+          //           Positioned(
+          //             bottom: 0,
+          //             right: -5,
+          //             child: CircleAvatar(
+          //               backgroundImage: AssetImage(
+          //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
+          //                   package: 'country_icons'),
+          //               backgroundColor: Colors.white,
+          //               radius: 15,
+          //             ),
+          //           )
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
@@ -743,12 +813,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                       itemCount: snapshot.data!.size,
                       itemBuilder: (context, index) {
                         Map<int, bool> favorite = new Map<int, bool>();
-                        print('123456 ${snapshot.data!.docs[index]["likes"]}');
-                        print(snapshot.data!.docs[index]["likes"].runtimeType);
 
-                        snapshot.data!.docs[index]["likes"][0]
-                                    ['7Ldq42bdxmbqQIp1PG2Mxii6MnF3'] ==
-                                controller.user!.uid
+                        List<dynamic> user =
+                            snapshot.data!.docs[index]["likes"];
+
+                        user.contains(controller.user!.uid)
                             ? favorite[index] = true
                             : favorite[index] = false;
 
@@ -764,1738 +833,1753 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               );
             }));
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   var size = MediaQuery.of(context).size;
-  //   return Scaffold(
-  //       backgroundColor: Colors.white,
-  //       body: SingleChildScrollView(
-  //         scrollDirection: Axis.vertical,
-  //         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-  //         child: Column(
-  //           children: <Widget>[
-  //             Padding(padding: EdgeInsets.only(top: 40)),
-  //             Row(children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.only(left: 15.0),
-  //                 child: Text("QnA",
-  //                     style: TextStyle(color: Colors.black, fontSize: 30)),
-  //               ),
-  //               Spacer(),
-  //               IconButton(
-  //                 icon: Icon(
-  //                   Icons.notifications_none,
-  //                   color: Colors.black,
-  //                 ),
-  //                 iconSize: 25,
-  //                 onPressed: () {},
-  //               ),
-  //               IconButton(
-  //                   icon: Icon(Icons.edit),
-  //                   iconSize: 25,
-  //                   onPressed: writingPage),
-  //             ]),
-  //             Container(
-  //                 child: Divider(
-  //               thickness: 1,
-  //               color: Colors.grey[800],
-  //             )),
-  //             Container(
-  //               width: MediaQuery.of(context).size.width,
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: <Widget>[
-  //                   exapnded(),
-  //                   expand1 == true
-  //                       ? selectCategory()
-  //                       : Container(
-  //                           height: 0,
-  //                         ),
-  //                   Padding(padding: EdgeInsets.all(10)),
-  //                   Container(
-  //                     padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-  //                     alignment: Alignment.center,
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: <Widget>[
-  //                         Row(
-  //                           children: <Widget>[
-  //                             Align(
-  //                               alignment: Alignment.centerLeft,
-  //                               child: CircleImage(
-  //                                 imageProvider: AssetImage(
-  //                                     'assets/image/photo_female_1.jpg'),
-  //                                 size: 45,
-  //                               ),
-  //                             ),
-  //                             Container(width: 5),
-  //                             Expanded(
-  //                               child: Bubble(
-  //                                 showNip: true,
-  //                                 padding: BubbleEdges.only(
-  //                                     left: 22, top: 22, bottom: 0, right: 22),
-  //                                 alignment: Alignment.centerLeft,
-  //                                 borderColor: Colors.black,
-  //                                 borderWidth: 1.3,
-  //                                 nip: BubbleNip.leftCenter,
-  //                                 margin: const BubbleEdges.all(4),
-  //                                 child: Column(
-  //                                   children: [
-  //                                     Wrap(
-  //                                       children: [
-  //                                         //               Container(
-  //                                         //                 decoration: BoxDecoration(
-  //                                         //                   border: Border.all(
-  //                                         //                       color: Colors.black),
-  //                                         //                   borderRadius:
-  //                                         //                       BorderRadius.circular(10),
-  //                                         //                 ),
-  //                                         //                 child: Center(
-  //                                         //                   child: ClipRect(
-  //                                         //                     child: Container(
-  //                                         //                       child: Align(
-  //                                         //                         alignment:
-  //                                         //                             Alignment.center,
-  //                                         //                         child: Image.file(
-  //                                         //   File(),
-  //                                         //   height: 50,
-  //                                         //   width: 50,
-  //                                         //   fit: BoxFit.contain,
-  //                                         // ),
-  //                                         //                       ),
-  //                                         //                     ),
-  //                                         //                   ),
-  //                                         //                 ),
-  //                                         //               )
-  //                                       ],
-  //                                     ),
-  //                                     Align(
-  //                                         alignment: Alignment.topLeft,
-  //                                         child: Text(
-  //                                           "What's the problem?What",
-  //                                           maxLines: 3,
-  //                                           overflow: TextOverflow.ellipsis,
-  //                                         )),
-  //                                     Padding(padding: EdgeInsets.only(top: 5)),
-  //                                     Container(
-  //                                       alignment: Alignment.topRight,
-  //                                       child: Row(
-  //                                         children: [
-  //                                           Text(
-  //                                             "12분전",
-  //                                             style: TextStyle(fontSize: 12),
-  //                                           ),
-  //                                           Spacer(),
-  //                                           IconButton(
-  //                                             iconSize: 12,
-  //                                             icon: Icon(Icons
-  //                                                 .favorite_border_outlined),
-  //                                             onPressed: () {},
-  //                                           ),
-  //                                           Text(
-  //                                             "12",
-  //                                             style: TextStyle(fontSize: 12),
-  //                                           ),
-  //                                           Container(
-  //                                             padding:
-  //                                                 EdgeInsets.only(right: 4),
-  //                                             child: Divider(
-  //                                               thickness: 0.2,
-  //                                             ),
-  //                                           ),
-  //                                           IconButton(
-  //                                             iconSize: 12,
-  //                                             icon: Icon(
-  //                                                 Icons.reply_all_outlined),
-  //                                             onPressed: () {},
-  //                                           ),
-  //                                           Text(
-  //                                             "1",
-  //                                             style: TextStyle(fontSize: 12),
-  //                                           ),
-  //                                         ],
-  //                                       ),
-  //                                     )
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.end,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.topLeft,
-  //                                   nip: BubbleNip.rightCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "it's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my story ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "ghhggghghghthe problem?What's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                         style: TextStyle(fontSize: 15),
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //             Container(
-  //                 width: MediaQuery.of(context).size.width,
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: <Widget>[
-  //                     Container(
-  //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //                       child: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: <Widget>[
-  //                           Row(
-  //                             children: <Widget>[
-  //                               Align(
-  //                                 alignment: Alignment.centerLeft,
-  //                                 child: CircleImage(
-  //                                   imageProvider: AssetImage(
-  //                                       'assets/image/photo_female_1.jpg'),
-  //                                   size: 45,
-  //                                 ),
-  //                               ),
-  //                               Container(width: 5),
-  //                               Expanded(
-  //                                 child: Bubble(
-  //                                   showNip: true,
-  //                                   padding: BubbleEdges.only(
-  //                                       left: 22,
-  //                                       top: 22,
-  //                                       bottom: 0,
-  //                                       right: 22),
-  //                                   borderColor: Colors.black,
-  //                                   borderWidth: 1.3,
-  //                                   alignment: Alignment.centerLeft,
-  //                                   nip: BubbleNip.leftCenter,
-  //                                   margin: const BubbleEdges.all(4),
-  //                                   child: Column(
-  //                                     children: [
-  //                                       Wrap(
-  //                                         children: [
-  //                                           //               Container(
-  //                                           //                 decoration: BoxDecoration(
-  //                                           //                   border: Border.all(
-  //                                           //                       color: Colors.black),
-  //                                           //                   borderRadius:
-  //                                           //                       BorderRadius.circular(10),
-  //                                           //                 ),
-  //                                           //                 child: Center(
-  //                                           //                   child: ClipRect(
-  //                                           //                     child: Container(
-  //                                           //                       child: Align(
-  //                                           //                         alignment:
-  //                                           //                             Alignment.center,
-  //                                           //                         child: Image.file(
-  //                                           //   File(),
-  //                                           //   height: 50,
-  //                                           //   width: 50,
-  //                                           //   fit: BoxFit.contain,
-  //                                           // ),
-  //                                           //                       ),
-  //                                           //                     ),
-  //                                           //                   ),
-  //                                           //                 ),
-  //                                           //               )
-  //                                         ],
-  //                                       ),
-  //                                       Text(
-  //                                         "s's the problem?What's the problem?What's the problem?What's the ",
-  //                                         maxLines: 3,
-  //                                         overflow: TextOverflow.ellipsis,
-  //                                       ),
-  //                                       Padding(
-  //                                           padding: EdgeInsets.only(top: 5)),
-  //                                       Container(
-  //                                         alignment: Alignment.topRight,
-  //                                         child: Row(
-  //                                           children: [
-  //                                             Text(
-  //                                               "12분전",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Spacer(),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(Icons
-  //                                                   .favorite_border_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "12",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                             Container(
-  //                                               padding:
-  //                                                   EdgeInsets.only(right: 4),
-  //                                               child: Divider(
-  //                                                 thickness: 0.2,
-  //                                               ),
-  //                                             ),
-  //                                             IconButton(
-  //                                               iconSize: 12,
-  //                                               icon: Icon(
-  //                                                   Icons.reply_all_outlined),
-  //                                               onPressed: () {},
-  //                                             ),
-  //                                             Text(
-  //                                               "1",
-  //                                               style: TextStyle(fontSize: 12),
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 )),
-  //           ],
-  //         ),
-  //       ));
-  // }
 }
+
+class User {
+  final String uid;
+
+  User(
+    this.uid,
+  );
+
+  User.fromJson(Map<String, dynamic> json) : uid = json['uid'];
+
+  Map<String, dynamic> toJson() => {
+        'uid': uid,
+      };
+}
+
+// @override
+// Widget build(BuildContext context) {
+//   var size = MediaQuery.of(context).size;
+//   return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SingleChildScrollView(
+//         scrollDirection: Axis.vertical,
+//         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+//         child: Column(
+//           children: <Widget>[
+//             Padding(padding: EdgeInsets.only(top: 40)),
+//             Row(children: [
+//               Padding(
+//                 padding: const EdgeInsets.only(left: 15.0),
+//                 child: Text("QnA",
+//                     style: TextStyle(color: Colors.black, fontSize: 30)),
+//               ),
+//               Spacer(),
+//               IconButton(
+//                 icon: Icon(
+//                   Icons.notifications_none,
+//                   color: Colors.black,
+//                 ),
+//                 iconSize: 25,
+//                 onPressed: () {},
+//               ),
+//               IconButton(
+//                   icon: Icon(Icons.edit),
+//                   iconSize: 25,
+//                   onPressed: writingPage),
+//             ]),
+//             Container(
+//                 child: Divider(
+//               thickness: 1,
+//               color: Colors.grey[800],
+//             )),
+//             Container(
+//               width: MediaQuery.of(context).size.width,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: <Widget>[
+//                   exapnded(),
+//                   expand1 == true
+//                       ? selectCategory()
+//                       : Container(
+//                           height: 0,
+//                         ),
+//                   Padding(padding: EdgeInsets.all(10)),
+//                   Container(
+//                     padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+//                     alignment: Alignment.center,
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: <Widget>[
+//                         Row(
+//                           children: <Widget>[
+//                             Align(
+//                               alignment: Alignment.centerLeft,
+//                               child: CircleImage(
+//                                 imageProvider: AssetImage(
+//                                     'assets/image/photo_female_1.jpg'),
+//                                 size: 45,
+//                               ),
+//                             ),
+//                             Container(width: 5),
+//                             Expanded(
+//                               child: Bubble(
+//                                 showNip: true,
+//                                 padding: BubbleEdges.only(
+//                                     left: 22, top: 22, bottom: 0, right: 22),
+//                                 alignment: Alignment.centerLeft,
+//                                 borderColor: Colors.black,
+//                                 borderWidth: 1.3,
+//                                 nip: BubbleNip.leftCenter,
+//                                 margin: const BubbleEdges.all(4),
+//                                 child: Column(
+//                                   children: [
+//                                     Wrap(
+//                                       children: [
+//                                         //               Container(
+//                                         //                 decoration: BoxDecoration(
+//                                         //                   border: Border.all(
+//                                         //                       color: Colors.black),
+//                                         //                   borderRadius:
+//                                         //                       BorderRadius.circular(10),
+//                                         //                 ),
+//                                         //                 child: Center(
+//                                         //                   child: ClipRect(
+//                                         //                     child: Container(
+//                                         //                       child: Align(
+//                                         //                         alignment:
+//                                         //                             Alignment.center,
+//                                         //                         child: Image.file(
+//                                         //   File(),
+//                                         //   height: 50,
+//                                         //   width: 50,
+//                                         //   fit: BoxFit.contain,
+//                                         // ),
+//                                         //                       ),
+//                                         //                     ),
+//                                         //                   ),
+//                                         //                 ),
+//                                         //               )
+//                                       ],
+//                                     ),
+//                                     Align(
+//                                         alignment: Alignment.topLeft,
+//                                         child: Text(
+//                                           "What's the problem?What",
+//                                           maxLines: 3,
+//                                           overflow: TextOverflow.ellipsis,
+//                                         )),
+//                                     Padding(padding: EdgeInsets.only(top: 5)),
+//                                     Container(
+//                                       alignment: Alignment.topRight,
+//                                       child: Row(
+//                                         children: [
+//                                           Text(
+//                                             "12분전",
+//                                             style: TextStyle(fontSize: 12),
+//                                           ),
+//                                           Spacer(),
+//                                           IconButton(
+//                                             iconSize: 12,
+//                                             icon: Icon(Icons
+//                                                 .favorite_border_outlined),
+//                                             onPressed: () {},
+//                                           ),
+//                                           Text(
+//                                             "12",
+//                                             style: TextStyle(fontSize: 12),
+//                                           ),
+//                                           Container(
+//                                             padding:
+//                                                 EdgeInsets.only(right: 4),
+//                                             child: Divider(
+//                                               thickness: 0.2,
+//                                             ),
+//                                           ),
+//                                           IconButton(
+//                                             iconSize: 12,
+//                                             icon: Icon(
+//                                                 Icons.reply_all_outlined),
+//                                             onPressed: () {},
+//                                           ),
+//                                           Text(
+//                                             "1",
+//                                             style: TextStyle(fontSize: 12),
+//                                           ),
+//                                         ],
+//                                       ),
+//                                     )
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.topLeft,
+//                                   nip: BubbleNip.rightCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "it's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my storyit's my story ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "ghhggghghghthe problem?What's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                         style: TextStyle(fontSize: 15),
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//             Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: <Widget>[
+//                     Container(
+//                       padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: <Widget>[
+//                           Row(
+//                             children: <Widget>[
+//                               Align(
+//                                 alignment: Alignment.centerLeft,
+//                                 child: CircleImage(
+//                                   imageProvider: AssetImage(
+//                                       'assets/image/photo_female_1.jpg'),
+//                                   size: 45,
+//                                 ),
+//                               ),
+//                               Container(width: 5),
+//                               Expanded(
+//                                 child: Bubble(
+//                                   showNip: true,
+//                                   padding: BubbleEdges.only(
+//                                       left: 22,
+//                                       top: 22,
+//                                       bottom: 0,
+//                                       right: 22),
+//                                   borderColor: Colors.black,
+//                                   borderWidth: 1.3,
+//                                   alignment: Alignment.centerLeft,
+//                                   nip: BubbleNip.leftCenter,
+//                                   margin: const BubbleEdges.all(4),
+//                                   child: Column(
+//                                     children: [
+//                                       Wrap(
+//                                         children: [
+//                                           //               Container(
+//                                           //                 decoration: BoxDecoration(
+//                                           //                   border: Border.all(
+//                                           //                       color: Colors.black),
+//                                           //                   borderRadius:
+//                                           //                       BorderRadius.circular(10),
+//                                           //                 ),
+//                                           //                 child: Center(
+//                                           //                   child: ClipRect(
+//                                           //                     child: Container(
+//                                           //                       child: Align(
+//                                           //                         alignment:
+//                                           //                             Alignment.center,
+//                                           //                         child: Image.file(
+//                                           //   File(),
+//                                           //   height: 50,
+//                                           //   width: 50,
+//                                           //   fit: BoxFit.contain,
+//                                           // ),
+//                                           //                       ),
+//                                           //                     ),
+//                                           //                   ),
+//                                           //                 ),
+//                                           //               )
+//                                         ],
+//                                       ),
+//                                       Text(
+//                                         "s's the problem?What's the problem?What's the problem?What's the ",
+//                                         maxLines: 3,
+//                                         overflow: TextOverflow.ellipsis,
+//                                       ),
+//                                       Padding(
+//                                           padding: EdgeInsets.only(top: 5)),
+//                                       Container(
+//                                         alignment: Alignment.topRight,
+//                                         child: Row(
+//                                           children: [
+//                                             Text(
+//                                               "12분전",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Spacer(),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(Icons
+//                                                   .favorite_border_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "12",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                             Container(
+//                                               padding:
+//                                                   EdgeInsets.only(right: 4),
+//                                               child: Divider(
+//                                                 thickness: 0.2,
+//                                               ),
+//                                             ),
+//                                             IconButton(
+//                                               iconSize: 12,
+//                                               icon: Icon(
+//                                                   Icons.reply_all_outlined),
+//                                               onPressed: () {},
+//                                             ),
+//                                             Text(
+//                                               "1",
+//                                               style: TextStyle(fontSize: 12),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       )
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//           ],
+//         ),
+//       ));
+// }

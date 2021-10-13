@@ -228,7 +228,7 @@ class _OtherProfileState extends State<OtherProfile> {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
-                                fontSize: 22.5, fontWeight: FontWeight.w600)),
+                                fontSize: 28, fontWeight: FontWeight.w600)),
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width * 0.6,

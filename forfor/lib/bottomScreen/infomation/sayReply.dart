@@ -334,7 +334,7 @@ class _SayReplyState extends State<SayReply> {
           ago[index] = _ago(review[index]["datetime"]);
           return Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(15),
             ),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: Row(
@@ -364,9 +364,9 @@ class _SayReplyState extends State<SayReply> {
                         child: Stack(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: 15.0),
+                              padding: EdgeInsets.only(left: 5.0),
                               child: CircleAvatar(
-                                  radius: 25,
+                                  radius: 20,
                                   backgroundColor: Colors.white,
                                   backgroundImage: NetworkImage(
                                       "${review[index]["replyImage"]}")),
@@ -386,7 +386,7 @@ class _SayReplyState extends State<SayReply> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 15.0),
+                        padding: const EdgeInsets.only(left: 5.0),
                         child: Text(review[index]["replyName"],
                             style: TextStyle(fontSize: 16.5)),
                       ),

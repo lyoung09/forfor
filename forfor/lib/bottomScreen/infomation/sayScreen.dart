@@ -292,6 +292,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     expand1 = !expand1;
   }
 
+  dd(uid) async {
+    var d = FirebaseFirestore.instance
+        .collection('users')
+        .where("uid", isEqualTo: uid)
+        .snapshots();
+    return d;
+  }
+
   writingPage() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -362,205 +370,225 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     return x;
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> tt(posting, index) async {
+    var author = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(posting[index]["authorId"])
+        .get();
+
+    return author;
+  }
+
   Widget otherUserQnA(posting, index, favorite) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18, left: 10),
-      child: Row(
-        children: [
-          Container(width: 5),
-          Column(
-            children: [
-              InkWell(
-                onTap: () async {
-                  var author = await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(posting[index]["authorId"])
-                      .get();
-
-                  Get.to(() => OtherProfile(
-                        uid: posting[index]["authorId"],
-                        userName: posting[index]["author"],
-                        userImage: posting[index]["authorImage"],
-                        country: posting[index]["authorCountry"],
-                        introduction: author["introduction"],
-                        address: author["address"],
-                      ));
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          child: Container(
-                              width: 85,
-                              height: 85,
-                              child: Image.network(
-                                '${posting[index]["authorImage"]}',
-                                fit: BoxFit.fitWidth,
-                              )),
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .where("uid", whereIn: [posting[index]["authorId"]]).snapshots(),
+        builder: (context, snapshot) {
+          print('12345   ${snapshot.data!.size}');
+          print(index);
+          print(snapshot.data!.docs[index]["nickname"]);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 18, left: 10),
+            child: Row(
+              children: [
+                Container(width: 5),
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        var author = await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(posting[index]["authorId"])
+                            .get();
+                        Get.to(() => OtherProfile(
+                              uid: posting[index]["authorId"],
+                              userName: snapshot.data!.docs[index]["nickname"],
+                              userImage: posting[index]["authorImage"],
+                              country: posting[index]["authorCountry"],
+                              introduction: author["introduction"],
+                              address: posting[index]["address"],
+                            ));
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                child: Container(
+                                    width: 85,
+                                    height: 85,
+                                    child: Image.network(
+                                      '${posting[index]["authorImage"]}',
+                                      fit: BoxFit.fitWidth,
+                                    )),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: -5,
+                              child: CircleAvatar(
+                                backgroundImage: AssetImage(
+                                    'icons/flags/png/${posting[index]["authorCountry"]}.png',
+                                    package: 'country_icons'),
+                                backgroundColor: Colors.white,
+                                radius: 15,
+                              ),
+                            )
+                          ],
                         ),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: -5,
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(
-                              'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                              package: 'country_icons'),
-                          backgroundColor: Colors.white,
-                          radius: 15,
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          Container(width: 5),
-          Expanded(
-            child: Bubble(
-              showNip: true,
-              padding:
-                  BubbleEdges.only(left: 22, top: 10, bottom: 0, right: 22),
-              alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
-              nip: BubbleNip.leftCenter,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text('${posting[index]["author"]}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: Colors.orange[400],
-                                  fontWeight: FontWeight.bold))),
-                      Text(
-                        "${ago[index]}",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  Padding(padding: EdgeInsets.only(top: 5)),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        '${posting[index]["story"]}',
-                        //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                  Divider(
-                    thickness: 0.7,
-                    color: Colors.grey[200],
-                  ),
-                  Container(
-                    height: 30,
-                    alignment: Alignment.topRight,
-                    child: Row(
+                Container(width: 5),
+                Expanded(
+                  child: Bubble(
+                    showNip: true,
+                    padding: BubbleEdges.only(
+                        left: 22, top: 10, bottom: 0, right: 22),
+                    alignment: Alignment.centerLeft,
+                    borderColor: Colors.black,
+                    borderWidth: 1.3,
+                    nip: BubbleNip.leftCenter,
+                    child: Column(
                       children: [
-                        Text(" ${posting[index]["address"]}",
-                            style: TextStyle(fontSize: 13)),
-                        Spacer(),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(
-                            Icons.favorite,
-                            color: favorite[index] == true
-                                ? Colors.red[400]
-                                : Colors.grey[300],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('${posting[index]["author"]}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.orange[400],
+                                        fontWeight: FontWeight.bold))),
+                            Text(
+                              "${ago[index]}",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 5)),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              '${posting[index]["story"]}',
+                              //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
+                            )),
+                        Divider(
+                          thickness: 0.7,
+                          color: Colors.grey[200],
+                        ),
+                        Container(
+                          height: 30,
+                          alignment: Alignment.topRight,
+                          child: Row(
+                            children: [
+                              Text(" ${posting[index]["address"]}",
+                                  style: TextStyle(fontSize: 13)),
+                              Spacer(),
+                              IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: favorite[index] == true
+                                      ? Colors.red[400]
+                                      : Colors.grey[300],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    favorite[index] = !favorite[index];
+
+                                    if (favorite[index]) {
+                                      // if (!user.contains(controller.user!.uid))
+                                      FirebaseFirestore.instance
+                                          .collection('posting')
+                                          .doc('${posting[index].id}')
+                                          .update({
+                                        "count": FieldValue.increment(1),
+                                        "likes": FieldValue.arrayUnion(
+                                            [controller.user!.uid])
+                                      });
+                                    } else {
+                                      FirebaseFirestore.instance
+                                          .collection('posting')
+                                          .doc('${posting[index].id}')
+                                          .update(
+                                        {
+                                          "count": FieldValue.increment(-1),
+                                          'likes': FieldValue.arrayRemove(
+                                              [controller.user!.uid])
+
+                                          // "uid": FieldValue.delete(),
+                                          // "userNickname": FieldValue.delete(),
+                                          // "userImage": FieldValue.delete(),
+                                          // "userCoutnry": FieldValue.delete()
+                                        },
+                                      );
+                                    }
+                                  });
+                                },
+                              ),
+                              Text(
+                                posting[index]["count"] == null ||
+                                        posting[index]["count"] < 1
+                                    ? ""
+                                    : "${posting[index]["count"]} ",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(Icons.chat_bubble_outline_outlined),
+                                onPressed: () {
+                                  Get.to(() => SayReply(
+                                      postingId: posting[index].id,
+                                      userId: controller.user!.uid,
+                                      userName: uName,
+                                      userImage: uImageUrl,
+                                      userCountry: uCountry,
+                                      author: posting[index]["author"],
+                                      authorCountry: posting[index]
+                                          ["authorCountry"],
+                                      authorId: posting[index]["authorId"],
+                                      authorImage: posting[index]
+                                          ["authorImage"],
+                                      count: posting[index]["count"],
+                                      favorite: favorite[index],
+                                      time: ago[index]!,
+                                      replyCount: posting[index]["replyCount"],
+                                      story: posting[index]["story"],
+                                      likes: posting[index]["likes"]));
+                                },
+                              ),
+                              Text(
+                                posting[index]["replyCount"] == null ||
+                                        posting[index]["replyCount"] < 1
+                                    ? ""
+                                    : "${posting[index]["replyCount"]} ",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            setState(() {
-                              favorite[index] = !favorite[index];
-
-                              if (favorite[index]) {
-                                // if (!user.contains(controller.user!.uid))
-                                FirebaseFirestore.instance
-                                    .collection('posting')
-                                    .doc('${posting[index].id}')
-                                    .update({
-                                  "count": FieldValue.increment(1),
-                                  "likes": FieldValue.arrayUnion(
-                                      [controller.user!.uid])
-                                });
-                              } else {
-                                FirebaseFirestore.instance
-                                    .collection('posting')
-                                    .doc('${posting[index].id}')
-                                    .update(
-                                  {
-                                    "count": FieldValue.increment(-1),
-                                    'likes': FieldValue.arrayRemove(
-                                        [controller.user!.uid])
-
-                                    // "uid": FieldValue.delete(),
-                                    // "userNickname": FieldValue.delete(),
-                                    // "userImage": FieldValue.delete(),
-                                    // "userCoutnry": FieldValue.delete()
-                                  },
-                                );
-                              }
-                            });
-                          },
-                        ),
-                        Text(
-                          posting[index]["count"] == null ||
-                                  posting[index]["count"] < 1
-                              ? ""
-                              : "${posting[index]["count"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(Icons.chat_bubble_outline_outlined),
-                          onPressed: () {
-                            Get.to(() => SayReply(
-                                postingId: posting[index].id,
-                                userId: controller.user!.uid,
-                                userName: uName,
-                                userImage: uImageUrl,
-                                userCountry: uCountry,
-                                author: posting[index]["author"],
-                                authorCountry: posting[index]["authorCountry"],
-                                authorId: posting[index]["authorId"],
-                                authorImage: posting[index]["authorImage"],
-                                count: posting[index]["count"],
-                                favorite: favorite[index],
-                                time: ago[index]!,
-                                replyCount: posting[index]["replyCount"],
-                                story: posting[index]["story"],
-                                likes: posting[index]["likes"]));
-                          },
-                        ),
-                        Text(
-                          posting[index]["replyCount"] == null ||
-                                  posting[index]["replyCount"] < 1
-                              ? ""
-                              : "${posting[index]["replyCount"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        )
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
-    );
+          );
+        });
   }
 
   bool like = false;
@@ -569,190 +597,201 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18, right: 10),
-      child: Row(
-        children: [
-          Container(width: 5),
-          Expanded(
-            child: Bubble(
-              showNip: true,
-              padding:
-                  BubbleEdges.only(left: 22, top: 10, bottom: 0, right: 22),
-              alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
-              nip: BubbleNip.rightCenter,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text('${posting[index]["author"]}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: Colors.orange[400],
-                                  fontWeight: FontWeight.bold))),
-                      Text(
-                        "${ago[index]}",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  Padding(padding: EdgeInsets.only(top: 5)),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        '${posting[index]["story"]}',
-                        //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                  Divider(
-                    thickness: 0.7,
-                    color: Colors.grey[200],
-                  ),
-                  Container(
-                    height: 30,
-                    alignment: Alignment.topRight,
-                    child: Row(
+    return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(posting[index]["authorId"])
+            .snapshots(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 18, right: 10),
+            child: Row(
+              children: [
+                Container(width: 5),
+                Expanded(
+                  child: Bubble(
+                    showNip: true,
+                    padding: BubbleEdges.only(
+                        left: 22, top: 10, bottom: 0, right: 22),
+                    alignment: Alignment.centerLeft,
+                    borderColor: Colors.black,
+                    borderWidth: 1.3,
+                    nip: BubbleNip.rightCenter,
+                    child: Column(
                       children: [
-                        Text(" ${posting[index]["address"]}",
-                            style: TextStyle(fontSize: 13)),
-                        Spacer(),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(
-                            Icons.favorite,
-                            color: favorite[index] == true
-                                ? Colors.red[400]
-                                : Colors.grey[300],
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              favorite[index] = !favorite[index];
-
-                              if (favorite[index]) {
-                                // if (!user.contains(controller.user!.uid))
-                                FirebaseFirestore.instance
-                                    .collection('posting')
-                                    .doc('${posting[index].id}')
-                                    .update({
-                                  "count": FieldValue.increment(1),
-                                  "likes": FieldValue.arrayUnion(
-                                      [controller.user!.uid])
-                                });
-                              } else {
-                                FirebaseFirestore.instance
-                                    .collection('posting')
-                                    .doc('${posting[index].id}')
-                                    .update(
-                                  {
-                                    "count": FieldValue.increment(-1),
-                                    'likes': FieldValue.arrayRemove(
-                                        [controller.user!.uid])
-
-                                    // "uid": FieldValue.delete(),
-                                    // "userNickname": FieldValue.delete(),
-                                    // "userImage": FieldValue.delete(),
-                                    // "userCoutnry": FieldValue.delete()
-                                  },
-                                );
-                              }
-                            });
-                          },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('${snapshot.data!["nickname"]}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.orange[400],
+                                        fontWeight: FontWeight.bold))),
+                            Text(
+                              "${ago[index]}",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
                         ),
-                        Text(
-                          posting[index]["count"] == null ||
-                                  posting[index]["count"] < 1
-                              ? ""
-                              : "${posting[index]["count"]} ",
-                          style: TextStyle(fontSize: 12),
+                        Padding(padding: EdgeInsets.only(top: 5)),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              '${posting[index]["story"]}',
+                              //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
+                            )),
+                        Divider(
+                          thickness: 0.7,
+                          color: Colors.grey[200],
                         ),
                         Container(
-                          padding: EdgeInsets.only(right: 4),
-                          child: Divider(
-                            thickness: 0.2,
+                          height: 30,
+                          alignment: Alignment.topRight,
+                          child: Row(
+                            children: [
+                              Text(" ${posting[index]["address"]}",
+                                  style: TextStyle(fontSize: 13)),
+                              Spacer(),
+                              IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: favorite[index] == true
+                                      ? Colors.red[400]
+                                      : Colors.grey[300],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    favorite[index] = !favorite[index];
+
+                                    if (favorite[index]) {
+                                      // if (!user.contains(controller.user!.uid))
+                                      FirebaseFirestore.instance
+                                          .collection('posting')
+                                          .doc('${posting[index].id}')
+                                          .update({
+                                        "count": FieldValue.increment(1),
+                                        "likes": FieldValue.arrayUnion(
+                                            [controller.user!.uid])
+                                      });
+                                    } else {
+                                      FirebaseFirestore.instance
+                                          .collection('posting')
+                                          .doc('${posting[index].id}')
+                                          .update(
+                                        {
+                                          "count": FieldValue.increment(-1),
+                                          'likes': FieldValue.arrayRemove(
+                                              [controller.user!.uid])
+
+                                          // "uid": FieldValue.delete(),
+                                          // "userNickname": FieldValue.delete(),
+                                          // "userImage": FieldValue.delete(),
+                                          // "userCoutnry": FieldValue.delete()
+                                        },
+                                      );
+                                    }
+                                  });
+                                },
+                              ),
+                              Text(
+                                posting[index]["count"] == null ||
+                                        posting[index]["count"] < 1
+                                    ? ""
+                                    : "${posting[index]["count"]} ",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Divider(
+                                  thickness: 0.2,
+                                ),
+                              ),
+                              IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(Icons.chat_bubble_outline_outlined),
+                                onPressed: () {
+                                  Get.to(() => SayReply(
+                                      postingId: posting[index].id,
+                                      userId: controller.user!.uid,
+                                      userName: uName,
+                                      userImage: uImageUrl,
+                                      userCountry: uCountry,
+                                      author: snapshot.data!["nickname"],
+                                      authorCountry: posting[index]
+                                          ["authorCountry"],
+                                      authorId: snapshot.data!["uid"],
+                                      authorImage: snapshot.data!["url"],
+                                      count: posting[index]["count"],
+                                      favorite: favorite[index],
+                                      time: ago[index]!,
+                                      replyCount: posting[index]["replyCount"],
+                                      story: posting[index]["story"],
+                                      likes: posting[index]["likes"]));
+                                },
+                              ),
+                              Text(
+                                posting[index]["replyCount"] == null ||
+                                        posting[index]["replyCount"] < 1
+                                    ? ""
+                                    : "${posting[index]["replyCount"]} ",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
                           ),
-                        ),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(Icons.chat_bubble_outline_outlined),
-                          onPressed: () {
-                            Get.to(() => SayReply(
-                                postingId: posting[index].id,
-                                userId: controller.user!.uid,
-                                userName: uName,
-                                userImage: uImageUrl,
-                                userCountry: uCountry,
-                                author: posting[index]["author"],
-                                authorCountry: posting[index]["authorCountry"],
-                                authorId: posting[index]["authorId"],
-                                authorImage: posting[index]["authorImage"],
-                                count: posting[index]["count"],
-                                favorite: favorite[index],
-                                time: ago[index]!,
-                                replyCount: posting[index]["replyCount"],
-                                story: posting[index]["story"],
-                                likes: posting[index]["likes"]));
-                          },
-                        ),
-                        Text(
-                          posting[index]["replyCount"] == null ||
-                                  posting[index]["replyCount"] < 1
-                              ? ""
-                              : "${posting[index]["replyCount"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        )
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+                Container(width: 5),
+                // Column(
+                //   children: [
+                //     Padding(
+                //       padding: EdgeInsets.only(left: 8.0),
+                //       child: Stack(
+                //         children: [
+                //           Align(
+                //             alignment: Alignment.topLeft,
+                //             child: ClipRRect(
+                //               borderRadius: BorderRadius.all(Radius.circular(10)),
+                //               child: Container(
+                //                   width: 85,
+                //                   height: 85,
+                //                   child: Image.network(
+                //                     '${posting[index]["authorImage"]}',
+                //                     fit: BoxFit.fitWidth,
+                //                   )),
+                //             ),
+                //           ),
+                //           Positioned(
+                //             bottom: 0,
+                //             right: -5,
+                //             child: CircleAvatar(
+                //               backgroundImage: AssetImage(
+                //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
+                //                   package: 'country_icons'),
+                //               backgroundColor: Colors.white,
+                //               radius: 15,
+                //             ),
+                //           )
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
+              ],
             ),
-          ),
-          Container(width: 5),
-          // Column(
-          //   children: [
-          //     Padding(
-          //       padding: EdgeInsets.only(left: 8.0),
-          //       child: Stack(
-          //         children: [
-          //           Align(
-          //             alignment: Alignment.topLeft,
-          //             child: ClipRRect(
-          //               borderRadius: BorderRadius.all(Radius.circular(10)),
-          //               child: Container(
-          //                   width: 85,
-          //                   height: 85,
-          //                   child: Image.network(
-          //                     '${posting[index]["authorImage"]}',
-          //                     fit: BoxFit.fitWidth,
-          //                   )),
-          //             ),
-          //           ),
-          //           Positioned(
-          //             bottom: 0,
-          //             right: -5,
-          //             child: CircleAvatar(
-          //               backgroundImage: AssetImage(
-          //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
-          //                   package: 'country_icons'),
-          //               backgroundColor: Colors.white,
-          //               radius: 15,
-          //             ),
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Widget build(BuildContext context) {

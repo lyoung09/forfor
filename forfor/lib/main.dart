@@ -171,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   startTime() async {
-    return new Timer(Duration(milliseconds: 500), () {
+    return new Timer(Duration(milliseconds: 50), () {
       checkFirstSeen();
     });
   }

@@ -89,7 +89,10 @@ class _HopeInfomationState extends State<HopeInfomation>
           ),
         ),
         body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('category').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('category')
+              .where("categoryId", isNotEqualTo: 0)
+              .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(

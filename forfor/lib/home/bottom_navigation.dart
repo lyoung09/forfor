@@ -39,6 +39,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     Group(),
     ChatMainScreen(),
     InvitePersonScreen(),
+
     SayScreen(),
     MyProfile(),
   ];

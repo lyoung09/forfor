@@ -10,16 +10,10 @@ import 'package:location/location.dart';
 
 class SayWriting extends StatefulWidget {
   final String uid;
-  final String username;
-  final String userImage;
-  final String userCountry;
-  const SayWriting(
-      {Key? key,
-      required this.uid,
-      required this.username,
-      required this.userImage,
-      required this.userCountry})
-      : super(key: key);
+  const SayWriting({
+    Key? key,
+    required this.uid,
+  }) : super(key: key);
 
   @override
   _SayWritingState createState() => _SayWritingState();
@@ -33,6 +27,7 @@ class _SayWritingState extends State<SayWriting> {
     super.initState();
   }
 
+  int category = 0;
   saveposting() async {
     print(_storycontroller.text);
     if (_storycontroller.text.isEmpty) {
@@ -59,15 +54,13 @@ class _SayWritingState extends State<SayWriting> {
       DateTime myDateTime = myTimeStamp.toDate(); //
       await FirebaseFirestore.instance.collection('posting').add({
         "story": _storycontroller.text,
-        "author": widget.username,
-        "authorImage": widget.userImage,
         "authorId": widget.uid,
         "timestamp": myDateTime,
-        "authorCountry": widget.userCountry,
         "address": address ?? "",
         "count": 0,
         "replyCount": 0,
         "likes": [],
+        "category": category,
       });
       Get.back();
     }
@@ -122,16 +115,88 @@ class _SayWritingState extends State<SayWriting> {
                     size: 25,
                   )),
             ),
-            Padding(padding: EdgeInsets.only(right: 30)),
-            Container(
+            Padding(padding: EdgeInsets.only(right: 15)),
+            InkWell(
               child: IconButton(
                 icon: Image.asset(
                   'assets/icon/location.png',
                   width: 20.0,
                   height: 20.0,
                 ),
-                onPressed: getLoc,
+                onPressed: () {},
               ),
+              onTap: getLoc,
+            ),
+            Padding(padding: EdgeInsets.only(right: 15)),
+            InkWell(
+              child: Image.asset(
+                'assets/icon/list.png',
+                width: 20.0,
+                height: 20.0,
+              ),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          height: 180,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            color: Colors.white,
+                          ),
+                          child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('category')
+                                  .orderBy("categoryId")
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Container();
+                                }
+                                return GridView.builder(
+                                    itemCount: snapshot.data!.size,
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisSpacing: 2,
+                                            mainAxisSpacing: 2,
+                                            crossAxisCount: 4),
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            category = snapshot.data!
+                                                .docs[index]["categoryId"];
+                                          });
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                          ),
+                                          child: CircleAvatar(
+                                            backgroundColor: category ==
+                                                    snapshot.data!.docs[index]
+                                                        ["categoryId"]
+                                                ? Colors.orange[50]
+                                                : Colors.white,
+                                            radius: 20,
+                                            child: Image.network(
+                                              snapshot.data!.docs[index]
+                                                  ["categoryImage"],
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }),
+                        ),
+                      );
+                    });
+              },
             ),
             Spacer(),
             InkWell(
@@ -175,14 +240,7 @@ class _SayWritingState extends State<SayWriting> {
             },
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.camera_alt_outlined,
-                size: 25,
-                color: Colors.grey[900],
-              ),
-              onPressed: () {},
-            ),
+            Spacer(),
             IconButton(
               icon: Icon(
                 Icons.send_outlined,

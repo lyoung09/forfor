@@ -65,6 +65,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     });
     print(ds.get('nickname'));
     print(ds.get('url'));
+
+    var user = FirebaseFirestore.instance.collection("users").doc(uid).get();
   }
 
   Widget selectCategory() {
@@ -379,216 +381,200 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     return author;
   }
 
-  Widget otherUserQnA(posting, index, favorite) {
+  Widget otherUserQnA(posting, index, favorite, user, count) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
-    return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where("uid", whereIn: [posting[index]["authorId"]]).snapshots(),
-        builder: (context, snapshot) {
-          print('12345   ${snapshot.data!.size}');
-          print(index);
-          print(snapshot.data!.docs[index]["nickname"]);
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 18, left: 10),
-            child: Row(
-              children: [
-                Container(width: 5),
-                Column(
-                  children: [
-                    InkWell(
-                      onTap: () async {
-                        var author = await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(posting[index]["authorId"])
-                            .get();
-                        Get.to(() => OtherProfile(
-                              uid: posting[index]["authorId"],
-                              userName: snapshot.data!.docs[index]["nickname"],
-                              userImage: posting[index]["authorImage"],
-                              country: posting[index]["authorCountry"],
-                              introduction: author["introduction"],
-                              address: posting[index]["address"],
-                            ));
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 8.0),
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                child: Container(
-                                    width: 85,
-                                    height: 85,
-                                    child: Image.network(
-                                      '${posting[index]["authorImage"]}',
-                                      fit: BoxFit.fitWidth,
-                                    )),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: -5,
-                              child: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                                    package: 'country_icons'),
-                                backgroundColor: Colors.white,
-                                radius: 15,
-                              ),
-                            )
-                          ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18, left: 10),
+      child: Row(
+        children: [
+          Container(width: 5),
+          Column(
+            children: [
+              InkWell(
+                onTap: () {
+                  Get.to(() => OtherProfile(
+                        uid: posting[index]["authorId"],
+                        userName: user[count]["nickname"],
+                        userImage: user[count]["url"],
+                        country: user[count]["country"],
+                        introduction: user[count]["introduction"],
+                        address: posting[index]["address"] ?? "",
+                      ));
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: Container(
+                              width: 85,
+                              height: 85,
+                              child: Image.network(
+                                '${user[count]["url"]}',
+                                fit: BoxFit.fitWidth,
+                              )),
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        bottom: 0,
+                        right: -5,
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(
+                              'icons/flags/png/${user[count]["country"]}.png',
+                              package: 'country_icons'),
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                Container(width: 5),
-                Expanded(
-                  child: Bubble(
-                    showNip: true,
-                    padding: BubbleEdges.only(
-                        left: 22, top: 10, bottom: 0, right: 22),
-                    alignment: Alignment.centerLeft,
-                    borderColor: Colors.black,
-                    borderWidth: 1.3,
-                    nip: BubbleNip.leftCenter,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text('${posting[index]["author"]}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Colors.orange[400],
-                                        fontWeight: FontWeight.bold))),
-                            Text(
-                              "${ago[index]}",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 5)),
-                        Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              '${posting[index]["story"]}',
-                              //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                              maxLines: 4,
+              ),
+            ],
+          ),
+          Container(width: 5),
+          Expanded(
+            child: Bubble(
+              showNip: true,
+              padding:
+                  BubbleEdges.only(left: 22, top: 10, bottom: 0, right: 22),
+              alignment: Alignment.centerLeft,
+              borderColor: Colors.black,
+              borderWidth: 1.3,
+              nip: BubbleNip.leftCenter,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Text('${user[count]["nickname"]}',
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                            )),
-                        Divider(
-                          thickness: 0.7,
-                          color: Colors.grey[200],
-                        ),
-                        Container(
-                          height: 30,
-                          alignment: Alignment.topRight,
-                          child: Row(
-                            children: [
-                              Text(" ${posting[index]["address"]}",
-                                  style: TextStyle(fontSize: 13)),
-                              Spacer(),
-                              IconButton(
-                                iconSize: 17.5,
-                                icon: Icon(
-                                  Icons.favorite,
-                                  color: favorite[index] == true
-                                      ? Colors.red[400]
-                                      : Colors.grey[300],
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    favorite[index] = !favorite[index];
-
-                                    if (favorite[index]) {
-                                      // if (!user.contains(controller.user!.uid))
-                                      FirebaseFirestore.instance
-                                          .collection('posting')
-                                          .doc('${posting[index].id}')
-                                          .update({
-                                        "count": FieldValue.increment(1),
-                                        "likes": FieldValue.arrayUnion(
-                                            [controller.user!.uid])
-                                      });
-                                    } else {
-                                      FirebaseFirestore.instance
-                                          .collection('posting')
-                                          .doc('${posting[index].id}')
-                                          .update(
-                                        {
-                                          "count": FieldValue.increment(-1),
-                                          'likes': FieldValue.arrayRemove(
-                                              [controller.user!.uid])
-
-                                          // "uid": FieldValue.delete(),
-                                          // "userNickname": FieldValue.delete(),
-                                          // "userImage": FieldValue.delete(),
-                                          // "userCoutnry": FieldValue.delete()
-                                        },
-                                      );
-                                    }
-                                  });
-                                },
-                              ),
-                              Text(
-                                posting[index]["count"] == null ||
-                                        posting[index]["count"] < 1
-                                    ? ""
-                                    : "${posting[index]["count"]} ",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              IconButton(
-                                iconSize: 17.5,
-                                icon: Icon(Icons.chat_bubble_outline_outlined),
-                                onPressed: () {
-                                  Get.to(() => SayReply(
-                                      postingId: posting[index].id,
-                                      userId: controller.user!.uid,
-                                      userName: uName,
-                                      userImage: uImageUrl,
-                                      userCountry: uCountry,
-                                      author: posting[index]["author"],
-                                      authorCountry: posting[index]
-                                          ["authorCountry"],
-                                      authorId: posting[index]["authorId"],
-                                      authorImage: posting[index]
-                                          ["authorImage"],
-                                      count: posting[index]["count"],
-                                      favorite: favorite[index],
-                                      time: ago[index]!,
-                                      replyCount: posting[index]["replyCount"],
-                                      story: posting[index]["story"],
-                                      likes: posting[index]["likes"]));
-                                },
-                              ),
-                              Text(
-                                posting[index]["replyCount"] == null ||
-                                        posting[index]["replyCount"] < 1
-                                    ? ""
-                                    : "${posting[index]["replyCount"]} ",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
+                              style: TextStyle(
+                                  color: Colors.orange[400],
+                                  fontWeight: FontWeight.bold))),
+                      Text(
+                        "${ago[index]}",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 5)),
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        '${posting[index]["story"]}',
+                        //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                  Divider(
+                    thickness: 0.7,
+                    color: Colors.grey[200],
+                  ),
+                  Container(
+                    height: 30,
+                    alignment: Alignment.topRight,
+                    child: Row(
+                      children: [
+                        Text(" ${posting[index]["address"]}",
+                            style: TextStyle(fontSize: 13)),
+                        Spacer(),
+                        IconButton(
+                          iconSize: 17.5,
+                          icon: Icon(
+                            Icons.favorite,
+                            color: favorite[index] == true
+                                ? Colors.red[400]
+                                : Colors.grey[300],
                           ),
-                        )
+                          onPressed: () {
+                            setState(() {
+                              favorite[index] = !favorite[index];
+
+                              if (favorite[index]) {
+                                // if (!user.contains(controller.user!.uid))
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update({
+                                  "count": FieldValue.increment(1),
+                                  "likes": FieldValue.arrayUnion(
+                                      [controller.user!.uid])
+                                });
+                              } else {
+                                FirebaseFirestore.instance
+                                    .collection('posting')
+                                    .doc('${posting[index].id}')
+                                    .update(
+                                  {
+                                    "count": FieldValue.increment(-1),
+                                    'likes': FieldValue.arrayRemove(
+                                        [controller.user!.uid])
+
+                                    // "uid": FieldValue.delete(),
+                                    // "userNickname": FieldValue.delete(),
+                                    // "userImage": FieldValue.delete(),
+                                    // "userCoutnry": FieldValue.delete()
+                                  },
+                                );
+                              }
+                            });
+                          },
+                        ),
+                        Text(
+                          posting[index]["count"] == null ||
+                                  posting[index]["count"] < 1
+                              ? ""
+                              : "${posting[index]["count"]} ",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        IconButton(
+                          iconSize: 17.5,
+                          icon: Icon(Icons.chat_bubble_outline_outlined),
+                          onPressed: () {
+                            Get.to(() => SayReply(
+                                postingId: posting[index].id,
+                                userId: controller.user!.uid,
+                                userName: uName,
+                                userImage: uImageUrl,
+                                userCountry: uCountry,
+                                author: user[count]["nickname"],
+                                authorCountry: user[count]["country"],
+                                authorId: posting[index]["authorId"],
+                                authorImage: user[count]["url"],
+                                count: posting[index]["count"],
+                                favorite: favorite[index],
+                                time: ago[index]!,
+                                replyCount: posting[index]["replyCount"],
+                                story: posting[index]["story"],
+                                likes: posting[index]["likes"]));
+                          },
+                        ),
+                        Text(
+                          posting[index]["replyCount"] == null ||
+                                  posting[index]["replyCount"] < 1
+                              ? ""
+                              : "${posting[index]["replyCount"]} ",
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ],
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          );
-        });
+          )
+        ],
+      ),
+    );
   }
 
   bool like = false;
@@ -796,6 +782,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
     return Scaffold(
         body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -807,86 +794,111 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                 return Center(child: Text("Loading"));
               }
               return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Padding(padding: EdgeInsets.only(top: 40)),
-                    Row(children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15.0),
-                        child: Text("QnA",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 40,
-                                fontWeight: FontWeight.w700)),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        icon: Icon(
-                          Icons.notifications_none,
-                          color: Colors.black,
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      Padding(padding: EdgeInsets.only(top: 40)),
+                      Row(children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0),
+                          child: Text("QnA",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w700)),
                         ),
-                        iconSize: 25,
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                          icon: Icon(Icons.edit),
-                          iconSize: 25,
-                          onPressed: writingPage),
-                    ]),
-                    Container(
-                        child: Divider(
-                      thickness: 1,
-                      color: Colors.grey[800],
-                    )),
-                    exapnded(),
-                    expand1 == true
-                        ? selectCategory()
-                        : Container(
-                            height: 0,
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            Icons.notifications_none,
+                            color: Colors.black,
                           ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: snapshot.data!.size,
-                      itemBuilder: (context, index) {
-                        Map<int, bool> favorite = new Map<int, bool>();
+                          iconSize: 25,
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                            icon: Icon(Icons.edit),
+                            iconSize: 25,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                    return SayWriting(
+                                        uid: controller.user!.uid,
+                                        username: uName,
+                                        userImage: uImageUrl,
+                                        userCountry: uCountry);
+                                  },
+                                ),
+                              );
+                            }),
+                      ]),
+                      Container(
+                          child: Divider(
+                        thickness: 1,
+                        color: Colors.grey[800],
+                      )),
+                      exapnded(),
+                      expand1 == true
+                          ? selectCategory()
+                          : Container(
+                              height: 0,
+                            ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: snapshot.data!.size,
+                        itemBuilder: (context, index) {
+                          Map<int, bool> favorite = new Map<int, bool>();
 
-                        List<dynamic> user =
-                            snapshot.data!.docs[index]["likes"];
+                          List<dynamic> user =
+                              snapshot.data!.docs[index]["likes"];
 
-                        user.contains(controller.user!.uid)
-                            ? favorite[index] = true
-                            : favorite[index] = false;
+                          user.contains(controller.user!.uid)
+                              ? favorite[index] = true
+                              : favorite[index] = false;
 
-                        return controller.user!.uid ==
-                                snapshot.data!.docs[index]["authorId"]
-                            ? myQnA(snapshot.data!.docs, index, favorite)
-                            : otherUserQnA(
-                                snapshot.data!.docs, index, favorite);
-                      },
-                    ),
-                  ],
-                ),
-              );
+                          return StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection("users")
+                                  .where("uid",
+                                      isEqualTo: snapshot.data!.docs[index]
+                                          ["authorId"])
+                                  .snapshots(),
+                              builder:
+                                  (context, AsyncSnapshot<QuerySnapshot> user) {
+                                if (!user.hasData) {
+                                  return Container();
+                                }
+
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount: user.data!.size,
+                                    itemBuilder: (BuildContext context, count) {
+                                      return controller.user!.uid ==
+                                              snapshot.data!.docs[index]
+                                                  ["authorId"]
+                                          ? myQnA(snapshot.data!.docs, index,
+                                              favorite)
+                                          : otherUserQnA(
+                                              snapshot.data!.docs,
+                                              index,
+                                              favorite,
+                                              user.data!.docs,
+                                              count);
+                                    });
+                              });
+                        },
+                      ),
+                    ],
+                  ));
             }));
   }
 }
 
-class User {
-  final String uid;
 
-  User(
-    this.uid,
-  );
-
-  User.fromJson(Map<String, dynamic> json) : uid = json['uid'];
-
-  Map<String, dynamic> toJson() => {
-        'uid': uid,
-      };
-}
 
 // @override
 // Widget build(BuildContext context) {

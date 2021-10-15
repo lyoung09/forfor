@@ -284,6 +284,12 @@ class _SayReplyState extends State<SayReply> {
                             : Colors.grey[300],
                       ),
                       onPressed: () {
+                        DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+                        Timestamp myTimeStamp =
+                            Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+                        DateTime myDateTime = myTimeStamp.toDate(); //
                         setState(() {
                           favoriteThis = !favoriteThis;
 
@@ -294,6 +300,7 @@ class _SayReplyState extends State<SayReply> {
                                 .doc('${widget.postingId}')
                                 .update({
                               "count": FieldValue.increment(1),
+                              "likeDatetime": myDateTime,
                               "likes": FieldValue.arrayUnion([widget.userId])
                             });
                           } else {
@@ -302,6 +309,7 @@ class _SayReplyState extends State<SayReply> {
                                 .doc('${widget.postingId}')
                                 .update(
                               {
+                                "likeDatetime": FieldValue.delete(),
                                 "count": FieldValue.increment(-1),
                                 'likes': FieldValue.arrayRemove([widget.userId])
                               },

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/infomation/sayAlarm.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
@@ -355,6 +356,16 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     );
   }
 
+  alarmPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return SayAlarm(uid: controller.user!.uid);
+        },
+      ),
+    );
+  }
+
   Widget exapnded() {
     return Row(
       children: [
@@ -533,6 +544,13 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 : Colors.grey[300],
                           ),
                           onPressed: () {
+                            DateTime currentPhoneDate =
+                                DateTime.now(); //DateTime
+
+                            Timestamp myTimeStamp = Timestamp.fromDate(
+                                currentPhoneDate); //To TimeStamp
+
+                            DateTime myDateTime = myTimeStamp.toDate(); //
                             setState(() {
                               favorite[index] = !favorite[index];
 
@@ -543,8 +561,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     .doc('${posting[index].id}')
                                     .update({
                                   "count": FieldValue.increment(1),
-                                  "likes": FieldValue.arrayUnion(
-                                      [controller.user!.uid])
+                                  "likes": FieldValue.arrayUnion([
+                                    {
+                                      "uid": controller.user!.uid,
+                                      "likeDatetime": myDateTime,
+                                    }
+                                  ])
                                 });
                               } else {
                                 FirebaseFirestore.instance
@@ -553,8 +575,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     .update(
                                   {
                                     "count": FieldValue.increment(-1),
-                                    'likes': FieldValue.arrayRemove(
-                                        [controller.user!.uid])
+                                    'likes': FieldValue.delete()
                                   },
                                 );
                               }
@@ -677,8 +698,15 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 ? Colors.red[400]
                                 : Colors.grey[300],
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
+                              DateTime currentPhoneDate =
+                                  DateTime.now(); //DateTime
+
+                              Timestamp myTimeStamp = Timestamp.fromDate(
+                                  currentPhoneDate); //To TimeStamp
+
+                              DateTime myDateTime = myTimeStamp.toDate(); //
                               favorite[index] = !favorite[index];
 
                               if (favorite[index]) {
@@ -688,8 +716,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     .doc('${posting[index].id}')
                                     .update({
                                   "count": FieldValue.increment(1),
-                                  "likes": FieldValue.arrayUnion(
-                                      [controller.user!.uid])
+                                  "likes": FieldValue.arrayUnion([
+                                    {
+                                      "likeId": controller.user!.uid,
+                                      "likeDatetime": myDateTime,
+                                    }
+                                  ])
                                 });
                               } else {
                                 FirebaseFirestore.instance
@@ -698,8 +730,13 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                     .update(
                                   {
                                     "count": FieldValue.increment(-1),
-                                    'likes': FieldValue.arrayRemove(
-                                        [controller.user!.uid])
+                                    'likes': FieldValue.arrayRemove([
+                                      {
+                                        "likeId": "",
+                                      }
+
+                                    ])
+                                    
                                   },
                                 );
                               }
@@ -831,7 +868,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             color: Colors.black,
                           ),
                           iconSize: 25,
-                          onPressed: () {},
+                          onPressed: alarmPage,
                         ),
                         IconButton(
                             icon: Icon(Icons.edit),
@@ -854,14 +891,21 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         physics: BouncingScrollPhysics(),
                         itemCount: snapshot.data!.size,
                         itemBuilder: (context, index) {
+                          Map<int, int> favoriteList = new Map<int, int>();
+
+                          favoriteList[index] =
+                              snapshot.data!.docs[index]["count"];
+
                           Map<int, bool> favorite = new Map<int, bool>();
-
-                          List<dynamic> user =
-                              snapshot.data!.docs[index]["likes"];
-
+                          List<dynamic> user = [];
+                          if (favoriteList[index]! > 0) {
+                            user.add(snapshot.data!.docs[index]["likes"]
+                                [favoriteList[index]! - 1]["likeId"]);
+                          }
                           user.contains(controller.user!.uid)
                               ? favorite[index] = true
                               : favorite[index] = false;
+
                           Timer(Duration(milliseconds: 500), () {});
                           return StreamBuilder<QuerySnapshot>(
                               stream: FirebaseFirestore.instance

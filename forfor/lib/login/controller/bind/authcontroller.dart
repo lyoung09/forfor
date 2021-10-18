@@ -424,7 +424,9 @@ class AuthController extends GetxController {
       await googleSignIn.signOut();
       await kakaotalUser.UserApi.instance.logout();
       Get.find<UserController>().clear();
-    } catch (e) {}
+    } catch (e) {
+      print("hoithoit ${e}");
+    }
   }
 
   logoutTalk() async {

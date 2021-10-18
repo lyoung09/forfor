@@ -16,19 +16,20 @@ class SayReply extends StatefulWidget {
   final String time;
   final bool favorite;
   final List likes;
-
-  const SayReply(
-      {Key? key,
-      required this.postingId,
-      required this.userId,
-      required this.authorId,
-      required this.count,
-      required this.replyCount,
-      required this.story,
-      required this.favorite,
-      required this.time,
-      required this.likes})
-      : super(key: key);
+  DateTime? likeDatetime;
+  SayReply({
+    Key? key,
+    required this.postingId,
+    required this.userId,
+    required this.authorId,
+    required this.count,
+    required this.replyCount,
+    required this.story,
+    required this.favorite,
+    required this.time,
+    required this.likes,
+    this.likeDatetime,
+  }) : super(key: key);
 
   @override
   _SayReplyState createState() => _SayReplyState();
@@ -40,11 +41,15 @@ class _SayReplyState extends State<SayReply> {
   bool textExist = false;
   TextEditingController _reply = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late DateTime dt;
   initState() {
     super.initState();
 
     favoriteThis = widget.favorite;
     myFocusNode = FocusNode();
+    if (favoriteThis) {
+      dt = widget.likeDatetime!;
+    }
   }
 
   @override
@@ -54,6 +59,8 @@ class _SayReplyState extends State<SayReply> {
 
     super.dispose();
   }
+
+  Map<String, DateTime> favoriteTime = new Map<String, DateTime>();
 
   String _ago(Timestamp t) {
     String x = timeago
@@ -299,19 +306,27 @@ class _SayReplyState extends State<SayReply> {
                                 .collection('posting')
                                 .doc('${widget.postingId}')
                                 .update({
-                              "count": FieldValue.increment(1),
-                              "likeDatetime": myDateTime,
-                              "likes": FieldValue.arrayUnion([widget.userId])
+                              "likes": FieldValue.arrayUnion([
+                                {
+                                  "likeId": widget.userId,
+                                  "likeDatetime": myDateTime,
+                                }
+                              ])
                             });
+                            dt = myDateTime;
                           } else {
                             FirebaseFirestore.instance
                                 .collection('posting')
                                 .doc('${widget.postingId}')
                                 .update(
                               {
-                                "likeDatetime": FieldValue.delete(),
                                 "count": FieldValue.increment(-1),
-                                'likes': FieldValue.arrayRemove([widget.userId])
+                                "likes": FieldValue.arrayRemove([
+                                  {
+                                    "likeId": widget.userId,
+                                    "likeDatetime": dt,
+                                  }
+                                ])
                               },
                             );
                           }
@@ -319,9 +334,9 @@ class _SayReplyState extends State<SayReply> {
                       },
                     ),
                     Text(
-                      post!["count"] == 0 || post!["count"] < 1
+                      widget.count == 0 || widget.count < 1
                           ? ""
-                          : "${post!["count"]} ",
+                          : "${widget.count} ",
                       style: TextStyle(fontSize: 12),
                     ),
                     IconButton(

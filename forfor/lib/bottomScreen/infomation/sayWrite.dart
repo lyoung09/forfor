@@ -52,6 +52,7 @@ class _SayWritingState extends State<SayWriting> {
           Timestamp.fromDate(currentPhoneDate); //To TimeStamp
 
       DateTime myDateTime = myTimeStamp.toDate(); //
+
       await FirebaseFirestore.instance.collection('posting').add({
         "story": _storycontroller.text,
         "authorId": widget.uid,
@@ -59,9 +60,9 @@ class _SayWritingState extends State<SayWriting> {
         "address": address ?? "",
         "count": 0,
         "replyCount": 0,
-        "likes": [],
         "category": category,
       });
+
       Get.back();
     }
   }

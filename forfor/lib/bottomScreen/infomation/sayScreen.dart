@@ -18,6 +18,7 @@ import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 import 'package:timeago/timeago.dart' as timeago;
 import 'dart:convert';
@@ -57,9 +58,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     });
   }
 
-  Map<String, DateTime> favoriteTime = new Map<String, DateTime>();
-  Map<String, String> favoriteUser = new Map<String, String>();
-  Map<String, DateTime> favoriteUserList = new Map<String, DateTime>();
   String category = "all";
   int checkCategory = 0;
   Widget gridViewCategory() {
@@ -426,6 +424,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     return x;
   }
 
+  var count;
   check(posting, index, favorite) async {
     DateTime currentPhoneDate = DateTime.now(); //DateTime
 
@@ -433,37 +432,46 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
     DateTime myDateTime = myTimeStamp.toDate(); //
 
+    DocumentReference ref =
+        FirebaseFirestore.instance.collection('posting').doc(posting[index].id);
+    ref.collection('likes');
+
     if (favorite[index]) {
-      print(myDateTime);
-      // if (!user.contains(controller.user!.uid))
-      FirebaseFirestore.instance
-          .collection('posting')
-          .doc('${posting[index].id}')
-          .update({
-        "count": FieldValue.increment(1),
-        "likes": FieldValue.arrayUnion([
-          {
-            "likeId": controller.user!.uid,
-            "likeDatetime": myDateTime,
-          }
-        ])
+      ref.collection("likes").doc(controller.user!.uid).set({
+        "likeId": controller.user!.uid,
+        "likeDatetime": myDateTime,
       });
-    } else {
-      FirebaseFirestore.instance
-          .collection('posting')
-          .doc('${posting[index].id}')
-          .update(
-        {
-          "count": FieldValue.increment(-1),
-          'likes': FieldValue.arrayRemove([
-            {
-              "likeId": controller.user!.uid,
-              "likeDatetime": favoriteTime[posting[index].id],
-            }
-          ])
-        },
-      );
+      ref.update({
+        "count": FieldValue.increment(1),
+      });
+      //.update({
+      // "count": FieldValue.increment(1),
+      // "likes": FieldValue.arrayUnion([
+      //   {
+      //     "likeId": controller.user!.uid,
+      //     "likeDatetime": myDateTime,
+      //   }
+      // ])
+      //});
     }
+    if (!favorite[index]) {
+      ref.collection('likes').doc(controller.user!.uid).delete();
+      ref.update({
+        "count": FieldValue.increment(-1),
+      });
+
+      //     .update(
+      //   {
+      //     "count": FieldValue.increment(-1),
+      //     'likes': FieldValue.arrayRemove([
+      //       {
+      //         "likeId": controller.user!.uid,
+      //         "likeDatetime": date,
+      //       }
+      //     ])
+      //   },
+      // );
+    } else {}
   }
 
   Widget otherUserQnA(posting, index, favorite, user, count) {
@@ -578,29 +586,46 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         Text(" ${posting[index]["address"]}",
                             style: TextStyle(fontSize: 13)),
                         Spacer(),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(
-                            Icons.favorite,
-                            color: favorite[index] == true
-                                ? Colors.red[400]
-                                : Colors.grey[300],
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              favorite[index] = !favorite[index];
-
-                              check(posting, index, favorite);
-                            });
-                          },
-                        ),
-                        Text(
-                          posting[index]["count"] == null ||
-                                  posting[index]["count"] < 1
-                              ? ""
-                              : "${posting[index]["count"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posting')
+                                .doc(posting[index].id)
+                                .collection('likes')
+                                .doc(controller.user!.uid)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<DocumentSnapshot> likeUser) {
+                              if (!likeUser.hasData) {
+                                favorite[index] = false;
+                              }
+                              if (likeUser.hasData) {
+                                favorite[index] = likeUser.data!.exists;
+                              }
+                              return Row(
+                                children: [
+                                  IconButton(
+                                    iconSize: 17.5,
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: favorite[index] == true
+                                          ? Colors.red[400]
+                                          : Colors.grey[300],
+                                    ),
+                                    onPressed: () {
+                                      favorite[index] = !favorite[index];
+                                      check(posting, index, favorite);
+                                    },
+                                  ),
+                                  Text(
+                                    posting[index]["count"] == null ||
+                                            posting[index]["count"] < 1
+                                        ? ""
+                                        : "${posting[index]["count"]} ",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              );
+                            }),
                         IconButton(
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
@@ -608,17 +633,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             controller.user!.uid == posting[index]["authorId"]
                                 ? Get.to(() => BottomNavigation(index: 4))
                                 : Get.to(() => SayReply(
-                                    postingId: posting[index].id,
-                                    userId: controller.user!.uid,
-                                    authorId: posting[index]["authorId"],
-                                    count: posting[index]["count"],
-                                    favorite: favorite[index],
-                                    time: ago[index]!,
-                                    replyCount: posting[index]["replyCount"],
-                                    story: posting[index]["story"],
-                                    likes: posting[index]["likes"],
-                                    likeDatetime:
-                                        favoriteTime[posting[index].id]));
+                                      postingId: posting[index].id,
+                                      userId: controller.user!.uid,
+                                      authorId: posting[index]["authorId"],
+                                      favorite: favorite[index],
+                                      time: ago[index]!,
+                                      replyCount: posting[index]["replyCount"],
+                                      story: posting[index]["story"],
+                                    ));
                           },
                         ),
                         Text(
@@ -704,66 +726,46 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         Text(" ${posting[index]["address"]}",
                             style: TextStyle(fontSize: 13)),
                         Spacer(),
-                        IconButton(
-                          iconSize: 17.5,
-                          icon: Icon(
-                            Icons.favorite,
-                            color: favorite[index] == true
-                                ? Colors.red[400]
-                                : Colors.grey[300],
-                          ),
-                          onPressed: () {
-                            favorite[index] = !favorite[index];
-                            check(posting, index, favorite);
-                            // setState(() {
-                            //   DateTime currentPhoneDate =
-                            //       DateTime.now(); //DateTime
-
-                            //   Timestamp myTimeStamp = Timestamp.fromDate(
-                            //       currentPhoneDate); //To TimeStamp
-
-                            //   DateTime myDateTime = myTimeStamp.toDate(); //
-
-                            //   if (favorite[index]) {
-                            //     FirebaseFirestore.instance
-                            //         .collection('posting')
-                            //         .doc('${posting[index].id}')
-                            //         .update({
-                            //       "count": FieldValue.increment(1),
-                            //       "likes": FieldValue.arrayUnion([
-                            //         {
-                            //           "likeId": controller.user!.uid,
-                            //           "likeDatetime": myDateTime,
-                            //         }
-                            //       ])
-                            //     });
-                            //   } else {
-                            //     FirebaseFirestore.instance
-                            //         .collection('posting')
-                            //         .doc('${posting[index].id}')
-                            //         .update(
-                            //       {
-                            //         "count": FieldValue.increment(-1),
-                            //         'likes': FieldValue.arrayRemove([
-                            //           {
-                            //             "likeId": controller.user!.uid,
-                            //             "likeDatetime":
-                            //                 favoriteTime[posting[index].id],
-                            //           }
-                            //         ])
-                            //       },
-                            //     );
-                            //   }
-                            // });
-                          },
-                        ),
-                        Text(
-                          posting[index]["count"] == null ||
-                                  posting[index]["count"] < 1
-                              ? ""
-                              : "${posting[index]["count"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posting')
+                                .doc(posting[index].id)
+                                .collection('likes')
+                                .doc(controller.user!.uid)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<DocumentSnapshot> likeUser) {
+                              if (!likeUser.hasData) {
+                                favorite[index] = false;
+                              }
+                              if (likeUser.hasData) {
+                                favorite[index] = likeUser.data!.exists;
+                              }
+                              return Row(
+                                children: [
+                                  IconButton(
+                                    iconSize: 17.5,
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: favorite[index] == true
+                                          ? Colors.red[400]
+                                          : Colors.grey[300],
+                                    ),
+                                    onPressed: () {
+                                      favorite[index] = !favorite[index];
+                                      check(posting, index, favorite);
+                                    },
+                                  ),
+                                  Text(
+                                    posting[index]["count"] == null ||
+                                            posting[index]["count"] < 1
+                                        ? ""
+                                        : "${posting[index]["count"]} ",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              );
+                            }),
                         Container(
                           padding: EdgeInsets.only(right: 4),
                           child: Divider(
@@ -773,18 +775,16 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         IconButton(
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
-                          onPressed: () {
+                          onPressed: () async {
                             Get.to(() => SayReply(
-                                postingId: posting[index].id,
-                                userId: controller.user!.uid,
-                                authorId: controller.user!.uid,
-                                count: posting[index]["count"],
-                                favorite: favorite[index],
-                                time: ago[index]!,
-                                replyCount: posting[index]["replyCount"],
-                                story: posting[index]["story"],
-                                likes: posting[index]["likes"],
-                                likeDatetime: favoriteTime[posting[index].id]));
+                                  postingId: posting[index].id,
+                                  userId: controller.user!.uid,
+                                  authorId: controller.user!.uid,
+                                  favorite: favorite[index],
+                                  time: ago[index]!,
+                                  replyCount: posting[index]["replyCount"],
+                                  story: posting[index]["story"],
+                                ));
                           },
                         ),
                         Text(
@@ -842,6 +842,15 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     );
   }
 
+  late DocumentSnapshot tt;
+  chchch(ref, favoriteUser, index) async {
+    tt = await ref.collection('likes').doc(controller.user!.uid).get();
+
+    setState(() {
+      favoriteUser[index] = tt.exists;
+    });
+  }
+
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
@@ -861,6 +870,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               if (!snapshot.hasData) {
                 return Center(child: Text("Loading"));
               }
+
               return SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   scrollDirection: Axis.vertical,
@@ -906,35 +916,36 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         physics: BouncingScrollPhysics(),
                         itemCount: snapshot.data!.size,
                         itemBuilder: (context, index) {
-                          Map<int, int> favoriteList = new Map<int, int>();
                           Map<int, bool> favorite = new Map<int, bool>();
+                          Map<int, bool> favoriteUser = new Map<int, bool>();
 
-                          favoriteList[index] =
-                              snapshot.data!.docs[index]["count"];
-                          print(snapshot.data!.docs[index]["likes"]);
-                          List<dynamic> user = [];
+                          // if (ref.id.isEmpty || ref == null) {
+                          //   FirebaseFirestore.instance
+                          //       .collection('posting')
+                          //       .doc(snapshot.data!.docs[index].id)
+                          //       .collection('likes');
+                          // }
 
-                          if (favoriteList[index]! > 0) {
-                            for (int i = 0;
-                                i <= favoriteList[index]! - 1;
-                                i++) {
-                              user.add(snapshot.data!.docs[index]["likes"][i]
-                                  ["likeId"]);
-                            }
-                          }
-                          user.contains(controller.user!.uid)
-                              ? favorite[index] = true
-                              : favorite[index] = false;
+                          // var ulike = ref
+                          //     .collection('likes')
+                          //     .doc(controller.user!.uid)
+                          //     .get();
 
-                          if (user.contains(controller.user!.uid)) {
-                            favoriteTime[snapshot.data!.docs[index].id] =
-                                snapshot
-                                    .data!
-                                    .docs[index]
-                                        ["likes"][favoriteList[index]! - 1]
-                                        ["likeDatetime"]
-                                    .toDate();
-                          }
+                          // ulike.isBlank == false
+                          //     ? favorite[index] = true
+                          //     : favorite[index] = false;
+
+                          // if (favorite[index]!) {
+
+                          //   favoriteTime[snapshot.data!.docs[index].id] =
+                          //       snapshot
+                          //           .data!
+                          //           .docs[index]
+                          //               ["likes"][favoriteList[index]! - 1]
+                          //               ["likeDatetime"]
+                          //           .toDate();
+                          // }
+
                           return StreamBuilder<QuerySnapshot>(
                               stream: FirebaseFirestore.instance
                                   .collection("users")
@@ -980,6 +991,20 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 }
                                 return Container();
                               });
+
+                          // StreamBuilder<DocumentSnapshot>(
+                          //     stream: FirebaseFirestore.instance
+                          //         .collection('posting')
+                          //         .doc(snapshot.data!.docs[index].id)
+                          //         .snapshots(),
+                          //     builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          //       //snapshot.collection('likes');
+                          //       if(!snapshot.hasData){
+
+                          //       }
+
+                          //       return Container();
+                          //     });
                         },
                       ),
                     ],

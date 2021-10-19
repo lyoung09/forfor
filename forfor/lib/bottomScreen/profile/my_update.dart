@@ -477,7 +477,10 @@ class _UserUpdateState extends State<UserUpdate> {
 
   Widget changeCategory(list1) {
     return FutureBuilder(
-        future: FirebaseFirestore.instance.collection('category').get(),
+        future: FirebaseFirestore.instance
+            .collection('category')
+            .where("categoryId", isNotEqualTo: 0)
+            .get(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Center(

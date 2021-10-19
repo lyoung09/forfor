@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
@@ -10,25 +12,21 @@ class SayReply extends StatefulWidget {
   final String postingId;
   final String userId;
   final String authorId;
-  final int count;
+
   final int replyCount;
   final String story;
   final String time;
   final bool favorite;
-  final List likes;
-  DateTime? likeDatetime;
+
   SayReply({
     Key? key,
     required this.postingId,
     required this.userId,
     required this.authorId,
-    required this.count,
     required this.replyCount,
     required this.story,
     required this.favorite,
     required this.time,
-    required this.likes,
-    this.likeDatetime,
   }) : super(key: key);
 
   @override
@@ -47,9 +45,6 @@ class _SayReplyState extends State<SayReply> {
 
     favoriteThis = widget.favorite;
     myFocusNode = FocusNode();
-    if (favoriteThis) {
-      dt = widget.likeDatetime!;
-    }
   }
 
   @override
@@ -86,10 +81,10 @@ class _SayReplyState extends State<SayReply> {
 
     DateTime myDateTime = myTimeStamp.toDate(); //
 
-    await FirebaseFirestore.instance
-        .collection('posting')
-        .doc(widget.postingId)
-        .update({
+    DocumentReference ref =
+        FirebaseFirestore.instance.collection('posting').doc(widget.postingId);
+
+    await ref.update({
       "replyCount": FieldValue.increment(1),
       "reply": FieldValue.arrayUnion([
         {
@@ -99,13 +94,14 @@ class _SayReplyState extends State<SayReply> {
         }
       ])
     });
+
     _reply.clear();
     myFocusNode.unfocus();
   }
 
   Widget bottom(size) {
     return Container(
-      height: 70,
+      height: Platform.isAndroid ? 70 : 90,
       child: Row(
         children: [
           Padding(padding: EdgeInsets.all(8)),
@@ -305,38 +301,40 @@ class _SayReplyState extends State<SayReply> {
                             FirebaseFirestore.instance
                                 .collection('posting')
                                 .doc('${widget.postingId}')
-                                .update({
-                              "likes": FieldValue.arrayUnion([
-                                {
-                                  "likeId": widget.userId,
-                                  "likeDatetime": myDateTime,
-                                }
-                              ])
+                                .collection('likes')
+                                .doc(widget.userId)
+                                .set({
+                              "likeId": widget.userId,
+                              "likeDatetime": myDateTime,
                             });
-                            dt = myDateTime;
-                          } else {
                             FirebaseFirestore.instance
                                 .collection('posting')
                                 .doc('${widget.postingId}')
-                                .update(
-                              {
-                                "count": FieldValue.increment(-1),
-                                "likes": FieldValue.arrayRemove([
-                                  {
-                                    "likeId": widget.userId,
-                                    "likeDatetime": dt,
-                                  }
-                                ])
-                              },
-                            );
+                                .update({
+                              "count": FieldValue.increment(1),
+                            });
                           }
+                          if (!favoriteThis) {
+                            FirebaseFirestore.instance
+                                .collection('posting')
+                                .doc('${widget.postingId}')
+                                .collection('likes')
+                                .doc(widget.userId)
+                                .delete();
+                            FirebaseFirestore.instance
+                                .collection('posting')
+                                .doc('${widget.postingId}')
+                                .update({
+                              "count": FieldValue.increment(-1),
+                            });
+                          } else {}
                         });
                       },
                     ),
                     Text(
-                      widget.count == 0 || widget.count < 1
+                      post!["count"] == 0 || post!["count"] < 1
                           ? ""
-                          : "${widget.count} ",
+                          : "${post!["count"]} ",
                       style: TextStyle(fontSize: 12),
                     ),
                     IconButton(
@@ -451,38 +449,155 @@ class _SayReplyState extends State<SayReply> {
                             ),
                             Expanded(
                               flex: 7,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.65,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 5.0, top: 10),
-                                      child: Text(
-                                          users.data!.docs[userCount]
-                                              ["nickname"],
-                                          // "helelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelel",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.clip,
-                                          style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w700)),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Text(
-                                        review[index]["reply"],
-                                        //"helelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelel",
-
-                                        style: TextStyle(fontSize: 14),
+                              child: InkWell(
+                                onTap: widget.userId ==
+                                        users.data!.docs[userCount]["uid"]
+                                    ? () {
+                                        print(widget.userId);
+                                        print(review[index]["datetime"]);
+                                        print(review[index]["reply"]);
+                                        // showDialog(
+                                        //     context: context,
+                                        //     builder: (BuildContext context) => CupertinoAlertDialog(
+                                        //           title: Text('이미지로 저장하시겠습니까?'),
+                                        //           actions: <Widget>[
+                                        //             CupertinoDialogAction(
+                                        //               child: Text('아니요'),
+                                        //               onPressed: () => Navigator.of(context).pop(),
+                                        //             ),
+                                        //             CupertinoDialogAction(
+                                        //                 child: Text('네'),
+                                        //                 onPressed: () {
+                                        //                   Navigator.of(context).pop();
+                                        //                 }),
+                                        //           ],
+                                        //         ));
+                                        showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (context) {
+                                              print(MediaQuery.of(context)
+                                                  .viewInsets
+                                                  .bottom);
+                                              return SingleChildScrollView(
+                                                  child: Container(
+                                                padding: EdgeInsets.only(
+                                                    bottom:
+                                                        MediaQuery.of(context)
+                                                            .viewInsets
+                                                            .bottom),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      height: 10,
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                "posting")
+                                                            .doc(widget
+                                                                .postingId)
+                                                            .update({
+                                                          "replyCount":
+                                                              FieldValue
+                                                                  .increment(
+                                                                      -1),
+                                                          "reply": FieldValue
+                                                              .arrayRemove([
+                                                            {
+                                                              "replyId":
+                                                                  widget.userId,
+                                                              "reply":
+                                                                  review[index]
+                                                                      ["reply"],
+                                                              "datetime": review[
+                                                                      index]
+                                                                  ["datetime"]
+                                                            }
+                                                          ])
+                                                        });
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Container(
+                                                        height: 40,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        child: Center(
+                                                            child: Text("삭제",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: Colors
+                                                                            .red[
+                                                                        400]))),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      color: Colors.transparent,
+                                                      height: 20,
+                                                    ),
+                                                    Container(
+                                                      height: 40,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Center(
+                                                            child: Text("취소")),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      height: 20,
+                                                    )
+                                                  ],
+                                                ),
+                                              ));
+                                            });
+                                      }
+                                    : () {},
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.65,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 5.0, top: 10),
+                                        child: Text(
+                                            users.data!.docs[userCount]
+                                                ["nickname"],
+                                            // "helelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelel",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.clip,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w700)),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          review[index]["reply"],
+                                          //"helelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelelhelelelellelelel",
+
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             Padding(
@@ -578,11 +693,28 @@ class _SayReplyState extends State<SayReply> {
                   //좋아요 -> 누른 사람얼굴
                   snapshot.data!['count'] == 0
                       ? Container(height: 0)
-                      : Container(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: likesUser(snapshot.data!["likes"])),
+                      : StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('posting')
+                              .doc(widget.postingId)
+                              .collection('likes')
+                              .snapshots(),
+                          builder:
+                              (context, AsyncSnapshot<QuerySnapshot> likes) {
+                            if (!likes.hasData) {
+                              return Center(child: Text(""));
+                            }
+                            List<dynamic> a = [];
+                            for (int k = 0; k < likes.data!.size; k++) {
+                              a.add(likes.data!.docs[k].id);
+                            }
+
+                            return Container(
+                                height: 60,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(color: Colors.white),
+                                child: likesUser(a));
+                          }),
                   //댓글 리스트
 
                   snapshot.data!['replyCount'] == 0

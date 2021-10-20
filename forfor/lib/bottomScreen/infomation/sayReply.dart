@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/infomation/favoriteList.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/home/bottom_navigation.dart';
@@ -16,7 +17,6 @@ class SayReply extends StatefulWidget {
   final int replyCount;
   final String story;
   final String time;
-  final bool favorite;
 
   SayReply({
     Key? key,
@@ -25,7 +25,6 @@ class SayReply extends StatefulWidget {
     required this.authorId,
     required this.replyCount,
     required this.story,
-    required this.favorite,
     required this.time,
   }) : super(key: key);
 
@@ -43,7 +42,6 @@ class _SayReplyState extends State<SayReply> {
   initState() {
     super.initState();
 
-    favoriteThis = widget.favorite;
     myFocusNode = FocusNode();
   }
 
@@ -181,16 +179,14 @@ class _SayReplyState extends State<SayReply> {
                   children: [
                     InkWell(
                       onTap: () {
-                        widget.userId == snapshot.data!["uid"]
-                            ? Get.to(() => BottomNavigation(index: 4))
-                            : Get.to(() => OtherProfile(
-                                  uid: post["authorId"],
-                                  userName: snapshot.data!["nickname"],
-                                  userImage: snapshot.data!["url"],
-                                  country: snapshot.data!["country"],
-                                  introduction: snapshot.data!["introduction"],
-                                  address: snapshot.data!["address"],
-                                ));
+                        Get.to(() => OtherProfile(
+                              uid: post["authorId"],
+                              userName: snapshot.data!["nickname"],
+                              userImage: snapshot.data!["url"],
+                              country: snapshot.data!["country"],
+                              introduction: snapshot.data!["introduction"],
+                              address: snapshot.data!["address"],
+                            ));
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0),
@@ -278,59 +274,37 @@ class _SayReplyState extends State<SayReply> {
                 Divider(),
                 Row(
                   children: [
-                    IconButton(
-                      iconSize: 15,
-                      icon: Icon(
-                        Icons.favorite,
-                        color: favoriteThis == true
-                            ? Colors.red[400]
-                            : Colors.grey[300],
-                      ),
-                      onPressed: () {
-                        DateTime currentPhoneDate = DateTime.now(); //DateTime
-
-                        Timestamp myTimeStamp =
-                            Timestamp.fromDate(currentPhoneDate); //To TimeStamp
-
-                        DateTime myDateTime = myTimeStamp.toDate(); //
-                        setState(() {
-                          favoriteThis = !favoriteThis;
-
-                          if (favoriteThis) {
-                            // if (!user.contains(controller.user!.uid))
-                            FirebaseFirestore.instance
-                                .collection('posting')
-                                .doc('${widget.postingId}')
-                                .collection('likes')
-                                .doc(widget.userId)
-                                .set({
-                              "likeId": widget.userId,
-                              "likeDatetime": myDateTime,
-                            });
-                            FirebaseFirestore.instance
-                                .collection('posting')
-                                .doc('${widget.postingId}')
-                                .update({
-                              "count": FieldValue.increment(1),
-                            });
+                    StreamBuilder<DocumentSnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('posting')
+                            .doc(widget.postingId)
+                            .collection('likes')
+                            .doc(widget.userId)
+                            .snapshots(),
+                        builder: (context,
+                            AsyncSnapshot<DocumentSnapshot> likeUser) {
+                          if (!likeUser.hasData) {
+                            favoriteThis = false;
                           }
-                          if (!favoriteThis) {
-                            FirebaseFirestore.instance
-                                .collection('posting')
-                                .doc('${widget.postingId}')
-                                .collection('likes')
-                                .doc(widget.userId)
-                                .delete();
-                            FirebaseFirestore.instance
-                                .collection('posting')
-                                .doc('${widget.postingId}')
-                                .update({
-                              "count": FieldValue.increment(-1),
-                            });
-                          } else {}
-                        });
-                      },
-                    ),
+                          if (likeUser.hasData) {
+                            favoriteThis = likeUser.data!.exists;
+
+                            return IconButton(
+                              iconSize: 15,
+                              icon: Icon(
+                                Icons.favorite,
+                                color: favoriteThis == true
+                                    ? Colors.red[400]
+                                    : Colors.grey[300],
+                              ),
+                              onPressed: () {
+                                favoriteThis = !favoriteThis;
+                                check();
+                              },
+                            );
+                          }
+                          return Container();
+                        }),
                     Text(
                       post!["count"] == 0 || post!["count"] < 1
                           ? ""
@@ -362,6 +336,47 @@ class _SayReplyState extends State<SayReply> {
             ),
           );
         });
+  }
+
+  check() async {
+    DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+    DateTime myDateTime = myTimeStamp.toDate(); //
+
+    if (favoriteThis) {
+      // if (!user.contains(controller.user!.uid))
+      FirebaseFirestore.instance
+          .collection('posting')
+          .doc('${widget.postingId}')
+          .collection('likes')
+          .doc(widget.userId)
+          .set({
+        "likeId": widget.userId,
+        "likeDatetime": myDateTime,
+      });
+      FirebaseFirestore.instance
+          .collection('posting')
+          .doc('${widget.postingId}')
+          .update({
+        "count": FieldValue.increment(1),
+      });
+    }
+    if (!favoriteThis) {
+      FirebaseFirestore.instance
+          .collection('posting')
+          .doc('${widget.postingId}')
+          .collection('likes')
+          .doc(widget.userId)
+          .delete();
+      FirebaseFirestore.instance
+          .collection('posting')
+          .doc('${widget.postingId}')
+          .update({
+        "count": FieldValue.increment(-1),
+      });
+    } else {}
   }
 
   Widget review(count, review) {
@@ -401,24 +416,20 @@ class _SayReplyState extends State<SayReply> {
                                   Padding(padding: EdgeInsets.only(top: 8)),
                                   InkWell(
                                     onTap: () {
-                                      widget.userId == review[index]["replyId"]
-                                          ? Get.to(
-                                              () => BottomNavigation(index: 4))
-                                          : Get.to(() => OtherProfile(
-                                                uid: review[index]["replyId"],
-                                                userName:
-                                                    users.data!.docs[userCount]
-                                                        ["nickname"],
-                                                userImage: users.data!
-                                                    .docs[userCount]["url"],
-                                                country: users.data!
-                                                    .docs[userCount]["country"],
-                                                introduction:
-                                                    users.data!.docs[userCount]
-                                                        ["introduction"],
-                                                address: users.data!
-                                                    .docs[userCount]["address"],
-                                              ));
+                                      Get.to(() => OtherProfile(
+                                            uid: review[index]["replyId"],
+                                            userName: users.data!
+                                                .docs[userCount]["nickname"],
+                                            userImage: users
+                                                .data!.docs[userCount]["url"],
+                                            country: users.data!.docs[userCount]
+                                                ["country"],
+                                            introduction:
+                                                users.data!.docs[userCount]
+                                                    ["introduction"],
+                                            address: users.data!.docs[userCount]
+                                                ["address"],
+                                          ));
                                     },
                                     child: Stack(
                                       children: [
@@ -596,6 +607,9 @@ class _SayReplyState extends State<SayReply> {
                                         ),
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: 15,
+                                    )
                                   ],
                                 ),
                               ),
@@ -651,7 +665,16 @@ class _SayReplyState extends State<SayReply> {
                 flex: 2,
                 child: IconButton(
                   icon: Icon(Icons.arrow_forward_ios),
-                  onPressed: () {},
+                  onPressed: () {
+                    print(likesPeople.runtimeType);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return FavoriteUser(userId: likesPeople);
+                        },
+                      ),
+                    );
+                  },
                 ),
               )
             ],
@@ -704,16 +727,20 @@ class _SayReplyState extends State<SayReply> {
                             if (!likes.hasData) {
                               return Center(child: Text(""));
                             }
-                            List<dynamic> a = [];
-                            for (int k = 0; k < likes.data!.size; k++) {
-                              a.add(likes.data!.docs[k].id);
-                            }
+                            if (likes.hasData && likes.data!.size > 0) {
+                              List<dynamic> a = [];
+                              for (int k = 0; k < likes.data!.size; k++) {
+                                a.add(likes.data!.docs[k].id);
+                              }
 
-                            return Container(
-                                height: 60,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(color: Colors.white),
-                                child: likesUser(a));
+                              return Container(
+                                  height: 60,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration:
+                                      BoxDecoration(color: Colors.white),
+                                  child: likesUser(a));
+                            }
+                            return Container();
                           }),
                   //댓글 리스트
 

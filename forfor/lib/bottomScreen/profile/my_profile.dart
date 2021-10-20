@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/profile/my_update.dart';
+import 'package:forfor/bottomScreen/profile/profileDetail/myQ.dart';
 import 'package:forfor/bottomScreen/profile/settings.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
@@ -481,12 +482,12 @@ class MyProfile extends GetWidget<AuthController> {
                           child: Column(
                             children: <Widget>[
                               Image.asset(
-                                'assets/icon/invite.png',
+                                'assets/icon/group.png',
                                 width: 35,
                                 height: 35,
                               ),
                               Container(height: 5),
-                              Text("invite",
+                              Text("Group",
                                   style: TextStyle(
                                       color: Colors.grey[900], fontSize: 20))
                             ],
@@ -522,18 +523,28 @@ class MyProfile extends GetWidget<AuthController> {
                         ),
                         Expanded(
                           flex: 2,
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset(
-                                'assets/icon/group.png',
-                                width: 35,
-                                height: 35,
-                              ),
-                              Container(height: 5),
-                              Text("group",
-                                  style: TextStyle(
-                                      color: Colors.grey[900], fontSize: 20))
-                            ],
+                          child: InkWell(
+                            onTap: () {
+                              Get.to(MyQuestion(
+                                myId: snapshot.user.id!,
+                                myName: snapshot.user.nickname!,
+                                myCountry: snapshot.user.country!,
+                                myImage: snapshot.user.url!,
+                              ));
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  'assets/icon/questionPeson.png',
+                                  width: 35,
+                                  height: 35,
+                                ),
+                                Container(height: 5),
+                                Text("QnA",
+                                    style: TextStyle(
+                                        color: Colors.grey[900], fontSize: 20))
+                              ],
+                            ),
                           ),
                         ),
                       ],

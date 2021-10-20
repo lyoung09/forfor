@@ -487,16 +487,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
             children: [
               InkWell(
                 onTap: () {
-                  controller.user!.uid == posting[index]["authorId"]
-                      ? Get.to(() => BottomNavigation(index: 4))
-                      : Get.to(() => OtherProfile(
-                            uid: posting[index]["authorId"],
-                            userName: user[count]["nickname"],
-                            userImage: user[count]["url"],
-                            country: user[count]["country"],
-                            introduction: user[count]["introduction"],
-                            address: posting[index]["address"] ?? "",
-                          ));
+                  Get.to(() => OtherProfile(
+                        uid: posting[index]["authorId"],
+                        userName: user[count]["nickname"],
+                        userImage: user[count]["url"],
+                        country: user[count]["country"],
+                        introduction: user[count]["introduction"],
+                        address: posting[index]["address"] ?? "",
+                      ));
                 },
                 child: Padding(
                   padding: EdgeInsets.only(left: 8.0),
@@ -630,17 +628,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
                           onPressed: () {
-                            controller.user!.uid == posting[index]["authorId"]
-                                ? Get.to(() => BottomNavigation(index: 4))
-                                : Get.to(() => SayReply(
-                                      postingId: posting[index].id,
-                                      userId: controller.user!.uid,
-                                      authorId: posting[index]["authorId"],
-                                      favorite: favorite[index],
-                                      time: ago[index]!,
-                                      replyCount: posting[index]["replyCount"],
-                                      story: posting[index]["story"],
-                                    ));
+                            Get.to(() => SayReply(
+                                  postingId: posting[index].id,
+                                  userId: controller.user!.uid,
+                                  authorId: posting[index]["authorId"],
+                                  time: ago[index]!,
+                                  replyCount: posting[index]["replyCount"],
+                                  story: posting[index]["story"],
+                                ));
                           },
                         ),
                         Text(
@@ -652,7 +647,10 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
             ),
@@ -780,7 +778,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   postingId: posting[index].id,
                                   userId: controller.user!.uid,
                                   authorId: controller.user!.uid,
-                                  favorite: favorite[index],
                                   time: ago[index]!,
                                   replyCount: posting[index]["replyCount"],
                                   story: posting[index]["story"],
@@ -917,7 +914,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                         itemCount: snapshot.data!.size,
                         itemBuilder: (context, index) {
                           Map<int, bool> favorite = new Map<int, bool>();
-                          Map<int, bool> favoriteUser = new Map<int, bool>();
 
                           // if (ref.id.isEmpty || ref == null) {
                           //   FirebaseFirestore.instance

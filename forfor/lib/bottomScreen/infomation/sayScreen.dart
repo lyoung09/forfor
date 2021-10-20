@@ -483,59 +483,10 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       child: Row(
         children: [
           Container(width: 5),
-          Column(
-            children: [
-              InkWell(
-                onTap: () {
-                  Get.to(() => OtherProfile(
-                        uid: posting[index]["authorId"],
-                        userName: user[count]["nickname"],
-                        userImage: user[count]["url"],
-                        country: user[count]["country"],
-                        introduction: user[count]["introduction"],
-                        address: posting[index]["address"] ?? "",
-                      ));
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          child: Container(
-                              width: 85,
-                              height: 85,
-                              child: Image.network(
-                                '${user[count]["url"]}',
-                                fit: BoxFit.fitWidth,
-                              )),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: -5,
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(
-                              'icons/flags/png/${user[count]["country"]}.png',
-                              package: 'country_icons'),
-                          backgroundColor: Colors.white,
-                          radius: 15,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Container(width: 5),
           Expanded(
             child: Bubble(
               showNip: true,
-              padding:
-                  BubbleEdges.only(left: 22, top: 10, bottom: 0, right: 22),
+              padding: BubbleEdges.only(left: 8, bottom: 5, right: 8),
               alignment: Alignment.centerLeft,
               borderColor: Colors.black,
               borderWidth: 1.3,
@@ -545,45 +496,96 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => OtherProfile(
+                                  uid: posting[index]["authorId"],
+                                  userName: user[count]["nickname"],
+                                  userImage: user[count]["url"],
+                                  country: user[count]["country"],
+                                  introduction: user[count]["introduction"],
+                                  address: posting[index]["address"] ?? "",
+                                ));
+                          },
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(25)),
+                                  child: Container(
+                                      width: 45,
+                                      height: 45,
+                                      child: Image.network(
+                                        '${user[count]["url"]}',
+                                        fit: BoxFit.fitWidth,
+                                      )),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'icons/flags/png/${user[count]["country"]}.png',
+                                      package: 'country_icons'),
+                                  backgroundColor: Colors.white,
+                                  radius: 8,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       Expanded(
                         flex: 8,
-                        child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('${user[count]["nickname"]}',
-                                //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: Colors.orange[400],
-                                    fontWeight: FontWeight.bold))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 10.0, left: 5, right: 5),
+                          child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text('${user[count]["nickname"]}',
+                                  //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 18.5,
+                                      color: Colors.orange[400],
+                                      fontWeight: FontWeight.bold))),
+                        ),
                       ),
-                      Text(
-                        "${ago[index]}",
-                        style: TextStyle(fontSize: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Text(
+                          "${ago[index]}",
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ],
                   ),
                   Padding(padding: EdgeInsets.only(top: 5)),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        '${posting[index]["story"]}',
-                        //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                  Divider(
-                    thickness: 0.7,
-                    color: Colors.grey[200],
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 8.0, left: 15, bottom: 8),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          '${posting[index]["story"]}',
+                          //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14),
+                        )),
                   ),
+                  SizedBox(height: 10),
                   Container(
                     height: 30,
-                    alignment: Alignment.topRight,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(" ${posting[index]["address"]}",
-                            style: TextStyle(fontSize: 13)),
-                        Spacer(),
                         StreamBuilder<DocumentSnapshot>(
                             stream: FirebaseFirestore.instance
                                 .collection('posting')
@@ -599,31 +601,33 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return Row(
-                                children: [
-                                  IconButton(
-                                    iconSize: 17.5,
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: favorite[index] == true
-                                          ? Colors.red[400]
-                                          : Colors.grey[300],
-                                    ),
-                                    onPressed: () {
-                                      favorite[index] = !favorite[index];
-                                      check(posting, index, favorite);
-                                    },
-                                  ),
-                                  Text(
-                                    posting[index]["count"] == null ||
-                                            posting[index]["count"] < 1
-                                        ? ""
-                                        : "${posting[index]["count"]} ",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
+                              return IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: favorite[index] == true
+                                      ? Colors.red[400]
+                                      : Colors.grey[300],
+                                ),
+                                onPressed: () {
+                                  favorite[index] = !favorite[index];
+                                  check(posting, index, favorite);
+                                },
                               );
                             }),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: Text(
+                            posting[index]["count"] == null ||
+                                    posting[index]["count"] < 1
+                                ? ""
+                                : "${posting[index]["count"]} ",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
                         IconButton(
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
@@ -645,12 +649,18 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               : "${posting[index]["replyCount"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
+                        Spacer(),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: Icon(Icons.more_vert, size: 17),
+                            onPressed: () {},
+                          ),
+                        )
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  SizedBox(height: 5),
                 ],
               ),
             ),
@@ -662,7 +672,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   bool like = false;
 
-  Widget myQnA(posting, index, favorite, uid, name) {
+  Widget myQnA(
+      posting, index, favorite, uid, name, url, country, introduction) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = _ago(posting[index]["timestamp"]);
 
@@ -674,8 +685,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
           Expanded(
             child: Bubble(
               showNip: true,
-              padding:
-                  BubbleEdges.only(left: 22, top: 10, bottom: 0, right: 22),
+              padding: BubbleEdges.only(
+                left: 8,
+                bottom: 5,
+                right: 8,
+              ),
               alignment: Alignment.centerLeft,
               borderColor: Colors.black,
               borderWidth: 1.3,
@@ -685,45 +699,89 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => OtherProfile(
+                                  uid: posting[index]["authorId"],
+                                  userName: name,
+                                  userImage: url,
+                                  country: country,
+                                  introduction: introduction,
+                                  address: posting[index]["address"] ?? "",
+                                ));
+                          },
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 5.0),
+                                child: CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: NetworkImage("${url}")),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'icons/flags/png/${country}.png',
+                                      package: 'country_icons'),
+                                  backgroundColor: Colors.white,
+                                  radius: 8,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       Expanded(
                         flex: 8,
-                        child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text('${name}',
-                                //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: Colors.orange[400],
-                                    fontWeight: FontWeight.bold))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 10.0, left: 5, right: 5),
+                          child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text('${name}',
+                                  //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 18.5,
+                                      color: Colors.orange[400],
+                                      fontWeight: FontWeight.bold))),
+                        ),
                       ),
-                      Text(
-                        "${ago[index]}",
-                        style: TextStyle(fontSize: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Text(
+                          "${ago[index]}",
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ],
                   ),
                   Padding(padding: EdgeInsets.only(top: 5)),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        '${posting[index]["story"]}',
-                        //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                  Divider(
-                    thickness: 0.7,
-                    color: Colors.grey[200],
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 8.0, left: 15, bottom: 8),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          '${posting[index]["story"]}',
+                          //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14),
+                        )),
                   ),
+                  SizedBox(height: 10),
                   Container(
                     height: 30,
-                    alignment: Alignment.topRight,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(" ${posting[index]["address"]}",
-                            style: TextStyle(fontSize: 13)),
-                        Spacer(),
                         StreamBuilder<DocumentSnapshot>(
                             stream: FirebaseFirestore.instance
                                 .collection('posting')
@@ -739,45 +797,41 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return Row(
-                                children: [
-                                  IconButton(
-                                    iconSize: 17.5,
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: favorite[index] == true
-                                          ? Colors.red[400]
-                                          : Colors.grey[300],
-                                    ),
-                                    onPressed: () {
-                                      favorite[index] = !favorite[index];
-                                      check(posting, index, favorite);
-                                    },
-                                  ),
-                                  Text(
-                                    posting[index]["count"] == null ||
-                                            posting[index]["count"] < 1
-                                        ? ""
-                                        : "${posting[index]["count"]} ",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
+                              return IconButton(
+                                iconSize: 17.5,
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: favorite[index] == true
+                                      ? Colors.red[400]
+                                      : Colors.grey[300],
+                                ),
+                                onPressed: () {
+                                  favorite[index] = !favorite[index];
+                                  check(posting, index, favorite);
+                                },
                               );
                             }),
-                        Container(
-                          padding: EdgeInsets.only(right: 4),
-                          child: Divider(
-                            thickness: 0.2,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: Text(
+                            posting[index]["count"] == null ||
+                                    posting[index]["count"] < 1
+                                ? ""
+                                : "${posting[index]["count"]} ",
+                            style: TextStyle(fontSize: 12),
                           ),
+                        ),
+                        SizedBox(
+                          width: 5,
                         ),
                         IconButton(
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
-                          onPressed: () async {
+                          onPressed: () {
                             Get.to(() => SayReply(
                                   postingId: posting[index].id,
                                   userId: controller.user!.uid,
-                                  authorId: controller.user!.uid,
+                                  authorId: posting[index]["authorId"],
                                   time: ago[index]!,
                                   replyCount: posting[index]["replyCount"],
                                   story: posting[index]["story"],
@@ -791,49 +845,22 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               : "${posting[index]["replyCount"]} ",
                           style: TextStyle(fontSize: 12),
                         ),
+                        Spacer(),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: Icon(Icons.more_vert, size: 17),
+                            onPressed: () {},
+                          ),
+                        )
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(height: 5),
                 ],
               ),
             ),
-          ),
-          Container(width: 5),
-          // Column(
-          //   children: [
-          //     Padding(
-          //       padding: EdgeInsets.only(left: 8.0),
-          //       child: Stack(
-          //         children: [
-          //           Align(
-          //             alignment: Alignment.topLeft,
-          //             child: ClipRRect(
-          //               borderRadius: BorderRadius.all(Radius.circular(10)),
-          //               child: Container(
-          //                   width: 85,
-          //                   height: 85,
-          //                   child: Image.network(
-          //                     '${posting[index]["authorImage"]}',
-          //                     fit: BoxFit.fitWidth,
-          //                   )),
-          //             ),
-          //           ),
-          //           Positioned(
-          //             bottom: 0,
-          //             right: -5,
-          //             child: CircleAvatar(
-          //               backgroundImage: AssetImage(
-          //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
-          //                   package: 'country_icons'),
-          //               backgroundColor: Colors.white,
-          //               radius: 15,
-          //             ),
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // ),
+          )
         ],
       ),
     );
@@ -962,11 +989,19 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                       itemBuilder:
                                           (BuildContext context, count) {
                                         late String name;
+                                        late String url;
+                                        late String country;
+                                        late String introduction;
                                         if (controller.user!.uid ==
                                             snapshot.data!.docs[index]
                                                 ["authorId"]) {
                                           name = user.data!.docs[count]
                                               ["nickname"];
+                                          url = user.data!.docs[count]["url"];
+                                          country =
+                                              user.data!.docs[count]["country"];
+                                          introduction = user.data!.docs[count]
+                                              ["introduction"];
                                         }
                                         return controller.user!.uid ==
                                                 snapshot.data!.docs[index]
@@ -976,7 +1011,10 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                                 index,
                                                 favorite,
                                                 controller.user!.uid,
-                                                name)
+                                                name,
+                                                url,
+                                                country,
+                                                introduction)
                                             : otherUserQnA(
                                                 snapshot.data!.docs,
                                                 index,

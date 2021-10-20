@@ -19,7 +19,7 @@ class _MainLoginState extends State<MainLogin> {
   }
 
   email() {
-    Get.to(Login());
+    Get.to(() => Login());
   }
 
   @override

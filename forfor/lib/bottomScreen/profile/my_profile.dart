@@ -525,12 +525,12 @@ class MyProfile extends GetWidget<AuthController> {
                           flex: 2,
                           child: InkWell(
                             onTap: () {
-                              Get.to(MyQuestion(
-                                myId: snapshot.user.id!,
-                                myName: snapshot.user.nickname!,
-                                myCountry: snapshot.user.country!,
-                                myImage: snapshot.user.url!,
-                              ));
+                              Get.to(() => MyQuestion(
+                                    myId: snapshot.user.id!,
+                                    myName: snapshot.user.nickname!,
+                                    myCountry: snapshot.user.country!,
+                                    myImage: snapshot.user.url!,
+                                  ));
                             },
                             child: Column(
                               children: <Widget>[

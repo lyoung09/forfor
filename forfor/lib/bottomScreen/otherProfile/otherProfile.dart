@@ -519,7 +519,7 @@ class _OtherProfileState extends State<OtherProfile> {
         stream: FirebaseFirestore.instance
             .collection("posting")
             .where("authorId", isEqualTo: widget.uid)
-            //.orderBy('timestamp', descending: true)
+            .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> posting) {
           if (!posting.hasData) {
@@ -561,19 +561,13 @@ class _OtherProfileState extends State<OtherProfile> {
                                     padding: const EdgeInsets.only(top: 2.0),
                                     child: Stack(
                                       children: [
-                                        Align(
-                                          alignment: Alignment.topLeft,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(25)),
-                                            child: Container(
-                                                width: 45,
-                                                height: 45,
-                                                child: Image.network(
-                                                  '${widget.userImage}',
-                                                  fit: BoxFit.fitWidth,
-                                                )),
-                                          ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 5.0),
+                                          child: CircleAvatar(
+                                              radius: 25,
+                                              backgroundColor: Colors.white,
+                                              backgroundImage: NetworkImage(
+                                                  "${widget.userImage}")),
                                         ),
                                         Positioned(
                                           bottom: 0,
@@ -585,7 +579,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                             backgroundColor: Colors.white,
                                             radius: 8,
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),

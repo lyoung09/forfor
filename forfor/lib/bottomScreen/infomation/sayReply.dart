@@ -73,28 +73,47 @@ class _SayReplyState extends State<SayReply> {
   }
 
   reply() async {
-    DateTime currentPhoneDate = DateTime.now(); //DateTime
+    if (_reply.text.trim().isNotEmpty) {
+      DateTime currentPhoneDate = DateTime.now(); //DateTime
 
-    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+      Timestamp myTimeStamp =
+          Timestamp.fromDate(currentPhoneDate); //To TimeStamp
 
-    DateTime myDateTime = myTimeStamp.toDate(); //
+      DateTime myDateTime = myTimeStamp.toDate(); //
 
-    DocumentReference ref =
-        FirebaseFirestore.instance.collection('posting').doc(widget.postingId);
+      DocumentReference ref = FirebaseFirestore.instance
+          .collection('posting')
+          .doc(widget.postingId);
 
-    await ref.update({
-      "replyCount": FieldValue.increment(1),
-      "reply": FieldValue.arrayUnion([
-        {
-          "reply": _reply.text.trim(),
-          "replyId": widget.userId,
-          "datetime": myDateTime
-        }
-      ])
-    });
+      await ref.update({
+        "replyCount": FieldValue.increment(1),
+        "reply": FieldValue.arrayUnion([
+          {
+            "reply": _reply.text.trim(),
+            "replyId": widget.userId,
+            "datetime": myDateTime
+          }
+        ])
+      });
 
-    _reply.clear();
-    myFocusNode.unfocus();
+      _reply.clear();
+      myFocusNode.unfocus();
+    } else {
+      Get.defaultDialog(
+        title: "Error",
+        middleText: "글이 있어야합니다",
+        backgroundColor: Colors.white,
+        middleTextStyle: TextStyle(color: Colors.black),
+        textCancel: "ok",
+        onCancel: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+
+          // Get.back();
+        },
+        buttonColor: Colors.white,
+        cancelTextColor: Colors.black,
+      );
+    }
   }
 
   Widget bottom(size) {
@@ -103,10 +122,11 @@ class _SayReplyState extends State<SayReply> {
       child: Row(
         children: [
           Padding(padding: EdgeInsets.all(8)),
-          Container(
-            width: size.width * 0.75,
-            height: 50,
+          Expanded(
+            flex: 7,
             child: TextFormField(
+              maxLines: 5,
+              minLines: 1,
               controller: _reply,
               onChanged: (value) {
                 if (value.isNotEmpty) {
@@ -117,13 +137,13 @@ class _SayReplyState extends State<SayReply> {
               },
               validator: (value) {
                 if (value!.isNotEmpty) {
-                  print(value);
                   return null;
                 }
                 return null;
               },
               focusNode: myFocusNode,
               decoration: InputDecoration(
+                isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
@@ -262,7 +282,7 @@ class _SayReplyState extends State<SayReply> {
                 ),
                 Padding(padding: EdgeInsets.all(9)),
                 Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10),
+                  padding: const EdgeInsets.only(left: 18.0, right: 10),
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(widget.story,

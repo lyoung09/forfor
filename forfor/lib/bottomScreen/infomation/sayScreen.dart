@@ -440,6 +440,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       ref.collection("likes").doc(controller.user!.uid).set({
         "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
+        "authorId": posting[index]["authorId"],
       });
       ref.update({
         "count": FieldValue.increment(1),
@@ -511,19 +512,13 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           },
                           child: Stack(
                             children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
-                                  child: Container(
-                                      width: 45,
-                                      height: 45,
-                                      child: Image.network(
-                                        '${user[count]["url"]}',
-                                        fit: BoxFit.fitWidth,
-                                      )),
-                                ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5.0),
+                                child: CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage:
+                                        NetworkImage("${user[count]["url"]}")),
                               ),
                               Positioned(
                                 bottom: 0,
@@ -535,7 +530,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   backgroundColor: Colors.white,
                                   radius: 8,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),

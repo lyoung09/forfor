@@ -375,6 +375,7 @@ class _SayReplyState extends State<SayReply> {
           .set({
         "likeId": widget.userId,
         "likeDatetime": myDateTime,
+        "postingId": widget.postingId
       });
       FirebaseFirestore.instance
           .collection('posting')
@@ -484,9 +485,6 @@ class _SayReplyState extends State<SayReply> {
                                 onTap: widget.userId ==
                                         users.data!.docs[userCount]["uid"]
                                     ? () {
-                                        print(widget.userId);
-                                        print(review[index]["datetime"]);
-                                        print(review[index]["reply"]);
                                         // showDialog(
                                         //     context: context,
                                         //     builder: (BuildContext context) => CupertinoAlertDialog(

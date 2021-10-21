@@ -204,9 +204,9 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
   Widget reply() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collectionGroup("posting")
+            .collection("posting")
             .where("authorId", isEqualTo: widget.uid)
-            .orderBy("reply.datetime")
+            //.orderBy("datetime")
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
@@ -220,7 +220,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
 
               return ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: BouncingScrollPhysics(),
                 itemCount: snapshot.data!.docs[index]["replyCount"],
                 itemBuilder: (context, count) {
                   return StreamBuilder<QuerySnapshot>(
@@ -234,7 +234,6 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                               .where("uid",
                                   isEqualTo: snapshot.data!.docs[index]["reply"]
                                       [count]["replyId"])
-                              // .orderBy("reply.datetime")
                               .snapshots(),
                       builder: (context, replyUser) {
                         Map<int, String> ago = new Map<int, String>();
@@ -554,397 +553,229 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
   }
 
   Widget favorite() {
+    // return StreamBuilder<QuerySnapshot>(
+    //     stream: FirebaseFirestore.instance
+    //         .collection("posting")
+    //         .where("authorId", isEqualTo: widget.uid)
+    //         .snapshots(),
+    //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    //       if (!snapshot.hasData) {
+    //         return Container();
+    //       }
+    //       return ListView.builder(
+    //         itemCount: snapshot.data!.size,
+    //         physics: BouncingScrollPhysics(),
+    //         itemBuilder: (context, index) {
+    //           //return Container();
+
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection("posting")
+            .collectionGroup('likes')
             .where("authorId", isEqualTo: widget.uid)
+            .orderBy("likeDatetime", descending: true)
             .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
+        builder: (context, AsyncSnapshot<QuerySnapshot> users) {
+          if (!users.hasData) {
             return Container();
           }
           return ListView.builder(
-            itemCount: snapshot.data!.size,
+            shrinkWrap: true,
             physics: BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              //return Container();
+            itemCount: users.data!.size,
+            itemBuilder: (context, count) {
+              Map<int, String> ago = new Map<int, String>();
+
+              ago[count] = _ago(users.data!.docs[count]["likeDatetime"]);
 
               return StreamBuilder<QuerySnapshot>(
-                  stream: snapshot.data!.docs[index]["count"] == 0
-                      ? null
-                      : FirebaseFirestore.instance
-                          // .collection('posting')
-                          // .doc(snapshot.data!.docs[index].id)
-                          .collectionGroup('likes')
-                          .where("authorId", isEqualTo: widget.uid)
-                          .orderBy("likeDatetime", descending: true)
-                          .snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> users) {
-                    if (!users.hasData) {
+                  stream: FirebaseFirestore.instance
+                      .collection("posting")
+                      .where("postingId",
+                          isEqualTo: users.data!.docs[count]["postingId"])
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
                       return Container();
                     }
                     return ListView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: users.data!.size,
-                      itemBuilder: (context, count) {
-                        Map<int, String> ago = new Map<int, String>();
-
-                        ago[count] =
-                            _ago(users.data!.docs[count]["likeDatetime"]);
-
-                        return StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('users')
-                                .where('uid',
-                                    isEqualTo: users.data!.docs[count]
-                                        ["likeId"])
-                                .snapshots(),
-                            builder: (context, userInfo) {
-                              if (!userInfo.hasData) {
-                                return Text("");
-                              }
-
-                              return ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: userInfo.data!.size,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, userInfoCount) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8, bottom: 4),
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        elevation: 5,
-                                        clipBehavior:
-                                            Clip.antiAliasWithSaveLayer,
-                                        child: ListTile(
-                                          leading: InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return OtherProfile(
-                                                        uid: userInfo.data!.docs[userInfoCount]
-                                                            ["uid"],
-                                                        userName: userInfo.data!
-                                                                .docs[userInfoCount]
-                                                            ["nickname"],
-                                                        userImage: userInfo
-                                                                .data!
-                                                                .docs[userInfoCount]
-                                                            ["url"],
-                                                        introduction: userInfo
-                                                                .data!
-                                                                .docs[userInfoCount]
-                                                            ["introduction"],
-                                                        country: userInfo.data!.docs[userInfoCount]
-                                                            ["country"],
-                                                        address: userInfo.data!
-                                                            .docs[userInfoCount]["address"]);
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 5.0),
-                                                  child: CircleAvatar(
-                                                      radius: 30,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.size,
+                        itemBuilder: (context, index) {
+                          return StreamBuilder<QuerySnapshot>(
+                              stream: widget.uid ==
+                                      users.data!.docs[count]["likeId"]
+                                  ? null
+                                  : FirebaseFirestore.instance
+                                      .collection('users')
+                                      .where('uid',
+                                          isEqualTo: users.data!.docs[count]
+                                              ["likeId"])
+                                      .snapshots(),
+                              builder: (context, userInfo) {
+                                if (!userInfo.hasData) {
+                                  return Text("");
+                                }
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: userInfo.data!.size,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, userInfoCount) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8, bottom: 4),
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          elevation: 5,
+                                          clipBehavior:
+                                              Clip.antiAliasWithSaveLayer,
+                                          child: ListTile(
+                                            leading: InkWell(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return OtherProfile(
+                                                          uid: userInfo.data!.docs[userInfoCount]
+                                                              ["uid"],
+                                                          userName: userInfo
+                                                                  .data!
+                                                                  .docs[userInfoCount]
+                                                              ["nickname"],
+                                                          userImage: userInfo
+                                                                  .data!
+                                                                  .docs[userInfoCount]
+                                                              ["url"],
+                                                          introduction: userInfo
+                                                                  .data!
+                                                                  .docs[userInfoCount]
+                                                              ["introduction"],
+                                                          country: userInfo.data!.docs[userInfoCount]
+                                                              ["country"],
+                                                          address: userInfo
+                                                              .data!
+                                                              .docs[userInfoCount]["address"]);
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 5.0),
+                                                    child: CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        backgroundImage:
+                                                            NetworkImage(
+                                                                "${userInfo.data!.docs[userInfoCount]['url']}")),
+                                                  ),
+                                                  Positioned(
+                                                    bottom: 5,
+                                                    left: 0,
+                                                    child: CircleAvatar(
+                                                      backgroundImage: AssetImage(
+                                                          'icons/flags/png/${userInfo.data!.docs[userInfoCount]['country']}.png',
+                                                          package:
+                                                              'country_icons'),
                                                       backgroundColor:
                                                           Colors.white,
-                                                      backgroundImage: NetworkImage(
-                                                          "${userInfo.data!.docs[userInfoCount]['url']}")),
-                                                ),
-                                                Positioned(
-                                                  bottom: 5,
-                                                  left: 0,
-                                                  child: CircleAvatar(
-                                                    backgroundImage: AssetImage(
-                                                        'icons/flags/png/${userInfo.data!.docs[userInfoCount]['country']}.png',
-                                                        package:
-                                                            'country_icons'),
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    radius: 8,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          title: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 15.0),
-                                            child: Text(
-                                              '${userInfo.data!.docs[userInfoCount]['nickname']}',
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18.5,
-                                              ),
-                                            ),
-                                          ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(height: 8),
-                                              Text(
-                                                "님이 좋아합니다",
-                                                maxLines: 1,
-                                                overflow: TextOverflow.clip,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 13.5,
-                                                ),
-                                              ),
-                                              SizedBox(height: 15),
-                                              Text(
-                                                "${ago[count]}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 14.5,
-                                                ),
-                                              ),
-                                              SizedBox(height: 15),
-                                            ],
-                                          ),
-                                          trailing: InkWell(
-                                            onTap: () {
-                                              Get.to(() => SayReply(
-                                                    postingId: snapshot
-                                                        .data!.docs[index].id,
-                                                    userId: widget.uid,
-                                                    authorId: snapshot
-                                                            .data!.docs[index]
-                                                        ["authorId"],
-                                                    time: ago[index]!,
-                                                    replyCount: snapshot
-                                                            .data!.docs[index]
-                                                        ["replyCount"],
-                                                    story: snapshot.data!
-                                                        .docs[index]["story"],
-                                                  ));
-                                            },
-                                            child: Container(
-                                              width: 60,
-                                              alignment: Alignment.center,
-                                              child: Wrap(
-                                                children: [
-                                                  Center(
-                                                    child: Text(
-                                                        // snapshot.data!.docs[index]["story"]
-                                                        //             .length >
-                                                        //         8
-                                                        //     ? ' ${snapshot.data!.docs[index]["story"].substring(0, 8)}\n${snapshot.data!.docs[index]["story"].substring(8, 15)}'
-                                                        //     :
-                                                        ' ${snapshot.data!.docs[index]["story"]}',
-                                                        maxLines: 4,
-                                                        style: TextStyle(
-                                                            fontSize: 13.5)),
+                                                      radius: 8,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                             ),
+                                            title: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 15.0),
+                                              child: Text(
+                                                '${userInfo.data!.docs[userInfoCount]['nickname']}',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18.5,
+                                                ),
+                                              ),
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  "님이 좋아합니다",
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.clip,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 13.5,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                Text(
+                                                  "${ago[count]}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14.5,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15),
+                                              ],
+                                            ),
+                                            trailing: InkWell(
+                                              onTap: () {
+                                                Get.to(() => SayReply(
+                                                      postingId: snapshot
+                                                          .data!.docs[index].id,
+                                                      userId: widget.uid,
+                                                      authorId: users
+                                                              .data!.docs[index]
+                                                          ["authorId"],
+                                                      time: ago[count]!,
+                                                      replyCount: snapshot
+                                                              .data!.docs[index]
+                                                          ["replyCount"],
+                                                      story: snapshot.data!
+                                                          .docs[index]["story"],
+                                                    ));
+                                              },
+                                              child: Container(
+                                                width: 60,
+                                                alignment: Alignment.center,
+                                                child: Wrap(
+                                                  children: [
+                                                    Center(
+                                                      child: Text(
+                                                          //":",
+                                                          ' ${snapshot.data!.docs[index]["story"]}',
+                                                          maxLines: 4,
+                                                          style: TextStyle(
+                                                              fontSize: 13.5)),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                    // Column(
-                                    //   children: [
-                                    //     Container(
-                                    //       height: 120,
-                                    //       width:
-                                    //           MediaQuery.of(context).size.width,
-                                    //       child: Row(
-                                    //         mainAxisAlignment:
-                                    //             MainAxisAlignment.start,
-                                    //         children: [
-                                    //           Padding(
-                                    //             padding: EdgeInsets.all(10),
-                                    //           ),
-                                    //           Expanded(
-                                    //             flex: 3,
-                                    //             child: InkWell(
-                                    //               onTap: () {
-                                    //                 Navigator.of(context).push(
-                                    //                   MaterialPageRoute(
-                                    //                     builder: (BuildContext
-                                    //                         context) {
-                                    //                       return OtherProfile(
-                                    //                           uid: userInfo.data!.docs[userInfoCount]
-                                    //                               ["uid"],
-                                    //                           userName: userInfo
-                                    //                                   .data!
-                                    //                                   .docs[userInfoCount]
-                                    //                               ["nickname"],
-                                    //                           userImage: userInfo
-                                    //                                   .data!
-                                    //                                   .docs[userInfoCount]
-                                    //                               ["url"],
-                                    //                           introduction: userInfo
-                                    //                                   .data!
-                                    //                                   .docs[userInfoCount][
-                                    //                               "introduction"],
-                                    //                           country: userInfo
-                                    //                               .data!
-                                    //                               .docs[userInfoCount]["country"],
-                                    //                           address: userInfo.data!.docs[userInfoCount]["address"]);
-                                    //                     },
-                                    //                   ),
-                                    //                 );
-                                    //               },
-                                    //               child: Stack(
-                                    //                 children: [
-                                    //                   Padding(
-                                    //                     padding:
-                                    //                         EdgeInsets.only(
-                                    //                             left: 5.0),
-                                    //                     child: CircleAvatar(
-                                    //                         radius: 30,
-                                    //                         backgroundColor:
-                                    //                             Colors.white,
-                                    //                         backgroundImage:
-                                    //                             NetworkImage(
-                                    //                                 "${userInfo.data!.docs[userInfoCount]['url']}")),
-                                    //                   ),
-                                    //                   Positioned(
-                                    //                     bottom: 5,
-                                    //                     left: 0,
-                                    //                     child: CircleAvatar(
-                                    //                       backgroundImage: AssetImage(
-                                    //                           'icons/flags/png/${userInfo.data!.docs[userInfoCount]['country']}.png',
-                                    //                           package:
-                                    //                               'country_icons'),
-                                    //                       backgroundColor:
-                                    //                           Colors.white,
-                                    //                       radius: 8,
-                                    //                     ),
-                                    //                   ),
-                                    //                 ],
-                                    //               ),
-                                    //             ),
-                                    //           ),
-                                    //           Padding(
-                                    //             padding: EdgeInsets.all(4),
-                                    //           ),
-                                    //           Expanded(
-                                    //             flex: 7,
-                                    //             child: Column(
-                                    //               children: [
-                                    //                 Expanded(
-                                    //                   flex: 4,
-                                    //                   child: Align(
-                                    //                     alignment: Alignment
-                                    //                         .centerLeft,
-                                    //                     child: Text(
-                                    //                       '${userInfo.data!.docs[userInfoCount]['nickname']}',
-                                    //                       // "userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']userData.data!.docs[index]['nickname']",
-
-                                    //                       maxLines: 1,
-                                    //                       overflow:
-                                    //                           TextOverflow.fade,
-                                    //                       style: TextStyle(
-                                    //                         fontWeight:
-                                    //                             FontWeight.w600,
-                                    //                         fontSize: 18.5,
-                                    //                       ),
-                                    //                     ),
-                                    //                   ),
-                                    //                 ),
-                                    //                 Expanded(
-                                    //                   flex: 3,
-                                    //                   child: Align(
-                                    //                     alignment:
-                                    //                         Alignment.topLeft,
-                                    //                     child: Text(
-                                    //                       "님이 좋아합니다",
-                                    //                       style: TextStyle(
-                                    //                         fontWeight:
-                                    //                             FontWeight.w400,
-                                    //                         fontSize: 14.5,
-                                    //                       ),
-                                    //                     ),
-                                    //                   ),
-                                    //                 ),
-                                    //                 Expanded(
-                                    //                   flex: 3,
-                                    //                   child: Align(
-                                    //                     alignment:
-                                    //                         Alignment.topLeft,
-                                    //                     child: Text(
-                                    //                       "${ago[count]}",
-                                    //                       style: TextStyle(
-                                    //                         fontWeight:
-                                    //                             FontWeight.w400,
-                                    //                         fontSize: 14.5,
-                                    //                       ),
-                                    //                     ),
-                                    //                   ),
-                                    //                 ),
-                                    //               ],
-                                    //             ),
-                                    //           ),
-                                    //           Spacer(),
-                                    //           Expanded(
-                                    //             child: InkWell(
-                                    //               onTap: () {
-                                    //                 Get.to(() => SayReply(
-                                    //                       postingId: snapshot
-                                    //                           .data!
-                                    //                           .docs[index]
-                                    //                           .id,
-                                    //                       userId: widget.uid,
-                                    //                       authorId: snapshot
-                                    //                               .data!
-                                    //                               .docs[index]
-                                    //                           ["authorId"],
-                                    //                       time: ago[count]!,
-                                    //                       replyCount: snapshot
-                                    //                               .data!
-                                    //                               .docs[index]
-                                    //                           ["replyCount"],
-                                    //                       story: snapshot.data!
-                                    //                               .docs[index]
-                                    //                           ["story"],
-                                    //                     ));
-                                    //               },
-                                    //               child: Text(
-                                    //                   snapshot
-                                    //                               .data!
-                                    //                               .docs[index]
-                                    //                                   ["story"]
-                                    //                               .length >
-                                    //                           18
-                                    //                       ? ' ${snapshot.data!.docs[index]["story"].substring(0, 17)}'
-                                    //                       : ' ${snapshot.data!.docs[index]["story"]}',
-                                    //                   style: TextStyle(
-                                    //                       fontSize: 13.5)),
-                                    //             ),
-                                    //             flex: 2,
-                                    //           ),
-                                    //           Padding(
-                                    //             padding: EdgeInsets.all(5),
-                                    //           ),
-                                    //         ],
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // );
-                                  });
-                            });
-                      },
-                    );
+                                      );
+                                    });
+                              });
+                        });
                   });
             },
           );
         });
+    //     },
+    //   );
+    // });
   }
 
   @override

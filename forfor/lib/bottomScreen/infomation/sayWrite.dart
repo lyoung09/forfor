@@ -61,6 +61,11 @@ class _SayWritingState extends State<SayWriting> {
         "count": 0,
         "replyCount": 0,
         "category": category,
+      }).then((value) async {
+        await FirebaseFirestore.instance
+            .collection('posting')
+            .doc(value.id)
+            .update({"postingId": value.id});
       });
 
       Get.back();

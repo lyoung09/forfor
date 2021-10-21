@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/infomation/sayAlarm.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
@@ -12,6 +16,7 @@ import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/utils/utils.dart';
 import 'package:forfor/widget/circle_image.dart';
 import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
@@ -441,6 +446,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
         "authorId": posting[index]["authorId"],
+        "postingId": posting[index].id
       });
       ref.update({
         "count": FieldValue.increment(1),
@@ -473,6 +479,105 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       //   },
       // );
     } else {}
+  }
+
+  CollectionReference ref = FirebaseFirestore.instance.collection('posting');
+  share(story, userUrl) async {
+    final url = Uri.parse(userUrl);
+    final response = await http.get(url);
+    final bytes = response.bodyBytes;
+
+    final temp = await getTemporaryDirectory();
+    final path = '${temp.path}/image.jpg';
+    File(path).writeAsBytesSync(bytes);
+    await Share.shareFiles([path], text: '${story}');
+  }
+
+  save(postingId, userId) async {
+    ref.doc(postingId).update({
+      "save": FieldValue.arrayUnion([userId])
+    });
+  }
+
+  delete(postingId) async {
+    ref.doc(postingId).delete();
+  }
+
+  sue() {
+    print("not good qna");
+  }
+
+  void postingExtra(context, postingId, userId, story, userUrl) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.share),
+                    SizedBox(width: 7.5),
+                    Text('Share'),
+                  ],
+                ),
+                onTap: () {
+                  share(story, userUrl);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.save_sharp),
+                    SizedBox(width: 7.5),
+                    Text('Save'),
+                  ],
+                ),
+                onTap: () {
+                  save(postingId, controller.user!.uid);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                //leading: userId ==controller.user!.uid ? Icon(Icons.music_note),
+                title: userId != controller.user!.uid
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.share),
+                          SizedBox(width: 7.5),
+                          Text('Sue'),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete_forever),
+                          SizedBox(width: 7.5),
+                          Text('delete'),
+                        ],
+                      ),
+                onTap: () {
+                  userId != controller.user!.uid ? sue() : delete(postingId);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Center(
+                    child: new Text('cancel',
+                        style: TextStyle(color: Colors.red))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Padding(padding: EdgeInsets.only(bottom: 25))
+            ],
+          );
+        });
   }
 
   Widget otherUserQnA(posting, index, favorite, user, count) {
@@ -649,13 +754,20 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             icon: Icon(Icons.more_vert, size: 17),
-                            onPressed: () {},
+                            onPressed: () {
+                              postingExtra(
+                                  context,
+                                  posting[index].id,
+                                  posting[index]["authorId"],
+                                  posting[index]["story"],
+                                  user[count]["url"]);
+                            },
                           ),
                         )
                       ],
                     ),
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(width: 7.5),
                 ],
               ),
             ),
@@ -845,13 +957,20 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             icon: Icon(Icons.more_vert, size: 17),
-                            onPressed: () {},
+                            onPressed: () {
+                              postingExtra(
+                                  context,
+                                  posting[index].id,
+                                  posting[index]["authorId"],
+                                  posting[index]["story"],
+                                  url);
+                            },
                           ),
                         )
                       ],
                     ),
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(width: 7.5),
                 ],
               ),
             ),

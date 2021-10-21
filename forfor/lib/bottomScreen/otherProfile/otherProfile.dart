@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +10,8 @@ import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/profile/my_update.dart';
 import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class OtherProfile extends StatefulWidget {
@@ -228,6 +233,7 @@ class _OtherProfileState extends State<OtherProfile> {
       ref.collection("likes").doc(controller.user!.uid).set({
         "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
+        "postingId": posting.data!.docs[index].id
       });
       ref.update({
         "count": FieldValue.increment(1),
@@ -429,7 +435,15 @@ class _OtherProfileState extends State<OtherProfile> {
                                         alignment: Alignment.topRight,
                                         child: IconButton(
                                           icon: Icon(Icons.more_vert, size: 17),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            postingExtra(
+                                                context,
+                                                posting.data!.docs[index].id,
+                                                controller.user!.uid,
+                                                posting.data!.docs[index]
+                                                    ["story"],
+                                                widget.userImage);
+                                          },
                                         )),
                                   ],
                                 ),
@@ -481,6 +495,104 @@ class _OtherProfileState extends State<OtherProfile> {
         },
       ),
     );
+  }
+
+  CollectionReference ref = FirebaseFirestore.instance.collection('posting');
+  share(story, userUrl) async {
+    final url = Uri.parse(userUrl);
+    final response = await http.get(url);
+    final bytes = response.bodyBytes;
+
+    final temp = await getTemporaryDirectory();
+    final path = '${temp.path}/image.jpg';
+    File(path).writeAsBytesSync(bytes);
+    await Share.shareFiles([path], text: '${story}');
+  }
+
+  save(postingId, userId) async {
+    ref.doc(postingId).update({
+      "save": FieldValue.arrayUnion([userId])
+    });
+  }
+
+  delete(postingId) async {
+    ref.doc(postingId).delete();
+  }
+
+  sue() {
+    print("not good qna");
+  }
+
+  void postingExtra(context, postingId, userId, story, userUrl) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.share),
+                    SizedBox(width: 7.5),
+                    Text('Share'),
+                  ],
+                ),
+                onTap: () {
+                  share(story, userUrl);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.save_sharp),
+                    SizedBox(width: 7.5),
+                    Text('Save'),
+                  ],
+                ),
+                onTap: () {
+                  save(postingId, controller.user!.uid);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: userId != controller.user!.uid
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.share),
+                          SizedBox(width: 7.5),
+                          Text('Sue'),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete_forever),
+                          SizedBox(width: 7.5),
+                          Text('delete'),
+                        ],
+                      ),
+                onTap: () {
+                  userId != controller.user!.uid ? sue() : delete(postingId);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Center(
+                    child: new Text('cancel',
+                        style: TextStyle(color: Colors.red))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Padding(padding: EdgeInsets.only(bottom: 25))
+            ],
+          );
+        });
   }
 
   Widget favoriteCheck(posting, favorite, index) {
@@ -684,13 +796,22 @@ class _OtherProfileState extends State<OtherProfile> {
                                       alignment: Alignment.topRight,
                                       child: IconButton(
                                         icon: Icon(Icons.more_vert, size: 17),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          postingExtra(
+                                              context,
+                                              posting.data!.docs[index].id,
+                                              posting.data!.docs[index]
+                                                  ["authorId"],
+                                              posting.data!.docs[index]
+                                                  ["story"],
+                                              widget.userImage);
+                                        },
                                       ),
                                     )
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(width: 7.5),
                             ],
                           ),
                         ),

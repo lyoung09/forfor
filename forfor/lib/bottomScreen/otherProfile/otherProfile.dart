@@ -378,6 +378,62 @@ class _OtherProfileState extends State<OtherProfile> {
                                   ),
                                 ),
                               ),
+                              posting.data!.docs[index]["images"] == null ||
+                                      posting.data!.docs[index]["images"]
+                                              .length ==
+                                          0
+                                  ? Text("")
+                                  : posting.data!.docs[index]["images"]
+                                              .length ==
+                                          3
+                                      ? Container(
+                                          height: 150,
+                                          child: GridView.builder(
+                                              shrinkWrap: false,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 3),
+                                              itemCount: posting.data!
+                                                  .docs[index]["images"].length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      count) {
+                                                return Center(
+                                                  child: Image.network(
+                                                      posting.data!.docs[index]
+                                                          ["images"][count],
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover),
+                                                );
+                                              }),
+                                        )
+                                      : Container(
+                                          height: 250,
+                                          child: GridView.builder(
+                                              shrinkWrap: false,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 3),
+                                              itemCount: posting.data!
+                                                  .docs[index]["images"].length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      count) {
+                                                return Center(
+                                                  child: Image.network(
+                                                      posting.data!.docs[index]
+                                                          ["images"][count],
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover),
+                                                );
+                                              }),
+                                        ),
                               SizedBox(height: 10),
                               Container(
                                 height: 30,
@@ -437,12 +493,11 @@ class _OtherProfileState extends State<OtherProfile> {
                                           icon: Icon(Icons.more_vert, size: 17),
                                           onPressed: () {
                                             postingExtra(
-                                                context,
-                                                posting.data!.docs[index].id,
-                                                controller.user!.uid,
-                                                posting.data!.docs[index]
-                                                    ["story"],
-                                                widget.userImage);
+                                              context,
+                                              posting.data!.docs[index].id,
+                                              controller.user!.uid,
+                                              posting.data!.docs[index]["save"],
+                                            );
                                           },
                                         )),
                                   ],
@@ -519,68 +574,64 @@ class _OtherProfileState extends State<OtherProfile> {
     ref.doc(postingId).delete();
   }
 
+  saveErase(postingId, userId) async {
+    ref.doc(postingId).update({
+      "save": FieldValue.arrayRemove([userId])
+    });
+  }
+
   sue() {
     print("not good qna");
   }
 
-  void postingExtra(context, postingId, userId, story, userUrl) {
+  void postingExtra(context, postingId, authorId, saveList) {
+    List<dynamic> saveUser = saveList;
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              // ListTile(
+              //   title: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Icon(Icons.share),
+              //       SizedBox(width: 7.5),
+              //       Text('Share'),
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     share(story, userUrl);
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              Padding(padding: EdgeInsets.only(top: 20)),
               ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.share),
-                    SizedBox(width: 7.5),
-                    Text('Share'),
-                  ],
-                ),
+                title:
+                    !saveUser.contains(controller.user!.uid) || saveUser.isEmpty
+                        ? Center(child: Text('SAVE'))
+                        : Center(child: Text('SAVE CANCEL')),
                 onTap: () {
-                  share(story, userUrl);
+                  !saveUser.contains(controller.user!.uid) || saveUser.isEmpty
+                      ? save(postingId, controller.user!.uid)
+                      : saveErase(postingId, controller.user!.uid);
                   Navigator.pop(context);
                 },
               ),
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.save_sharp),
-                    SizedBox(width: 7.5),
-                    Text('Save'),
-                  ],
-                ),
+                //leading: userId ==controller.user!.uid ? Icon(Icons.music_note),
+                title: authorId != controller.user!.uid
+                    ? Center(child: Text('SUE'))
+                    : Center(child: Text('DELETE')),
+
                 onTap: () {
-                  save(postingId, controller.user!.uid);
+                  authorId != controller.user!.uid ? sue() : delete(postingId);
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                title: userId != controller.user!.uid
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.share),
-                          SizedBox(width: 7.5),
-                          Text('Sue'),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delete_forever),
-                          SizedBox(width: 7.5),
-                          Text('delete'),
-                        ],
-                      ),
-                onTap: () {
-                  userId != controller.user!.uid ? sue() : delete(postingId);
-                  Navigator.pop(context);
-                },
-              ),
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
                 title: Center(
                     child: new Text('cancel',
@@ -737,6 +788,62 @@ class _OtherProfileState extends State<OtherProfile> {
                                       style: TextStyle(fontSize: 14),
                                     )),
                               ),
+                              posting.data!.docs[index]["images"] == null ||
+                                      posting.data!.docs[index]["images"]
+                                              .length ==
+                                          0
+                                  ? Text("")
+                                  : posting.data!.docs[index]["images"]
+                                              .length ==
+                                          3
+                                      ? Container(
+                                          height: 150,
+                                          child: GridView.builder(
+                                              shrinkWrap: false,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 3),
+                                              itemCount: posting.data!
+                                                  .docs[index]["images"].length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      count) {
+                                                return Center(
+                                                  child: Image.network(
+                                                      posting.data!.docs[index]
+                                                          ["images"][count],
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover),
+                                                );
+                                              }),
+                                        )
+                                      : Container(
+                                          height: 250,
+                                          child: GridView.builder(
+                                              shrinkWrap: false,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 3),
+                                              itemCount: posting.data!
+                                                  .docs[index]["images"].length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      count) {
+                                                return Center(
+                                                  child: Image.network(
+                                                      posting.data!.docs[index]
+                                                          ["images"][count],
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover),
+                                                );
+                                              }),
+                                        ),
                               SizedBox(height: 10),
                               Container(
                                 height: 30,
@@ -798,13 +905,12 @@ class _OtherProfileState extends State<OtherProfile> {
                                         icon: Icon(Icons.more_vert, size: 17),
                                         onPressed: () {
                                           postingExtra(
-                                              context,
-                                              posting.data!.docs[index].id,
-                                              posting.data!.docs[index]
-                                                  ["authorId"],
-                                              posting.data!.docs[index]
-                                                  ["story"],
-                                              widget.userImage);
+                                            context,
+                                            posting.data!.docs[index].id,
+                                            posting.data!.docs[index]
+                                                ["authorId"],
+                                            posting.data!.docs[index]["save"],
+                                          );
                                         },
                                       ),
                                     )

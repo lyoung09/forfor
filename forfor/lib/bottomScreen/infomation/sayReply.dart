@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/infomation/favoriteList.dart';
+import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:get/get.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class SayReply extends StatefulWidget {
   final String postingId;
@@ -37,8 +37,13 @@ class _SayReplyState extends State<SayReply> {
   late FocusNode myFocusNode;
   bool textExist = false;
   TextEditingController _reply = new TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+
   late DateTime dt;
+  CollectionReference _userRef = FirebaseFirestore.instance.collection("users");
+  CollectionReference _categoryRef =
+      FirebaseFirestore.instance.collection("category");
+  CollectionReference _postingRef =
+      FirebaseFirestore.instance.collection("posting");
   initState() {
     super.initState();
 
@@ -54,23 +59,6 @@ class _SayReplyState extends State<SayReply> {
   }
 
   Map<String, DateTime> favoriteTime = new Map<String, DateTime>();
-
-  String _ago(Timestamp t) {
-    String x = timeago
-        .format(t.toDate())
-        .replaceAll("minutes", "분")
-        .replaceAll("a minute", "1분")
-        .replaceAll("a moment", "방금")
-        .replaceAll("a day", "1일")
-        .replaceAll("ago", "전")
-        .replaceAll("about", "")
-        .replaceAll("an hour", "한시간")
-        .replaceAll("hours", "시간")
-        .replaceAll("one year", "1년")
-        .replaceAll("years", "년");
-
-    return x;
-  }
 
   reply() async {
     if (_reply.text.trim().isNotEmpty) {
@@ -179,10 +167,7 @@ class _SayReplyState extends State<SayReply> {
 
   Widget post(post) {
     return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(post["authorId"])
-            .snapshots(),
+        stream: _userRef.doc(post["authorId"]).snapshots(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Container();
@@ -197,7 +182,7 @@ class _SayReplyState extends State<SayReply> {
                 Padding(padding: EdgeInsets.all(5)),
                 Row(
                   children: [
-                    InkWell(
+                    GestureDetector(
                       onTap: () {
                         Get.to(() => OtherProfile(
                               uid: post["authorId"],
@@ -253,8 +238,7 @@ class _SayReplyState extends State<SayReply> {
                                   fontWeight: FontWeight.bold)),
                         ),
                         StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('category')
+                            stream: _categoryRef
                                 .where("categoryId",
                                     isEqualTo: post["category"])
                                 .snapshots(),
@@ -290,13 +274,51 @@ class _SayReplyState extends State<SayReply> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w400))),
                 ),
+                post["images"] == null || post["images"].length == 0
+                    ? Text("")
+                    : post["images"].length == 3
+                        ? Container(
+                            height: 150,
+                            child: GridView.builder(
+                                shrinkWrap: false,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3),
+                                itemCount: post["images"].length,
+                                itemBuilder: (BuildContext context, count) {
+                                  return Center(
+                                    child: Image.network(post["images"][count],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                  );
+                                }),
+                          )
+                        : Container(
+                            height: 250,
+                            child: GridView.builder(
+                                shrinkWrap: false,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3),
+                                itemCount: post["images"].length,
+                                itemBuilder: (BuildContext context, count) {
+                                  return Center(
+                                    child: Image.network(post["images"][count],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                  );
+                                }),
+                          ),
                 Padding(padding: EdgeInsets.all(9)),
                 Divider(),
                 Row(
                   children: [
                     StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('posting')
+                        stream: _postingRef
                             .doc(widget.postingId)
                             .collection('likes')
                             .doc(widget.userId)
@@ -407,10 +429,9 @@ class _SayReplyState extends State<SayReply> {
         itemCount: count,
         itemBuilder: (BuildContext context, int index) {
           Map<int, String> ago = new Map<int, String>();
-          ago[index] = _ago(review[index]["datetime"]);
+          ago[index] = QnA().ago(review[index]["datetime"]);
           return StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
+              stream: _userRef
                   .where("uid", isEqualTo: review[index]["replyId"])
                   .snapshots(),
               builder: (context, users) {
@@ -435,7 +456,7 @@ class _SayReplyState extends State<SayReply> {
                               child: Column(
                                 children: [
                                   Padding(padding: EdgeInsets.only(top: 8)),
-                                  InkWell(
+                                  GestureDetector(
                                     onTap: () {
                                       Get.to(() => OtherProfile(
                                             uid: review[index]["replyId"],
@@ -647,10 +668,7 @@ class _SayReplyState extends State<SayReply> {
 
   Widget likesUser(likesPeople) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where("uid", whereIn: likesPeople)
-            .snapshots(),
+        stream: _userRef.where("uid", whereIn: likesPeople).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Container();
@@ -715,10 +733,7 @@ class _SayReplyState extends State<SayReply> {
             }),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('posting')
-              .doc(widget.postingId)
-              .snapshots(),
+          stream: _postingRef.doc(widget.postingId).snapshots(),
           builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Text("");
@@ -735,8 +750,7 @@ class _SayReplyState extends State<SayReply> {
                   snapshot.data!['count'] == 0
                       ? Container(height: 0)
                       : StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('posting')
+                          stream: _postingRef
                               .doc(widget.postingId)
                               .collection('likes')
                               .snapshots(),

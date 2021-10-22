@@ -73,6 +73,7 @@ class AuthController extends GetxController {
     this.lng = longitude;
 
     if (this.lat == -1) {
+      this.address = "";
       updateUserLocatioin(uid, -1.2, -1.2, "");
     } else {
       final coordinates = new Coordinates(this.lat, this.lng);

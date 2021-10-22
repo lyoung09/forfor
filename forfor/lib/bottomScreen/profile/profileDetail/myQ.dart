@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bubble/bubble.dart';
@@ -12,6 +14,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+////
+///Timer(Duration(milliseconds: 50), () {
+//Get.dialog(Loading());
+//});
+///
+///
+///
 class MyQuestion extends StatefulWidget {
   final String myId;
   final String myName;
@@ -138,41 +147,59 @@ class _MyQuestionState extends State<MyQuestion> {
     print("not good qna");
   }
 
-  void postingExtra(context, postingId, userId, story, userUrl) {
+  saveErase(postingId, userId) async {
+    ref.doc(postingId).update({
+      "save": FieldValue.arrayRemove([userId])
+    });
+  }
+
+  void postingExtra(context, postingId, authorId, saveList) {
+    List<dynamic> saveUser = saveList;
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              // ListTile(
+              //   title: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Icon(Icons.share),
+              //       SizedBox(width: 7.5),
+              //       Text('Share'),
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     share(story, userUrl);
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              Padding(padding: EdgeInsets.only(top: 20)),
               ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.share),
-                    SizedBox(width: 7.5),
-                    Text('Share'),
-                  ],
-                ),
+                title: !saveUser.contains(widget.myId) || saveUser.isEmpty
+                    ? Center(child: Text('SAVE'))
+                    : Center(child: Text('SAVE CANCEL')),
                 onTap: () {
-                  share(story, userUrl);
+                  !saveUser.contains(widget.myId) || saveUser.isEmpty
+                      ? save(postingId, widget.myId)
+                      : saveErase(postingId, widget.myId);
                   Navigator.pop(context);
                 },
               ),
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.delete_forever),
-                    SizedBox(width: 7.5),
-                    Text(' delete'),
-                  ],
-                ),
+                //leading: userId ==controller.user!.uid ? Icon(Icons.music_note),
+                title: authorId != widget.myId
+                    ? Center(child: Text('SUE'))
+                    : Center(child: Text('DELETE')),
+
                 onTap: () {
-                  save(postingId, widget.myId);
+                  authorId != widget.myId ? sue() : delete(postingId);
                   Navigator.pop(context);
                 },
               ),
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
                 title: Center(
                     child: new Text('cancel',
@@ -301,6 +328,52 @@ class _MyQuestionState extends State<MyQuestion> {
                     ),
                   ),
                 ),
+                posting.data!.docs[index]["images"] == null ||
+                        posting.data!.docs[index]["images"].length == 0
+                    ? Text("")
+                    : posting.data!.docs[index]["images"].length == 3
+                        ? Container(
+                            height: 150,
+                            child: GridView.builder(
+                                shrinkWrap: false,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3),
+                                itemCount:
+                                    posting.data!.docs[index]["images"].length,
+                                itemBuilder: (BuildContext context, count) {
+                                  return Center(
+                                    child: Image.network(
+                                        posting.data!.docs[index]["images"]
+                                            [count],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                  );
+                                }),
+                          )
+                        : Container(
+                            height: 250,
+                            child: GridView.builder(
+                                shrinkWrap: false,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3),
+                                itemCount:
+                                    posting.data!.docs[index]["images"].length,
+                                itemBuilder: (BuildContext context, count) {
+                                  return Center(
+                                    child: Image.network(
+                                        posting.data!.docs[index]["images"]
+                                            [count],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                  );
+                                }),
+                          ),
                 SizedBox(height: 10),
                 Container(
                   height: 30,
@@ -350,11 +423,11 @@ class _MyQuestionState extends State<MyQuestion> {
                             icon: Icon(Icons.more_vert, size: 17),
                             onPressed: () {
                               postingExtra(
-                                  context,
-                                  posting.data!.docs[index].id,
-                                  widget.myId,
-                                  posting.data!.docs[index]["story"],
-                                  widget.myImage);
+                                context,
+                                posting.data!.docs[index].id,
+                                widget.myId,
+                                posting.data!.docs[index]["save"],
+                              );
                             },
                           )),
                     ],
@@ -379,7 +452,7 @@ class _MyQuestionState extends State<MyQuestion> {
         //                   width: 85,
         //                   height: 85,
         //                   child: Image.network(
-        //                     '${posting[index]["authorImage"]}',
+        //                     '${posting.data!.docs[index]["authorImage"]}',
         //                     fit: BoxFit.fitWidth,
         //                   )),
         //             ),
@@ -389,7 +462,7 @@ class _MyQuestionState extends State<MyQuestion> {
         //             right: -5,
         //             child: CircleAvatar(
         //               backgroundImage: AssetImage(
-        //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
+        //                   'icons/flags/png/${posting.data!.docs[index]["authorCountry"]}.png',
         //                   package: 'country_icons'),
         //               backgroundColor: Colors.white,
         //               radius: 15,
@@ -402,6 +475,253 @@ class _MyQuestionState extends State<MyQuestion> {
         // ),
       ],
     );
+  }
+
+  Widget saveProfile(posting, index, favorite, ago) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .where("uid", isEqualTo: posting.data!.docs[index]["authorId"])
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              itemCount: snapshot.data!.size,
+              itemBuilder: (context, count) {
+                return Row(
+                  children: [
+                    Container(width: 5),
+                    Expanded(
+                      child: Bubble(
+                        showNip: true,
+                        padding: BubbleEdges.only(left: 5, bottom: 5, right: 5),
+                        alignment: Alignment.centerLeft,
+                        borderColor: Colors.black,
+                        borderWidth: 1.3,
+                        nip: BubbleNip.no,
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => OtherProfile(
+                                          uid: posting.data!.docs[index]
+                                              ["authorId"],
+                                          userName: snapshot.data!.docs[count]
+                                              ["nickname"],
+                                          userImage: snapshot.data!.docs[count]
+                                              ["url"],
+                                          country: snapshot.data!.docs[count]
+                                              ["country"],
+                                          introduction: snapshot.data!
+                                              .docs[count]["introduction"],
+                                          address: snapshot.data!.docs[count]
+                                              ["address"],
+                                        ));
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 5.0),
+                                        child: CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: NetworkImage(
+                                                "${snapshot.data!.docs[count]["url"]}")),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              'icons/flags/png/${snapshot.data!.docs[count]["country"]}.png',
+                                              package: 'country_icons'),
+                                          backgroundColor: Colors.white,
+                                          radius: 8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 8,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 10.0, left: 5, right: 5),
+                                    child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                            '${snapshot.data!.docs[count]["nickname"]}',
+                                            //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 18.5,
+                                                color: Colors.orange[400],
+                                                fontWeight: FontWeight.bold))),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Text(
+                                    "${ago[index]}",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 15, top: 15),
+                                child: Text(
+                                  '${posting.data!.docs[index]["story"]}',
+                                  style: TextStyle(fontSize: 14),
+                                  //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            posting.data!.docs[index]["images"] == null ||
+                                    posting.data!.docs[index]["images"]
+                                            .length ==
+                                        0
+                                ? Text("")
+                                : posting.data!.docs[index]["images"].length ==
+                                        3
+                                    ? Container(
+                                        height: 150,
+                                        child: GridView.builder(
+                                            shrinkWrap: false,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 3),
+                                            itemCount: posting.data!
+                                                .docs[index]["images"].length,
+                                            itemBuilder:
+                                                (BuildContext context, count) {
+                                              return Center(
+                                                child: Image.network(
+                                                    posting.data!.docs[index]
+                                                        ["images"][count],
+                                                    width: 100,
+                                                    height: 100,
+                                                    fit: BoxFit.cover),
+                                              );
+                                            }),
+                                      )
+                                    : Container(
+                                        height: 250,
+                                        child: GridView.builder(
+                                            shrinkWrap: false,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 3),
+                                            itemCount: posting.data!
+                                                .docs[index]["images"].length,
+                                            itemBuilder:
+                                                (BuildContext context, count) {
+                                              return Center(
+                                                child: Image.network(
+                                                    posting.data!.docs[index]
+                                                        ["images"][count],
+                                                    width: 100,
+                                                    height: 100,
+                                                    fit: BoxFit.cover),
+                                              );
+                                            }),
+                                      ),
+                            SizedBox(height: 10),
+                            Container(
+                              height: 30,
+                              alignment: Alignment.topRight,
+                              child: Row(
+                                children: [
+                                  favoriteCheck(posting, favorite, index),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: Text(
+                                      posting.data!.docs[index]["count"] ==
+                                                  null ||
+                                              posting.data!.docs[index]
+                                                      ["count"] <
+                                                  1
+                                          ? ""
+                                          : "${posting.data!.docs[index]["count"]} ",
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  IconButton(
+                                    iconSize: 17.5,
+                                    icon: Icon(
+                                        Icons.chat_bubble_outline_outlined),
+                                    onPressed: () async {
+                                      Get.to(() => SayReply(
+                                            postingId:
+                                                posting.data!.docs[index].id,
+                                            userId: widget.myId,
+                                            authorId: posting.data!.docs[index]
+                                                ["authorId"],
+                                            time: ago[index]!,
+                                            replyCount: posting.data!
+                                                .docs[index]["replyCount"],
+                                            story: posting.data!.docs[index]
+                                                ["story"],
+                                          ));
+                                    },
+                                  ),
+                                  Text(
+                                    posting.data!.docs[index]["replyCount"] ==
+                                                null ||
+                                            posting.data!.docs[index]
+                                                    ["replyCount"] <
+                                                1
+                                        ? ""
+                                        : "${posting.data!.docs[index]["replyCount"]} ",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Spacer(),
+                                  Align(
+                                      alignment: Alignment.topRight,
+                                      child: IconButton(
+                                        icon: Icon(Icons.more_vert, size: 17),
+                                        onPressed: () {
+                                          postingExtra(
+                                            context,
+                                            posting.data!.docs[index].id,
+                                            posting.data!.docs[index]
+                                                ["authorId"],
+                                            posting.data!.docs[index]["save"],
+                                          );
+                                        },
+                                      )),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(width: 5),
+                  ],
+                );
+              });
+        });
   }
 
   @override
@@ -436,11 +756,15 @@ class _MyQuestionState extends State<MyQuestion> {
                   .where("authorId", isEqualTo: widget.myId)
                   .orderBy('timestamp', descending: true)
                   .snapshots()
-              : _ref.where("save", arrayContains: widget.myId).snapshots(),
+              : _ref
+                  .where("save", arrayContains: widget.myId)
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> posting) {
             if (!posting.hasData) {
               return Container();
             }
+
             return Column(
               children: [
                 Row(
@@ -511,294 +835,7 @@ class _MyQuestionState extends State<MyQuestion> {
                         ),
                         child: _value == "my"
                             ? my(posting, index, favorite, ago)
-                            : StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('users')
-                                    .where("uid",
-                                        isEqualTo: posting.data!.docs[index]
-                                            ["authorId"])
-                                    .snapshots(),
-                                builder: (context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Container();
-                                  }
-                                  return ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: BouncingScrollPhysics(),
-                                      itemCount: snapshot.data!.size,
-                                      itemBuilder: (context, count) {
-                                        return Row(
-                                          children: [
-                                            Container(width: 5),
-
-                                            Expanded(
-                                              child: Bubble(
-                                                showNip: true,
-                                                padding: BubbleEdges.only(
-                                                    left: 5,
-                                                    bottom: 5,
-                                                    right: 5),
-                                                alignment: Alignment.centerLeft,
-                                                borderColor: Colors.black,
-                                                borderWidth: 1.3,
-                                                nip: BubbleNip.no,
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Stack(
-                                                          children: [
-                                                            Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      left:
-                                                                          5.0),
-                                                              child: CircleAvatar(
-                                                                  radius: 25,
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  backgroundImage:
-                                                                      NetworkImage(
-                                                                          "${snapshot.data!.docs[count]["url"]}")),
-                                                            ),
-                                                            Positioned(
-                                                              bottom: 0,
-                                                              right: 0,
-                                                              child:
-                                                                  CircleAvatar(
-                                                                backgroundImage:
-                                                                    AssetImage(
-                                                                        'icons/flags/png/${snapshot.data!.docs[count]["country"]}.png',
-                                                                        package:
-                                                                            'country_icons'),
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                radius: 8,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Expanded(
-                                                          flex: 8,
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom:
-                                                                        10.0,
-                                                                    left: 5,
-                                                                    right: 5),
-                                                            child: Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .topLeft,
-                                                                child: Text(
-                                                                    '${snapshot.data!.docs[count]["nickname"]}',
-                                                                    //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
-                                                                    maxLines: 1,
-                                                                    overflow: TextOverflow
-                                                                        .ellipsis,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            18.5,
-                                                                        color: Colors.orange[
-                                                                            400],
-                                                                        fontWeight:
-                                                                            FontWeight.bold))),
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  bottom: 10.0),
-                                                          child: Text(
-                                                            "${ago[index]}",
-                                                            style: TextStyle(
-                                                                fontSize: 12),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Align(
-                                                      alignment:
-                                                          Alignment.topLeft,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 15,
-                                                                top: 15),
-                                                        child: Text(
-                                                          '${posting.data!.docs[index]["story"]}',
-                                                          style: TextStyle(
-                                                              fontSize: 14),
-                                                          //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkh",
-                                                          maxLines: 4,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Container(
-                                                      height: 30,
-                                                      alignment:
-                                                          Alignment.topRight,
-                                                      child: Row(
-                                                        children: [
-                                                          favoriteCheck(posting,
-                                                              favorite, index),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    right:
-                                                                        10.0),
-                                                            child: Text(
-                                                              posting.data!.docs[index]
-                                                                              [
-                                                                              "count"] ==
-                                                                          null ||
-                                                                      posting.data!.docs[index]
-                                                                              [
-                                                                              "count"] <
-                                                                          1
-                                                                  ? ""
-                                                                  : "${posting.data!.docs[index]["count"]} ",
-                                                              style: TextStyle(
-                                                                  fontSize: 12),
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 5,
-                                                          ),
-                                                          IconButton(
-                                                            iconSize: 17.5,
-                                                            icon: Icon(Icons
-                                                                .chat_bubble_outline_outlined),
-                                                            onPressed:
-                                                                () async {
-                                                              Get.to(
-                                                                  () =>
-                                                                      SayReply(
-                                                                        postingId: posting
-                                                                            .data!
-                                                                            .docs[index]
-                                                                            .id,
-                                                                        userId:
-                                                                            widget.myId,
-                                                                        authorId: posting
-                                                                            .data!
-                                                                            .docs[index]["authorId"],
-                                                                        time: ago[
-                                                                            index]!,
-                                                                        replyCount: posting
-                                                                            .data!
-                                                                            .docs[index]["replyCount"],
-                                                                        story: posting
-                                                                            .data!
-                                                                            .docs[index]["story"],
-                                                                      ));
-                                                            },
-                                                          ),
-                                                          Text(
-                                                            posting.data!.docs[index]
-                                                                            [
-                                                                            "replyCount"] ==
-                                                                        null ||
-                                                                    posting.data!.docs[index]
-                                                                            [
-                                                                            "replyCount"] <
-                                                                        1
-                                                                ? ""
-                                                                : "${posting.data!.docs[index]["replyCount"]} ",
-                                                            style: TextStyle(
-                                                                fontSize: 12),
-                                                          ),
-                                                          Spacer(),
-                                                          Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .topRight,
-                                                              child: IconButton(
-                                                                icon: Icon(
-                                                                    Icons
-                                                                        .more_vert,
-                                                                    size: 17),
-                                                                onPressed: () {
-                                                                  postingExtra(
-                                                                      context,
-                                                                      posting
-                                                                          .data!
-                                                                          .docs[
-                                                                              index]
-                                                                          .id,
-                                                                      posting.data!
-                                                                              .docs[index]
-                                                                          [
-                                                                          "authorId"],
-                                                                      posting.data!
-                                                                              .docs[index]
-                                                                          [
-                                                                          "story"],
-                                                                      widget
-                                                                          .myImage);
-                                                                },
-                                                              )),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Container(width: 5),
-                                            // Column(
-                                            //   children: [
-                                            //     Padding(
-                                            //       padding: EdgeInsets.only(left: 8.0),
-                                            //       child: Stack(
-                                            //         children: [
-                                            //           Align(
-                                            //             alignment: Alignment.topLeft,
-                                            //             child: ClipRRect(
-                                            //               borderRadius: BorderRadius.all(Radius.circular(10)),
-                                            //               child: Container(
-                                            //                   width: 85,
-                                            //                   height: 85,
-                                            //                   child: Image.network(
-                                            //                     '${posting[index]["authorImage"]}',
-                                            //                     fit: BoxFit.fitWidth,
-                                            //                   )),
-                                            //             ),
-                                            //           ),
-                                            //           Positioned(
-                                            //             bottom: 0,
-                                            //             right: -5,
-                                            //             child: CircleAvatar(
-                                            //               backgroundImage: AssetImage(
-                                            //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                                            //                   package: 'country_icons'),
-                                            //               backgroundColor: Colors.white,
-                                            //               radius: 15,
-                                            //             ),
-                                            //           )
-                                            //         ],
-                                            //       ),
-                                            //     ),
-                                            //   ],
-                                            // ),
-                                          ],
-                                        );
-                                      });
-                                }),
+                            : saveProfile(posting, index, favorite, ago),
                       );
                     }),
               ],

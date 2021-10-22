@@ -156,6 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {
+        startTime();
         return;
       }
     }

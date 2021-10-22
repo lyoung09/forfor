@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:io';
+import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:bubble/bubble.dart';
@@ -12,23 +12,14 @@ import 'package:forfor/bottomScreen/infomation/sayAlarm.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
-import 'package:forfor/home/bottom_navigation.dart';
+
 import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
-import 'package:forfor/service/userdatabase.dart';
-import 'package:forfor/utils/utils.dart';
-import 'package:forfor/widget/circle_image.dart';
-import 'package:forfor/widget/img.dart';
+
 import 'package:forfor/widget/my_colors.dart';
-import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 import 'package:timeago/timeago.dart' as timeago;
-import 'dart:convert';
-
-import 'infomationDetail/WritingPage.dart';
 
 class SayScreen extends StatefulWidget {
   const SayScreen({Key? key}) : super(key: key);
@@ -44,7 +35,10 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   late Animation<double> animation1, animation1View;
   TextEditingController _filter = new TextEditingController();
   final controller = Get.put(AuthController());
-
+  CollectionReference _postingref =
+      FirebaseFirestore.instance.collection('posting');
+  CollectionReference _categoryref =
+      FirebaseFirestore.instance.collection('category');
   @override
   void initState() {
     // TODO: implement initState
@@ -75,10 +69,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         clipBehavior: Clip.antiAliasWithSaveLayer,
         //padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('category')
-                .orderBy("categoryId")
-                .snapshots(),
+            stream: _categoryref.orderBy("categoryId").snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Container();
@@ -121,215 +112,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                     );
                   });
             }),
-      ),
-    );
-  }
-
-  Widget selectCategory() {
-    return SizeTransition(
-      sizeFactor: animation1View,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        color: Colors.white,
-        elevation: 2,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab1",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.lightGreen[500],
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          togglePanel1();
-                        },
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "FRIENDS",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab2",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.yellow[600],
-                        child: Icon(
-                          Icons.people,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "GROUPS",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab3",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.purple[400],
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "NEARBY",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab4",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.blue[400],
-                        child: Icon(
-                          Icons.near_me,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "MOMENT",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              Container(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab5",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.indigo[300],
-                        child: Icon(
-                          Icons.crop_original,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "ALBUMS",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab6",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.green[500],
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "LIKES",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab7",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.lightGreen[400],
-                        child: Icon(
-                          Icons.subject,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "ARTICLES",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "fab8",
-                        elevation: 0,
-                        mini: true,
-                        backgroundColor: Colors.orange[300],
-                        child: Icon(
-                          Icons.textsms,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Container(height: 5),
-                      Text(
-                        "REVIEWS",
-                        style: MyText.caption(context)!
-                            .copyWith(color: MyColors.grey_40),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -412,23 +194,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     );
   }
 
-  String _ago(Timestamp t) {
-    String x = timeago
-        .format(t.toDate())
-        .replaceAll("minutes", "분")
-        .replaceAll("a minute", "1분")
-        .replaceAll("a day", "1일")
-        .replaceAll("a moment", "방금")
-        .replaceAll("ago", "전")
-        .replaceAll("about", "")
-        .replaceAll("an hour", "한시간")
-        .replaceAll("hours", "시간")
-        .replaceAll("one year", "1년")
-        .replaceAll("years", "년");
-
-    return x;
-  }
-
   var count;
   check(posting, index, favorite) async {
     DateTime currentPhoneDate = DateTime.now(); //DateTime
@@ -451,33 +216,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       ref.update({
         "count": FieldValue.increment(1),
       });
-      //.update({
-      // "count": FieldValue.increment(1),
-      // "likes": FieldValue.arrayUnion([
-      //   {
-      //     "likeId": controller.user!.uid,
-      //     "likeDatetime": myDateTime,
-      //   }
-      // ])
-      //});
     }
     if (!favorite[index]) {
       ref.collection('likes').doc(controller.user!.uid).delete();
       ref.update({
         "count": FieldValue.increment(-1),
       });
-
-      //     .update(
-      //   {
-      //     "count": FieldValue.increment(-1),
-      //     'likes': FieldValue.arrayRemove([
-      //       {
-      //         "likeId": controller.user!.uid,
-      //         "likeDatetime": date,
-      //       }
-      //     ])
-      //   },
-      // );
     } else {}
   }
 
@@ -499,6 +243,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     });
   }
 
+  saveErase(postingId, userId) async {
+    ref.doc(postingId).update({
+      "save": FieldValue.arrayRemove([userId])
+    });
+  }
+
   delete(postingId) async {
     ref.doc(postingId).delete();
   }
@@ -507,65 +257,57 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     print("not good qna");
   }
 
-  void postingExtra(context, postingId, userId, story, userUrl) {
+  void postingExtra(context, postingId, authorId, saveList) {
+    List<dynamic> saveUser = saveList;
+
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              // ListTile(
+              //   title: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Icon(Icons.share),
+              //       SizedBox(width: 7.5),
+              //       Text('Share'),
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     share(story, userUrl);
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              Padding(padding: EdgeInsets.only(top: 20)),
+
               ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.share),
-                    SizedBox(width: 7.5),
-                    Text('Share'),
-                  ],
-                ),
+                title:
+                    !saveUser.contains(controller.user!.uid) || saveUser.isEmpty
+                        ? Center(child: Text('SAVE'))
+                        : Center(child: Text('SAVE CANCEL')),
                 onTap: () {
-                  share(story, userUrl);
+                  !saveUser.contains(controller.user!.uid) || saveUser.isEmpty
+                      ? save(postingId, controller.user!.uid)
+                      : saveErase(postingId, controller.user!.uid);
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.save_sharp),
-                    SizedBox(width: 7.5),
-                    Text('Save'),
-                  ],
-                ),
-                onTap: () {
-                  save(postingId, controller.user!.uid);
-                  Navigator.pop(context);
-                },
-              ),
+
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
                 //leading: userId ==controller.user!.uid ? Icon(Icons.music_note),
-                title: userId != controller.user!.uid
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.share),
-                          SizedBox(width: 7.5),
-                          Text('Sue'),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delete_forever),
-                          SizedBox(width: 7.5),
-                          Text('delete'),
-                        ],
-                      ),
+                title: authorId != controller.user!.uid
+                    ? Center(child: Text('SUE'))
+                    : Center(child: Text('DELETE')),
+
                 onTap: () {
-                  userId != controller.user!.uid ? sue() : delete(postingId);
+                  authorId != controller.user!.uid ? sue() : delete(postingId);
                   Navigator.pop(context);
                 },
               ),
+              Divider(height: 0.8, color: Colors.black),
               ListTile(
                 title: Center(
                     child: new Text('cancel',
@@ -582,7 +324,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   Widget otherUserQnA(posting, index, favorite, user, count) {
     Map<int, String> ago = new Map<int, String>();
-    ago[index] = _ago(posting[index]["timestamp"]);
+    ago[index] = QnA().ago(posting[index]["timestamp"]);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18, left: 10),
@@ -604,7 +346,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 2.0),
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () {
                             Get.to(() => OtherProfile(
                                   uid: posting[index]["authorId"],
@@ -612,7 +354,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   userImage: user[count]["url"],
                                   country: user[count]["country"],
                                   introduction: user[count]["introduction"],
-                                  address: posting[index]["address"] ?? "",
+                                  address: user[count]["address"],
                                 ));
                           },
                           child: Stack(
@@ -680,6 +422,48 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           style: TextStyle(fontSize: 14),
                         )),
                   ),
+                  posting[index]["images"] == null ||
+                          posting[index]["images"].length == 0
+                      ? Text("")
+                      : posting[index]["images"].length == 3
+                          ? Container(
+                              height: 150,
+                              child: GridView.builder(
+                                  shrinkWrap: false,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3),
+                                  itemCount: posting[index]["images"].length,
+                                  itemBuilder: (BuildContext context, count) {
+                                    return Center(
+                                      child: Image.network(
+                                          posting[index]["images"][count],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                    );
+                                  }),
+                            )
+                          : Container(
+                              height: 250,
+                              child: GridView.builder(
+                                  shrinkWrap: false,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3),
+                                  itemCount: posting[index]["images"].length,
+                                  itemBuilder: (BuildContext context, count) {
+                                    return Center(
+                                      child: Image.network(
+                                          posting[index]["images"][count],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                    );
+                                  }),
+                            ),
                   SizedBox(height: 10),
                   Container(
                     height: 30,
@@ -687,8 +471,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('posting')
+                            stream: _postingref
                                 .doc(posting[index].id)
                                 .collection('likes')
                                 .doc(controller.user!.uid)
@@ -759,8 +542,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                   context,
                                   posting[index].id,
                                   posting[index]["authorId"],
-                                  posting[index]["story"],
-                                  user[count]["url"]);
+                                  posting[index]["save"]);
                             },
                           ),
                         )
@@ -779,10 +561,10 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   bool like = false;
 
-  Widget myQnA(
-      posting, index, favorite, uid, name, url, country, introduction) {
+  Widget myQnA(posting, index, favorite, uid, name, url, country, introduction,
+      address) {
     Map<int, String> ago = new Map<int, String>();
-    ago[index] = _ago(posting[index]["timestamp"]);
+    ago[index] = QnA().ago(posting[index]["timestamp"]);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18, right: 10),
@@ -808,16 +590,15 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 2.0),
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () {
                             Get.to(() => OtherProfile(
-                                  uid: posting[index]["authorId"],
-                                  userName: name,
-                                  userImage: url,
-                                  country: country,
-                                  introduction: introduction,
-                                  address: posting[index]["address"] ?? "",
-                                ));
+                                uid: posting[index]["authorId"],
+                                userName: name,
+                                userImage: url,
+                                country: country,
+                                introduction: introduction,
+                                address: address));
                           },
                           child: Stack(
                             children: [
@@ -883,6 +664,48 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                           style: TextStyle(fontSize: 14),
                         )),
                   ),
+                  posting[index]["images"] == null ||
+                          posting[index]["images"].length == 0
+                      ? Text("")
+                      : posting[index]["images"].length == 3
+                          ? Container(
+                              height: 150,
+                              child: GridView.builder(
+                                  shrinkWrap: false,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3),
+                                  itemCount: posting[index]["images"].length,
+                                  itemBuilder: (BuildContext context, count) {
+                                    return Center(
+                                      child: Image.network(
+                                          posting[index]["images"][count],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                    );
+                                  }),
+                            )
+                          : Container(
+                              height: 250,
+                              child: GridView.builder(
+                                  shrinkWrap: false,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3),
+                                  itemCount: posting[index]["images"].length,
+                                  itemBuilder: (BuildContext context, count) {
+                                    return Center(
+                                      child: Image.network(
+                                          posting[index]["images"][count],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                    );
+                                  }),
+                            ),
                   SizedBox(height: 10),
                   Container(
                     height: 30,
@@ -890,8 +713,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('posting')
+                            stream: _postingref
                                 .doc(posting[index].id)
                                 .collection('likes')
                                 .doc(controller.user!.uid)
@@ -959,11 +781,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             icon: Icon(Icons.more_vert, size: 17),
                             onPressed: () {
                               postingExtra(
-                                  context,
-                                  posting[index].id,
-                                  posting[index]["authorId"],
-                                  posting[index]["story"],
-                                  url);
+                                context,
+                                posting[index].id,
+                                posting[index]["authorId"],
+                                posting[index]["save"],
+                              );
                             },
                           ),
                         )
@@ -995,12 +817,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     return Scaffold(
         body: StreamBuilder<QuerySnapshot>(
             stream: checkCategory == 0
-                ? FirebaseFirestore.instance
-                    .collection('posting')
-                    .orderBy("timestamp", descending: true)
-                    .snapshots()
-                : FirebaseFirestore.instance
-                    .collection('posting')
+                ? _postingref.orderBy("timestamp", descending: true).snapshots()
+                : _postingref
                     .where("category", isEqualTo: checkCategory)
                     .orderBy("timestamp", descending: true)
                     .snapshots(),
@@ -1106,6 +924,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                         late String url;
                                         late String country;
                                         late String introduction;
+                                        late String address;
                                         if (controller.user!.uid ==
                                             snapshot.data!.docs[index]
                                                 ["authorId"]) {
@@ -1116,6 +935,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                               user.data!.docs[count]["country"];
                                           introduction = user.data!.docs[count]
                                               ["introduction"];
+                                          address =
+                                              user.data!.docs[count]["address"];
                                         }
                                         return controller.user!.uid ==
                                                 snapshot.data!.docs[index]
@@ -1128,7 +949,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                                 name,
                                                 url,
                                                 country,
-                                                introduction)
+                                                introduction,
+                                                address)
                                             : otherUserQnA(
                                                 snapshot.data!.docs,
                                                 index,

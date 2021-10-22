@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:get/get.dart';
@@ -237,8 +238,8 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                               .snapshots(),
                       builder: (context, replyUser) {
                         Map<int, String> ago = new Map<int, String>();
-                        ago[index] = _ago(snapshot.data!.docs[index]["reply"]
-                            [count]["datetime"]);
+                        ago[index] = QnA().ago(snapshot.data!.docs[index]
+                            ["reply"][count]["datetime"]);
 
                         if (!replyUser.hasData) {
                           return Container();
@@ -258,7 +259,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                                   elevation: 5,
                                   clipBehavior: Clip.antiAliasWithSaveLayer,
                                   child: ListTile(
-                                    leading: InkWell(
+                                    leading: GestureDetector(
                                       onTap: () {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
@@ -535,23 +536,6 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
         });
   }
 
-  String _ago(Timestamp t) {
-    String x = timeago
-        .format(t.toDate())
-        .replaceAll("minutes", "분")
-        .replaceAll("a minute", "1분")
-        .replaceAll("a moment", "방금")
-        .replaceAll("a day", "1일")
-        .replaceAll("ago", "전")
-        .replaceAll("about", "")
-        .replaceAll("an hour", "한시간")
-        .replaceAll("hours", "시간")
-        .replaceAll("one year", "1년")
-        .replaceAll("years", "년");
-
-    return x;
-  }
-
   Widget favorite() {
     // return StreamBuilder<QuerySnapshot>(
     //     stream: FirebaseFirestore.instance
@@ -585,7 +569,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
             itemBuilder: (context, count) {
               Map<int, String> ago = new Map<int, String>();
 
-              ago[count] = _ago(users.data!.docs[count]["likeDatetime"]);
+              ago[count] = QnA().ago(users.data!.docs[count]["likeDatetime"]);
 
               return StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -632,7 +616,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                                           clipBehavior:
                                               Clip.antiAliasWithSaveLayer,
                                           child: ListTile(
-                                            leading: InkWell(
+                                            leading: GestureDetector(
                                               onTap: () {
                                                 Navigator.of(context).push(
                                                   MaterialPageRoute(
@@ -810,27 +794,6 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
               ],
             ),
           ),
-          // body:
-          // NestedScrollView(
-          // headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          //   return <Widget>[
-          //     new SliverAppBar(
-          //       automaticallyImplyLeading: false,
-          //       leading: IconButton(
-          //           icon: Icon(Icons.arrow_back_ios),
-          //           color: Colors.black,
-          //           onPressed: () {
-          //             Navigator.of(context).pop();
-          //           }),
-          //       title: Text('QnA 알림',
-          //           style: TextStyle(color: Colors.black, fontSize: 20)),
-          //       centerTitle: true,
-          //       pinned: false,
-          //       floating: false,
-
-          //     ),
-          //   ];
-          // },
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: <Widget>[

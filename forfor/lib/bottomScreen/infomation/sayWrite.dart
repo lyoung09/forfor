@@ -1,12 +1,17 @@
-import 'package:bubble/bubble.dart';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
+import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/widget/loading.dart';
-import 'package:forfor/widget/my_text.dart';
+
 import 'package:get/get.dart';
-import 'package:location/location.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'package:multi_image_picker2/multi_image_picker2.dart';
+
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 
 class SayWriting extends StatefulWidget {
   final String uid;
@@ -21,16 +26,22 @@ class SayWriting extends StatefulWidget {
 
 class _SayWritingState extends State<SayWriting> {
   TextEditingController _storycontroller = new TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+  List<XFile> _imageList = [];
+  List<Asset> imageList = [];
+
+  List<File> writePicList = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
+  CollectionReference _ref = FirebaseFirestore.instance.collection('category');
   int category = 0;
   saveposting() async {
-    print(_storycontroller.text);
-    if (_storycontroller.text.isEmpty) {
+    if (_storycontroller.text.isEmpty && writePicList.isEmpty) {
       Get.defaultDialog(
         title: "Error",
         middleText: "사진 또는 글이 있어야합니다",
@@ -54,55 +65,58 @@ class _SayWritingState extends State<SayWriting> {
       DateTime myDateTime = myTimeStamp.toDate(); //
 
       await FirebaseFirestore.instance.collection('posting').add({
-        "story": _storycontroller.text,
+        "story": _storycontroller.text.isEmpty ? "" : _storycontroller.text,
         "authorId": widget.uid,
         "timestamp": myDateTime,
-        "address": address ?? "",
         "count": 0,
+        "save": [],
         "replyCount": 0,
         "category": category,
+        "images": []
       }).then((value) async {
-        await FirebaseFirestore.instance
-            .collection('posting')
-            .doc(value.id)
-            .update({"postingId": value.id});
-      });
+        if (writePicList.isEmpty) {
+          FirebaseFirestore.instance
+              .collection('posting')
+              .doc(value.id)
+              .update({"postingId": value.id});
+          Get.back();
+        } else {
+          Get.dialog(Loading());
+          for (int i = 0; i < writePicList.length; i++) {
+            Reference ref = FirebaseStorage.instance
+                .ref()
+                .child('posting/${value.id}/${i}');
 
-      Get.back();
+            await ref.putFile(writePicList[i]).whenComplete(() async {
+              await ref.getDownloadURL().then((url) {
+                FirebaseFirestore.instance
+                    .collection('posting')
+                    .doc(value.id)
+                    .update({
+                  "postingId": value.id,
+                  "images": FieldValue.arrayUnion([url])
+                });
+              });
+            });
+          }
+          Get.to(() => BottomNavigation(index: 3));
+        }
+      });
     }
   }
 
-  String? address;
-  getLoc() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    final controller = Get.put(AuthController());
-    late LocationData _currentPosition;
-    final Location location = Location();
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _currentPosition = await location.getLocation();
-
-    // location.onLocationChanged.listen((LocationData currentLocation) {
-    //   setState(() {
-
-    address = await controller.saveLocation(controller.user!.uid,
-        _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
+  showDia(context) {
+    showDialog(
+        context: context,
+        builder: (_) => CupertinoAlertDialog(
+              content: Text("사진은 최대 6장입니다."),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text('check'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ));
   }
 
   Widget bottom() {
@@ -115,31 +129,40 @@ class _SayWritingState extends State<SayWriting> {
             Padding(padding: EdgeInsets.only(right: 30)),
             Container(
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    writePicList.length >= 6
+                        ? showDia(context)
+                        : showModal(context);
+                    //loadAssets();
+                  },
                   icon: Icon(
                     Icons.camera_alt_outlined,
                     size: 25,
                   )),
             ),
+
             Padding(padding: EdgeInsets.only(right: 15)),
             InkWell(
-              child: IconButton(
-                icon: Image.asset(
-                  'assets/icon/location.png',
-                  width: 20.0,
-                  height: 20.0,
-                ),
-                onPressed: () {},
-              ),
-              onTap: getLoc,
-            ),
-            Padding(padding: EdgeInsets.only(right: 15)),
-            InkWell(
-              child: Image.asset(
-                'assets/icon/list.png',
-                width: 20.0,
-                height: 20.0,
-              ),
+              child: StreamBuilder<QuerySnapshot>(
+                  stream:
+                      _ref.where("categoryId", isEqualTo: category).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container();
+                    }
+                    return Container(
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          border: Border.all(width: 1, color: Colors.black)),
+                      child: Image.network(
+                        //'assets/icon/all.png',
+                        snapshot.data!.docs[0]["categoryImage"],
+                        width: 20.0,
+                        height: 20.0,
+                      ),
+                    );
+                  }),
               onTap: () {
                 showDialog(
                     context: context,
@@ -153,10 +176,7 @@ class _SayWritingState extends State<SayWriting> {
                             color: Colors.white,
                           ),
                           child: StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('category')
-                                  .orderBy("categoryId")
-                                  .snapshots(),
+                              stream: _ref.orderBy("categoryId").snapshots(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return Container();
@@ -182,17 +202,31 @@ class _SayWritingState extends State<SayWriting> {
                                             color: Colors.white,
                                           ),
                                           child: CircleAvatar(
-                                            backgroundColor: category ==
-                                                    snapshot.data!.docs[index]
-                                                        ["categoryId"]
-                                                ? Colors.orange[50]
-                                                : Colors.white,
+                                            backgroundColor: Colors.white,
                                             radius: 20,
-                                            child: Image.network(
-                                              snapshot.data!.docs[index]
-                                                  ["categoryImage"],
-                                              width: 20,
-                                              height: 20,
+                                            child: Container(
+                                              padding: EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.orange[50],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(20)),
+                                                  border: category ==
+                                                          snapshot.data!
+                                                                  .docs[index]
+                                                              ["categoryId"]
+                                                      ? Border.all(
+                                                          width: 1,
+                                                          color: Colors.black)
+                                                      : Border.all(
+                                                          width: 0,
+                                                          color: Colors.white)),
+                                              child: Image.network(
+                                                snapshot.data!.docs[index]
+                                                    ["categoryImage"],
+                                                width: 20,
+                                                height: 20,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -253,7 +287,9 @@ class _SayWritingState extends State<SayWriting> {
                 size: 25,
                 color: Colors.grey[900],
               ),
-              onPressed: saveposting,
+              onPressed: () {
+                saveposting();
+              },
             ),
           ]),
       body: SingleChildScrollView(
@@ -278,7 +314,7 @@ class _SayWritingState extends State<SayWriting> {
                   },
                   keyboardType: TextInputType.multiline,
                   cursorColor: Colors.black26,
-                  maxLines: 15,
+                  maxLines: null,
                   autofocus: true,
                   decoration: InputDecoration(
                     hintText:
@@ -286,14 +322,49 @@ class _SayWritingState extends State<SayWriting> {
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(0),
-                      borderSide: BorderSide(color: Colors.black, width: 2),
+                      borderSide:
+                          BorderSide(color: Colors.transparent, width: 0),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(0),
                       borderSide:
-                          BorderSide(color: Colors.grey[400]!, width: 1),
+                          BorderSide(color: Colors.transparent, width: 0),
                     ),
                   ),
+                ),
+                Container(
+                  height: 250,
+                  child: GridView.builder(
+                      shrinkWrap: false,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3),
+                      itemCount: writePicList.length,
+                      itemBuilder: (BuildContext context, count) {
+                        return Stack(
+                          children: [
+                            Center(
+                              child: Image.file(writePicList[count],
+                                  width: 100, height: 100, fit: BoxFit.cover),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: IconButton(
+                                  onPressed: () {
+                                    writePicList.removeAt(count);
+
+                                    setState(() {});
+                                  },
+                                  icon: Icon(
+                                    Icons.cancel,
+                                    color: Colors.grey[200],
+                                    size: 20,
+                                  )),
+                            )
+                          ],
+                        );
+                      }),
                 ),
                 Container(height: 10),
               ],
@@ -303,5 +374,108 @@ class _SayWritingState extends State<SayWriting> {
       ),
       bottomSheet: bottom(),
     );
+  }
+
+  showModal(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.camera_alt_rounded),
+                    Padding(padding: EdgeInsets.only(right: 20)),
+                    Text('CAMERA'),
+                  ],
+                ),
+                onTap: () {
+                  imageCameraSelect();
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                //leading: Icon(Icons.alarm_add_rounded),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.photo),
+                    Padding(padding: EdgeInsets.only(right: 20)),
+                    Text('ALBUM'),
+                  ],
+                ),
+                onTap: () {
+                  loadAssets();
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                title: Center(
+                    child:
+                        Text('취소', style: TextStyle(color: Colors.grey[600]))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void imageCameraSelect() async {
+    if (writePicList.length >= 6 || imageList.length + _imageList.length >= 6) {
+    } else {
+      print('leng${writePicList.length}');
+      final XFile? selectedImage =
+          await _picker.pickImage(source: ImageSource.camera);
+
+      if (selectedImage!.path.isNotEmpty) {
+        writePicList.add(File(selectedImage.path));
+        _imageList.add(selectedImage);
+      }
+      setState(() {});
+    }
+  }
+
+  void loadAssets() async {
+    if (writePicList.length >= 6) {
+    } else {
+      List<Asset> resultList = <Asset>[];
+      String error = 'No Error Detected';
+
+      try {
+        resultList = await MultiImagePicker.pickImages(
+          maxImages: 6 - writePicList.length,
+          enableCamera: true,
+          selectedAssets: imageList,
+        );
+      } on Exception catch (e) {
+        error = e.toString();
+        print(error);
+      }
+      // If the widget was removed from the tree while the asynchronous platform
+      // message was in flight, we want to discard the reply rather than calling
+      // setState to update our non-existent appearance.
+
+      setState(() {
+        imageList = resultList;
+      });
+
+      resultList.forEach((imageAsset) async {
+        final filePath =
+            await FlutterAbsolutePath.getAbsolutePath(imageAsset.identifier);
+
+        File tempFile = File(filePath);
+        if (tempFile.existsSync()) {
+          writePicList.add(tempFile);
+        }
+
+        setState(() {});
+      });
+      resultList.clear();
+    }
   }
 }

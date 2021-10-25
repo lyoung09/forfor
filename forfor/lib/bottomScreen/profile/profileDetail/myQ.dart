@@ -258,8 +258,8 @@ class _MyQuestionState extends State<MyQuestion> {
             showNip: true,
             padding: BubbleEdges.only(left: 5, bottom: 5, right: 5),
             alignment: Alignment.centerLeft,
-            borderColor: Colors.black,
-            borderWidth: 1.3,
+            borderColor: Colors.transparent,
+            borderWidth: 0,
             nip: BubbleNip.no,
             child: Column(
               children: [
@@ -500,8 +500,8 @@ class _MyQuestionState extends State<MyQuestion> {
                         showNip: true,
                         padding: BubbleEdges.only(left: 5, bottom: 5, right: 5),
                         alignment: Alignment.centerLeft,
-                        borderColor: Colors.black,
-                        borderWidth: 1.3,
+                        borderColor: Colors.transparent,
+                        borderWidth: 0,
                         nip: BubbleNip.no,
                         child: Column(
                           children: [

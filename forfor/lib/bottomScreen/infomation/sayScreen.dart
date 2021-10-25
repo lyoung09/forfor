@@ -336,8 +336,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               showNip: true,
               padding: BubbleEdges.only(left: 8, bottom: 5, right: 8),
               alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
+              borderColor: Colors.transparent,
+              borderWidth: 0,
               nip: BubbleNip.leftCenter,
               child: Column(
                 children: [
@@ -425,7 +425,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   posting[index]["images"] == null ||
                           posting[index]["images"].length == 0
                       ? Text("")
-                      : posting[index]["images"].length == 3
+                      : posting[index]["images"].length <= 3
                           ? Container(
                               height: 150,
                               child: GridView.builder(
@@ -580,9 +580,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                 right: 8,
               ),
               alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
-              nip: BubbleNip.rightCenter,
+              borderColor: Colors.transparent,
+              borderWidth: 0.0,
+              nip: BubbleNip.no,
               child: Column(
                 children: [
                   Row(
@@ -667,9 +667,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   posting[index]["images"] == null ||
                           posting[index]["images"].length == 0
                       ? Text("")
-                      : posting[index]["images"].length == 3
+                      : posting[index]["images"].length <= 3
                           ? Container(
-                              height: 150,
+                              height: 130,
                               child: GridView.builder(
                                   shrinkWrap: false,
                                   physics: NeverScrollableScrollPhysics(),

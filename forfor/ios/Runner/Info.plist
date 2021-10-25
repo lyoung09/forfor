@@ -62,9 +62,10 @@
 			</array>
 		</dict>
 	</array>
-	
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>NO</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>bbc30e62de88b34dadbc0e199b220cc4</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -74,27 +75,27 @@
 		<string>kakaolink</string>
 		<string>kakaonavi-sdk</string>
 	</array>
-	
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access to location when open.</string>
-
-<key>NSLocationTemporaryUsageDescriptionDictionary</key>
-<dict>
-  <key>YourPurposeKey</key>
-  <string>The example App requires temporary access to the device&apos;s precise location.</string>
-</dict>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access to location when in the background.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
 	<string>9.0</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to demonstrate image picker plugin</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>YourPurposeKey</key>
+		<string>The example App requires temporary access to the device's precise location.</string>
+	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used to capture audio for image picker plugin</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Used to demonstrate image picker plugin</string>
+	<key>UIBackgroundModes</key>
+	<array/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

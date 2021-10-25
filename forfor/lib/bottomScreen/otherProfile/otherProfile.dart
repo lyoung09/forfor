@@ -300,8 +300,8 @@ class _OtherProfileState extends State<OtherProfile> {
                           padding:
                               BubbleEdges.only(left: 8, bottom: 5, right: 8),
                           alignment: Alignment.centerLeft,
-                          borderColor: Colors.black,
-                          borderWidth: 1.3,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
                           nip: BubbleNip.no,
                           child: Column(
                             children: [
@@ -384,10 +384,10 @@ class _OtherProfileState extends State<OtherProfile> {
                                           0
                                   ? Text("")
                                   : posting.data!.docs[index]["images"]
-                                              .length ==
+                                              .length <=
                                           3
                                       ? Container(
-                                          height: 150,
+                                          height: 120,
                                           child: GridView.builder(
                                               shrinkWrap: false,
                                               physics:
@@ -711,8 +711,8 @@ class _OtherProfileState extends State<OtherProfile> {
                           padding:
                               BubbleEdges.only(left: 8, bottom: 5, right: 8),
                           alignment: Alignment.centerLeft,
-                          borderColor: Colors.black,
-                          borderWidth: 1.3,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
                           nip: BubbleNip.no,
                           child: Column(
                             children: [
@@ -794,10 +794,10 @@ class _OtherProfileState extends State<OtherProfile> {
                                           0
                                   ? Text("")
                                   : posting.data!.docs[index]["images"]
-                                              .length ==
+                                              .length <=
                                           3
                                       ? Container(
-                                          height: 150,
+                                          height: 120,
                                           child: GridView.builder(
                                               shrinkWrap: false,
                                               physics:

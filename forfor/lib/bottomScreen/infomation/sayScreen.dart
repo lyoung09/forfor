@@ -327,7 +327,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     ago[index] = QnA().ago(posting[index]["timestamp"]);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18, left: 10),
+      padding: const EdgeInsets.only(bottom: 18, left: 10, right: 10),
       child: Row(
         children: [
           Container(width: 5),
@@ -336,9 +336,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               showNip: true,
               padding: BubbleEdges.only(left: 8, bottom: 5, right: 8),
               alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
-              nip: BubbleNip.leftCenter,
+              borderColor: Colors.transparent,
+              borderWidth: 0,
+              nip: BubbleNip.no,
               child: Column(
                 children: [
                   Row(
@@ -425,9 +425,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   posting[index]["images"] == null ||
                           posting[index]["images"].length == 0
                       ? Text("")
-                      : posting[index]["images"].length == 3
+                      : posting[index]["images"].length <= 3
                           ? Container(
-                              height: 150,
+                              height: 120,
                               child: GridView.builder(
                                   shrinkWrap: false,
                                   physics: NeverScrollableScrollPhysics(),
@@ -567,7 +567,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     ago[index] = QnA().ago(posting[index]["timestamp"]);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18, right: 10),
+      padding: const EdgeInsets.only(bottom: 18, right: 10, left: 10),
       child: Row(
         children: [
           Container(width: 5),
@@ -580,9 +580,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                 right: 8,
               ),
               alignment: Alignment.centerLeft,
-              borderColor: Colors.black,
-              borderWidth: 1.3,
-              nip: BubbleNip.rightCenter,
+              borderColor: Colors.transparent,
+              borderWidth: 0,
+              nip: BubbleNip.no,
               child: Column(
                 children: [
                   Row(
@@ -667,9 +667,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   posting[index]["images"] == null ||
                           posting[index]["images"].length == 0
                       ? Text("")
-                      : posting[index]["images"].length == 3
+                      : posting[index]["images"].length <= 3
                           ? Container(
-                              height: 150,
+                              height: 120,
                               child: GridView.builder(
                                   shrinkWrap: false,
                                   physics: NeverScrollableScrollPhysics(),

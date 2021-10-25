@@ -276,9 +276,9 @@ class _SayReplyState extends State<SayReply> {
                 ),
                 post["images"] == null || post["images"].length == 0
                     ? Text("")
-                    : post["images"].length == 3
+                    : post["images"].length <= 3
                         ? Container(
-                            height: 150,
+                            height: 120,
                             child: GridView.builder(
                                 shrinkWrap: false,
                                 physics: NeverScrollableScrollPhysics(),

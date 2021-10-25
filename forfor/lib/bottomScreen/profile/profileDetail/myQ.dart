@@ -258,8 +258,8 @@ class _MyQuestionState extends State<MyQuestion> {
             showNip: true,
             padding: BubbleEdges.only(left: 5, bottom: 5, right: 5),
             alignment: Alignment.centerLeft,
-            borderColor: Colors.black,
-            borderWidth: 1.3,
+            borderColor: Colors.transparent,
+            borderWidth: 0,
             nip: BubbleNip.no,
             child: Column(
               children: [
@@ -331,9 +331,9 @@ class _MyQuestionState extends State<MyQuestion> {
                 posting.data!.docs[index]["images"] == null ||
                         posting.data!.docs[index]["images"].length == 0
                     ? Text("")
-                    : posting.data!.docs[index]["images"].length == 3
+                    : posting.data!.docs[index]["images"].length <= 3
                         ? Container(
-                            height: 150,
+                            height: 120,
                             child: GridView.builder(
                                 shrinkWrap: false,
                                 physics: NeverScrollableScrollPhysics(),
@@ -500,8 +500,8 @@ class _MyQuestionState extends State<MyQuestion> {
                         showNip: true,
                         padding: BubbleEdges.only(left: 5, bottom: 5, right: 5),
                         alignment: Alignment.centerLeft,
-                        borderColor: Colors.black,
-                        borderWidth: 1.3,
+                        borderColor: Colors.transparent,
+                        borderWidth: 0,
                         nip: BubbleNip.no,
                         child: Column(
                           children: [
@@ -595,10 +595,10 @@ class _MyQuestionState extends State<MyQuestion> {
                                             .length ==
                                         0
                                 ? Text("")
-                                : posting.data!.docs[index]["images"].length ==
+                                : posting.data!.docs[index]["images"].length <=
                                         3
                                     ? Container(
-                                        height: 150,
+                                        height: 120,
                                         child: GridView.builder(
                                             shrinkWrap: false,
                                             physics:

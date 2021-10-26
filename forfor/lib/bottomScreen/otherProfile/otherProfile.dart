@@ -36,6 +36,7 @@ class OtherProfile extends StatefulWidget {
   _OtherProfileState createState() => _OtherProfileState();
 }
 
+//hoit
 class _OtherProfileState extends State<OtherProfile> {
   late ScrollController scrollController;
   final controller = Get.put(AuthController());

@@ -18,18 +18,16 @@ import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/show.dart';
 import 'package:forfor/login/screen/userInfo.dart';
-import 'package:forfor/login/screen/sigup_main.dart';
-import 'package:forfor/model/user.dart';
-import 'package:forfor/service/location_service.dart';
+
 import 'package:forfor/service/userdatabase.dart';
-import 'package:geocoder/geocoder.dart';
 
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:location/location.dart';
-import 'package:provider/provider.dart';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -132,6 +130,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     getLoc();
 
+    FirebaseMessaging.instance.getToken().then((value) {
+      String? token = value;
+      print(token);
+    });
+
     //permission();
   }
 
@@ -141,6 +144,26 @@ class _MyHomePageState extends State<MyHomePage> {
   PermissionStatus? _permissionGranted;
   var latitude, longtitude;
   getLoc() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 

@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:multi_image_picker2/multi_image_picker2.dart';
+import 'package:heic_to_jpg/heic_to_jpg.dart';
 
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 
@@ -82,13 +83,22 @@ class _SayWritingState extends State<SayWriting> {
           Get.back();
         } else {
           Get.dialog(Loading());
+
           for (int i = 0; i < writePicList.length; i++) {
+            //List<File> jpegPath = [];
+            // Platform.isIOS
+            //     ? jpegPath.add(await HeicToJpg.convert(writePicList[i]))
+            //     : print("");
+
             Reference ref = FirebaseStorage.instance
                 .ref()
                 .child('posting/${value.id}/${i}');
 
             await ref.putFile(writePicList[i]).whenComplete(() async {
+              print(writePicList[i]);
+              print(value.id);
               await ref.getDownloadURL().then((url) {
+                print(url);
                 FirebaseFirestore.instance
                     .collection('posting')
                     .doc(value.id)
@@ -123,6 +133,7 @@ class _SayWritingState extends State<SayWriting> {
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Container(
+        padding: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(color: Colors.orange[50]),
         child: Row(
           children: [
@@ -343,6 +354,7 @@ class _SayWritingState extends State<SayWriting> {
                       itemBuilder: (BuildContext context, count) {
                         return Stack(
                           children: [
+                            
                             Center(
                               child: Image.file(writePicList[count],
                                   width: 100, height: 100, fit: BoxFit.cover),
@@ -394,6 +406,7 @@ class _SayWritingState extends State<SayWriting> {
                 ),
                 onTap: () {
                   imageCameraSelect();
+
                   Navigator.pop(context);
                 },
               ),
@@ -409,6 +422,7 @@ class _SayWritingState extends State<SayWriting> {
                 ),
                 onTap: () {
                   loadAssets();
+
                   Navigator.of(context).pop();
                 },
               ),
@@ -426,9 +440,11 @@ class _SayWritingState extends State<SayWriting> {
   }
 
   void imageCameraSelect() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (writePicList.length >= 6 || imageList.length + _imageList.length >= 6) {
     } else {
-      print('leng${writePicList.length}');
+      // FocusScope.of(context).requestFocus(new FocusNode());
+
       final XFile? selectedImage =
           await _picker.pickImage(source: ImageSource.camera);
 
@@ -441,16 +457,19 @@ class _SayWritingState extends State<SayWriting> {
   }
 
   void loadAssets() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (writePicList.length >= 6) {
     } else {
       List<Asset> resultList = <Asset>[];
       String error = 'No Error Detected';
 
       try {
+        int z = 6 - writePicList.length;
         resultList = await MultiImagePicker.pickImages(
-          maxImages: 6 - writePicList.length,
+          maxImages: z,
           enableCamera: true,
           selectedAssets: imageList,
+          cupertinoOptions: CupertinoOptions(doneButtonTitle: "${z}장 남음"),
         );
       } on Exception catch (e) {
         error = e.toString();

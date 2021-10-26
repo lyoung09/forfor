@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forfor/bottomScreen/buddy/nearUser.dart';
+import 'package:forfor/bottomScreen/chat/chat.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
@@ -56,9 +57,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await Firebase.initializeApp();
   runApp(MyApp());
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+
+  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends StatelessWidget {
@@ -132,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     FirebaseMessaging.instance.getToken().then((value) {
       String? token = value;
-      print(token);
+      print('token ${token}');
     });
 
     //permission();
@@ -164,6 +173,36 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       print('User declined or has not accepted permission');
     }
+    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    //   print("message recieved");
+    //   print(event.notification!.body);
+    //   hohoh();
+    // });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved 123");
+      print(event.notification!.title);
+      // showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return AlertDialog(
+      //         title: Text("Notification"),
+      //         content: Text(event.notification!.body!),
+      //         actions: [
+      //           TextButton(
+      //             child: Text("Ok"),
+      //             onPressed: () {
+      //               Navigator.of(context).pop();
+      //             },
+      //           )
+      //         ],
+      //       );
+      //     });
+    });
+
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
@@ -232,52 +271,30 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
-    if (_seen) {
-      try {
-        await userDb(controller.user!.uid);
+    // if (_seen) {
+    //   try {
+    //     await userDb(controller.user!.uid);
 
-        if (!userData) {
-          controller.deleteUser();
+    //     if (!userData) {
+    //       controller.deleteUser();
 
-          Get.offAll(() => MainLogin());
-        } else {
-          Get.offAll(() => BottomNavigation());
-        }
-      } catch (e) {
-        Get.offAll(() => MainLogin());
-      }
-    } else {
-      prefs.setBool('seen', true);
-    }
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) {
-    //       return SayScreen();
-    //     },
-    //   ),
-    // );
-
-    // if (controller.user!.uid.isNotEmpty) {
-    //   DocumentSnapshot ds =
-    //       await UserDatabase().getUserDs(controller.user!.uid);
-
-    //   this.setState(() {
-    //     userData = ds.exists;
-    //   });
-
-    //   if (!userData) {
-    //     controller.deleteUser();
-    //     Navigator.pushNamed(context, '/login');
-    //   } else {
-    //     if (ds.get('deviceId') != await controller.getDeviceId()) {
-    //       Navigator.pushNamed(context, '/login');
+    //       Get.offAll(() => MainLogin());
     //     } else {
-    //       Navigator.pushNamed(context, '/bottomScreen');
+    //       Get.offAll(() => BottomNavigation());
     //     }
+    //   } catch (e) {
+    //     Get.offAll(() => MainLogin());
     //   }
     // } else {
-    //   Navigator.pushNamed(context, '/login');
+    //   prefs.setBool('seen', true);
     // }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return ChatUserList();
+        },
+      ),
+    );
   }
 
   @override
@@ -294,6 +311,29 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ));
+  }
+
+  hohoh() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved 123");
+
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Notification"),
+              content: Text(event.notification!.body!),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    });
   }
 }
 

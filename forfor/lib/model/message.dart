@@ -1,23 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:forfor/utils/utils.dart';
+
+class MessageField {
+  static final String createdAt = 'createdAt';
+}
+
 class Message {
-  int? id;
-  late String date;
-  late String content;
-  late bool fromMe;
-  bool showTime = true;
+  final String idUser;
+  final String urlAvatar;
+  final String username;
+  final String message;
+  final DateTime createdAt;
+  final bool fromMe;
 
-  Message(int id, String content, bool fromMe, String date) {
-    this.id = id;
-    this.date = date;
-    this.content = content;
-    this.fromMe = fromMe;
-  }
+  const Message({
+    required this.idUser,
+    required this.urlAvatar,
+    required this.username,
+    required this.message,
+    required this.createdAt,
+    required this.fromMe,
+  });
 
-  Message.time(
-      int id, String content, bool fromMe, bool showTime, String date) {
-    this.id = id;
-    this.date = date;
-    this.content = content;
-    this.fromMe = fromMe;
-    this.showTime = showTime;
-  }
+  static Message fromJson(Map<String, dynamic> json) => Message(
+        idUser: json['idUser'],
+        urlAvatar: json['urlAvatar'],
+        username: json['username'],
+        message: json['message'],
+        createdAt: Utils.toDateTime(json['createdAt']),
+        fromMe: json['fromMe'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'idUser': idUser,
+        'urlAvatar': urlAvatar,
+        'username': username,
+        'message': message,
+        'createdAt': Utils.fromDateTimeToJson(createdAt),
+        'fromMe': fromMe,
+      };
 }

@@ -24,10 +24,6 @@ class ChatBBMRouteState extends State<ChatBBMRoute> {
   @override
   void initState() {
     super.initState();
-    items.add(Message.time(items.length, "Hello!", true, items.length % 5 == 0,
-        Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
-    items.add(Message.time(items.length, "Hai..", false, items.length % 5 == 0,
-        Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
   }
 
   @override
@@ -94,9 +90,7 @@ class ChatBBMRouteState extends State<ChatBBMRoute> {
                     onPressed: () {}),
                 IconButton(
                     icon: Icon(Icons.send, color: MyColors.grey_40, size: 20),
-                    onPressed: () {
-                      if (showSend) sendMessage();
-                    }),
+                    onPressed: () {}),
               ],
             ),
             Row(
@@ -131,33 +125,4 @@ class ChatBBMRouteState extends State<ChatBBMRoute> {
   }
 
   void onItemClick(int index, String obj) {}
-
-  void sendMessage() {
-    String message = inputController.text;
-    inputController.clear();
-    showSend = false;
-    setState(() {
-      adapter.insertSingleItem(Message.time(
-          adapter.getItemCount(),
-          message,
-          true,
-          adapter.getItemCount() % 5 == 0,
-          Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
-    });
-    generateReply(message);
-  }
-
-  void generateReply(String msg) {
-    Timer(Duration(seconds: 1), () {
-      setState(() {
-        adapter.insertSingleItem(Message.time(
-            adapter.getItemCount(),
-            msg,
-            false,
-            adapter.getItemCount() % 5 == 0,
-            Tools.getFormattedTimeEvent(
-                DateTime.now().millisecondsSinceEpoch)));
-      });
-    });
-  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
 import 'package:forfor/bottomScreen/buddy/invitePeopleScreen.dart';
+import 'package:forfor/bottomScreen/chat/chat.dart';
 import 'package:forfor/bottomScreen/chat/chat_main.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
@@ -37,7 +38,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _widgetOptions = <Widget>[
     //GroupCategoryMain(),
     Group(),
-    ChatMainScreen(),
+    ChatUserList(),
     InvitePersonScreen(),
 
     SayScreen(),

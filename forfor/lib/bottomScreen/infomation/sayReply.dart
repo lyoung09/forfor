@@ -75,13 +75,11 @@ class _SayReplyState extends State<SayReply> {
 
       await ref.update({
         "replyCount": FieldValue.increment(1),
-        "reply": FieldValue.arrayUnion([
-          {
-            "reply": _reply.text.trim(),
-            "replyId": widget.userId,
-            "datetime": myDateTime
-          }
-        ])
+      });
+      await ref.collection('review').add({
+        "reply": _reply.text.trim(),
+        "replyId": widget.userId,
+        "datetime": myDateTime
       });
 
       _reply.clear();
@@ -429,6 +427,7 @@ class _SayReplyState extends State<SayReply> {
         itemCount: count,
         itemBuilder: (BuildContext context, int index) {
           Map<int, String> ago = new Map<int, String>();
+
           ago[index] = QnA().ago(review[index]["datetime"]);
           return StreamBuilder<QuerySnapshot>(
               stream: _userRef
@@ -543,10 +542,7 @@ class _SayReplyState extends State<SayReply> {
                                                     ),
                                                     InkWell(
                                                       onTap: () {
-                                                        FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                "posting")
+                                                        _postingRef
                                                             .doc(widget
                                                                 .postingId)
                                                             .update({
@@ -554,20 +550,15 @@ class _SayReplyState extends State<SayReply> {
                                                               FieldValue
                                                                   .increment(
                                                                       -1),
-                                                          "reply": FieldValue
-                                                              .arrayRemove([
-                                                            {
-                                                              "replyId":
-                                                                  widget.userId,
-                                                              "reply":
-                                                                  review[index]
-                                                                      ["reply"],
-                                                              "datetime": review[
-                                                                      index]
-                                                                  ["datetime"]
-                                                            }
-                                                          ])
                                                         });
+                                                        _postingRef
+                                                            .doc(widget
+                                                                .postingId)
+                                                            .collection(
+                                                                'review')
+                                                            .doc(review[index]
+                                                                .id)
+                                                            .delete();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -780,8 +771,19 @@ class _SayReplyState extends State<SayReply> {
                       ? Container(
                           height: 0,
                         )
-                      : review(snapshot.data!['replyCount'],
-                          snapshot.data!["reply"].reversed.toList()),
+                      : StreamBuilder<QuerySnapshot>(
+                          stream: _postingRef
+                              .doc(widget.postingId)
+                              .collection('review')
+                              .snapshots(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> reviewList) {
+                            if (!reviewList.hasData) {
+                              return Container();
+                            }
+                            return review(snapshot.data!['replyCount'],
+                                reviewList.data!.docs.reversed.toList());
+                          }),
                   SizedBox(
                     height: 80,
                   ),

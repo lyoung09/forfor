@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -567,7 +568,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     ago[index] = QnA().ago(posting[index]["timestamp"]);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18, right: 10, left: 10),
+      padding: const EdgeInsets.only(bottom: 18, right: 10),
       child: Row(
         children: [
           Container(width: 5),
@@ -581,7 +582,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               ),
               alignment: Alignment.centerLeft,
               borderColor: Colors.transparent,
-              borderWidth: 0,
+              borderWidth: 0.0,
               nip: BubbleNip.no,
               child: Column(
                 children: [
@@ -826,6 +827,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
               if (!snapshot.hasData) {
                 return Center(child: Text("Loading"));
               }
+              print(snapshot.data);
+              final data = snapshot.data!.docs;
+              print(data.runtimeType);
 
               return SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
@@ -981,28 +985,52 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                   ));
             }));
   }
+
+  Future<List<Map<dynamic, dynamic>>> getCollection() async {
+    List<DocumentSnapshot> templist;
+    List<Map<dynamic, dynamic>> list = [];
+    CollectionReference collectionRef =
+        FirebaseFirestore.instance.collection("path");
+    QuerySnapshot collectionSnapshot =
+        await collectionRef.get(); // <--- This method is now get().
+
+    templist = collectionSnapshot.docs; // <--- ERROR
+
+    list = templist.map((DocumentSnapshot docSnapshot) {
+      return docSnapshot.data() as Map<dynamic, dynamic>; // <--- Typecast this.
+    }).toList();
+
+    return list;
+  }
 }
 
-class DeleteR {
-  final String status;
-  final DateTime cnt;
+class User {
+  String? idUser;
+  String? name;
+  String? urlAvatar;
+  //final DateTime lastMessageTime;
 
-  DeleteR(
-    this.status,
-    this.cnt,
-  );
-  // Status.fromJson(Map<String,dynamic> json):STATUS:json['STATUS'],cnt:json['cnt'];
+  User({
+    this.idUser,
+    this.name,
+    this.urlAvatar,
+    //required this.lastMessageTime,
+  });
 
-  DeleteR.fromJson(Map<String, dynamic> json)
-      : status = json['likeId'],
-        cnt = json['likeDatetime'];
+  User fromJson(Map<dynamic, dynamic> json) => User(
+        idUser: json['idUser'],
+        name: json['name'],
+        urlAvatar: json['urlAvatar'],
+        //lastMessageTime: Utils.toDateTime(json['lastMessageTime']),
+      );
 
   Map<String, dynamic> toJson() => {
-        'likeId': status,
-        'likeDatetime': cnt,
+        'idUser': idUser,
+        'name': name,
+        'urlAvatar': urlAvatar,
+        //'lastMessageTime': Utils.fromDateTimeToJson(lastMessageTime),
       };
 }
-
 // @override
 // Widget build(BuildContext context) {
 //   var size = MediaQuery.of(context).size;

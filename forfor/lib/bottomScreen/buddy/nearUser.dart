@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/model/userLocation.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -296,10 +295,9 @@ class DistancerUserState extends State<DistanceUser> {
   late List<int> sortedKeys;
   late LinkedHashMap sortedMap;
   Location location = Location();
-  final geo = Geoflutterfire();
+
   final _firestore = FirebaseFirestore.instance;
   Map<int, String> distanceUser = new Map();
-  late GeoFirePoint myLocation;
 
   initState() {
     super.initState();
@@ -320,15 +318,6 @@ class DistancerUserState extends State<DistanceUser> {
 
   final userDistance = FirebaseFirestore.instance.collection('users');
   late Stream<List<DocumentSnapshot>> stream;
-  getUserDistance() async {
-    stream = geo
-        .collection(collectionRef: userDistance)
-        .within(center: myLocation, radius: 10, field: "postition");
-
-    stream.listen((List<DocumentSnapshot> documentList) {});
-
-    return stream;
-  }
 
   Future<QuerySnapshot> getUserDistancefuture() async {
     final distance = await FirebaseFirestore.instance.collection('users')

@@ -1,14 +1,29 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Utils {
-  static void showSnackbar(BuildContext context, {required String message}) {
-    final snackbar = SnackBar(
-      content: Text(message, style: TextStyle(fontSize: 20)),
-      backgroundColor: Colors.red,
-    );
+  static StreamTransformer transformer<T>(
+          T Function(Map<String, dynamic> json) fromJson) =>
+      StreamTransformer<QuerySnapshot, List<T>>.fromHandlers(
+        handleData: (QuerySnapshot data, EventSink<List<T>> sink) {
+          final snaps = data.docs.map((doc) => doc.data()).toList();
 
-    Scaffold.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(snackbar);
+          final users = snaps
+              .map((json) => fromJson(json as Map<String, dynamic>))
+              .toList();
+
+          sink.add(users);
+        },
+      );
+
+  static DateTime toDateTime(Timestamp value) {
+    return value.toDate();
+  }
+
+  static dynamic fromDateTimeToJson(DateTime date) {
+    if (date == null) return null;
+
+    return date.toUtc();
   }
 }

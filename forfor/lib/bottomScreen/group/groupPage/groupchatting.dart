@@ -26,10 +26,6 @@ class GroupChattingState extends State<GroupChatting> {
   @override
   void initState() {
     super.initState();
-    items.add(Message.time(items.length, "Hello!", true, items.length % 5 == 0,
-        Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
-    items.add(Message.time(items.length, "Hai..", false, items.length % 5 == 0,
-        Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
   }
 
   @override
@@ -130,12 +126,12 @@ class GroupChattingState extends State<GroupChatting> {
     inputController.clear();
     showSend = false;
     setState(() {
-      adapter.insertSingleItem(Message.time(
-          adapter.getItemCount(),
-          message,
-          true,
-          adapter.getItemCount() % 5 == 0,
-          Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
+      // adapter.insertSingleItem(Message.time(
+      //     adapter.getItemCount(),
+      //     message,
+      //     true,
+      //     adapter.getItemCount() % 5 == 0,
+      //     Tools.getFormattedTimeEvent(DateTime.now().millisecondsSinceEpoch)));
     });
     generateReply(message);
   }
@@ -143,13 +139,13 @@ class GroupChattingState extends State<GroupChatting> {
   void generateReply(String msg) {
     Timer(Duration(seconds: 1), () {
       setState(() {
-        adapter.insertSingleItem(Message.time(
-            adapter.getItemCount(),
-            msg,
-            false,
-            adapter.getItemCount() % 5 == 0,
-            Tools.getFormattedTimeEvent(
-                DateTime.now().millisecondsSinceEpoch)));
+        // adapter.insertSingleItem(Message.time(
+        //     adapter.getItemCount(),
+        //     msg,
+        //     false,
+        //     adapter.getItemCount() % 5 == 0,
+        //     Tools.getFormattedTimeEvent(
+        //         DateTime.now().millisecondsSinceEpoch)));
       });
     });
   }

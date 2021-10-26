@@ -18,7 +18,6 @@ class _FavoriteUserState extends State<FavoriteUser> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.userId);
   }
 
   @override

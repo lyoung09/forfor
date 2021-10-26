@@ -57,7 +57,7 @@ class ChattingAdapter {
             crossAxisAlignment:
                 isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
-              Text(item.date,
+              Text("item.date",
                   style: TextStyle(fontSize: 10, color: MyColors.grey_20)),
               Container(
                 child: Card(
@@ -99,7 +99,7 @@ class ChattingAdapter {
                                           BorderRadius.circular(12.0)),
                                 ),
                           Expanded(
-                            child: Text(item.content,
+                            child: Text("item.content",
                                 style: MyText.subhead(context)!.copyWith(
                                     color: isMe
                                         ? Colors.white

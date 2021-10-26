@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:multi_image_picker2/multi_image_picker2.dart';
-import 'package:heic_to_jpg/heic_to_jpg.dart';
 
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 
@@ -354,7 +353,6 @@ class _SayWritingState extends State<SayWriting> {
                       itemBuilder: (BuildContext context, count) {
                         return Stack(
                           children: [
-                            
                             Center(
                               child: Image.file(writePicList[count],
                                   width: 100, height: 100, fit: BoxFit.cover),

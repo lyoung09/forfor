@@ -41,12 +41,14 @@ import 'controller/bind/authbinding.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'login/screen/show.dart';
+
 void main() async {
-  await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
 
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -245,30 +247,30 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool _seen = (prefs.getBool('seen') ?? false);
-    // if (_seen) {
-    //   try {
-    //     await userDb(controller.user!.uid);
+    if (_seen) {
+      try {
+        await userDb(controller.user!.uid);
 
-    //     if (!userData) {
-    //       controller.deleteUser();
+        if (!userData) {
+          controller.deleteUser();
 
-    //       Get.offAll(() => MainLogin());
-    //     } else {
-    //       Get.offAll(() => BottomNavigation());
-    //     }
-    //   } catch (e) {
-    //     Get.offAll(() => MainLogin());
-    //   }
-    // } else {
-    //   prefs.setBool('seen', true);
-    // }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return ChatUserList();
-        },
-      ),
-    );
+          Get.offAll(() => MainLogin());
+        } else {
+          Get.offAll(() => BottomNavigation());
+        }
+      } catch (e) {
+        Get.offAll(() => MainLogin());
+      }
+    } else {
+      prefs.setBool('seen', true);
+    }
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) {
+    //       return ChatUserList();
+    //     },
+    //   ),
+    // );
   }
 
   @override

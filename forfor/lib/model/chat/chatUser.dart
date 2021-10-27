@@ -11,7 +11,7 @@ class ChatUsers {
   String? name;
   String? messageText;
   String? urlAvatar;
-  DateTime? lastMessageTime;
+  Timestamp? lastMessageTime;
 
   ChatUsers({
     this.name,
@@ -24,6 +24,8 @@ class ChatUsers {
   ChatUsers.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
+    print(documentSnapshot.id);
+    print(documentSnapshot["datetime"]);
     idUser = documentSnapshot.id;
     name = documentSnapshot["name"];
     messageText = documentSnapshot["messageText"];

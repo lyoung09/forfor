@@ -8,14 +8,15 @@ import 'package:forfor/model/message.dart';
 class ChatFirebaseApi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static Stream<List<ChatUsers>> todoStream(String uid) {
+  Stream<List<ChatUsers>> todoStream(String uid) {
     return FirebaseFirestore.instance
         .collection("message")
         .doc(uid)
-        .collection("todos")
-        .orderBy("dateCreated", descending: true)
+        .collection(uid)
+        //.orderBy("dateCreated", descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
+      print('hoit ${query.docs}');
       List<ChatUsers> retVal = [];
       query.docs.forEach((element) {
         retVal.add(ChatUsers.fromDocumentSnapshot(element));

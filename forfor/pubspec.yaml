@@ -51,11 +51,11 @@ dependencies:
   email_validator: ^2.0.1
   navigation_rail: ^1.5.0
   firebase_auth: 
-  google_sign_in: ^4.5.9
+  google_sign_in: 
   cloud_firestore: 
-  firebase_core: ^1.1.0
+  firebase_core: 
   firebase_storage: 
-  cloud_functions: ^3.0.0
+  cloud_functions: 
   flutter_web_auth: ^0.3.0
   uuid: ^3.0.4
   multi_select_item: ^1.0.3
@@ -81,7 +81,7 @@ dependencies:
   country_icons: ^2.0.2
   provider: ^6.0.1
   location: ^4.3.0
-  firebase_database: ^8.0.0
+  firebase_database: 
   geocoder: ^0.2.1
 
   gallery_saver: ^0.0,5

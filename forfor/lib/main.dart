@@ -1,23 +1,22 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forfor/bottomScreen/buddy/nearUser.dart';
+
 import 'package:forfor/bottomScreen/chat/chat.dart';
-import 'package:forfor/bottomScreen/group/group.dart';
+
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
-import 'package:forfor/login/controller/bind/authbinding.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
-import 'package:forfor/login/screen/show.dart';
+
 import 'package:forfor/login/screen/userInfo.dart';
 
 import 'package:forfor/service/userdatabase.dart';
@@ -28,46 +27,27 @@ import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dar
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:location/location.dart';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'bottomScreen/buddy/invitePeopleScreen.dart';
-import 'bottomScreen/group/addGroupStepper.dart';
 import 'bottomScreen/group/groupPage/groupFriend.dart';
 import 'bottomScreen/group/groupPage/groupHome.dart';
 import 'bottomScreen/group/groupPage/groupPosting.dart';
 import 'bottomScreen/group/groupPage/groupQnA.dart';
 import 'bottomScreen/group/groupPage/groupSearch.dart';
-import 'bottomScreen/group/group_click.dart';
-import 'bottomScreen/group/groupclick.dart';
+
 import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
-import 'bottomScreen/infomation/sayScreen.dart';
-import 'bottomScreen/otherProfile/a.dart';
-import 'bottomScreen/profile/my_profile.dart';
-import 'bottomScreen/profile/my_update.dart';
+
+import 'controller/bind/authbinding.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'login/controller/bind/authcontroller.dart';
-import 'login/controller/bind/usercontroller.dart';
-import 'model/userLocation.dart';
-
 void main() async {
+  await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await Firebase.initializeApp();
   runApp(MyApp());
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-
-  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends StatelessWidget {
@@ -148,9 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final Location location = Location();
-  late LocationData _currentPosition;
 
-  PermissionStatus? _permissionGranted;
   var latitude, longtitude;
   getLoc() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -173,11 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       print('User declined or has not accepted permission');
     }
-    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-    //   print("message recieved");
-    //   print(event.notification!.body);
-    //   hohoh();
-    // });
+
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print('Message clicked!');
     });

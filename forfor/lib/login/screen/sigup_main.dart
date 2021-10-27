@@ -2,8 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
 
-import 'package:forfor/login/controller/bind/authcontroller.dart';
 import 'package:forfor/widget/loading.dart';
 
 import 'package:get/get.dart';

@@ -483,7 +483,7 @@ class _SayWritingState extends State<SayWriting> {
 
       resultList.forEach((imageAsset) async {
         final filePath =
-            await FlutterAbsolutePath.getAbsolutePath(imageAsset.identifier);
+            await FlutterAbsolutePath.getAbsolutePath(imageAsset.identifier!);
 
         File tempFile = File(filePath);
         if (tempFile.existsSync()) {

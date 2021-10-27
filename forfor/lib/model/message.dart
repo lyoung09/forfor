@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/utils/utils.dart';
 
 class MessageField {
   static final String createdAt = 'createdAt';
@@ -10,7 +9,7 @@ class Message {
   final String urlAvatar;
   final String username;
   final String message;
-  final DateTime createdAt;
+  //final DateTime createdAt;
   final bool fromMe;
 
   const Message({
@@ -18,7 +17,7 @@ class Message {
     required this.urlAvatar,
     required this.username,
     required this.message,
-    required this.createdAt,
+    //required this.createdAt,
     required this.fromMe,
   });
 
@@ -27,7 +26,7 @@ class Message {
         urlAvatar: json['urlAvatar'],
         username: json['username'],
         message: json['message'],
-        createdAt: Utils.toDateTime(json['createdAt']),
+        //createdAt: Utils.toDateTime(json['createdAt']),
         fromMe: json['fromMe'],
       );
 
@@ -36,7 +35,7 @@ class Message {
         'urlAvatar': urlAvatar,
         'username': username,
         'message': message,
-        'createdAt': Utils.fromDateTimeToJson(createdAt),
+        //'createdAt': Utils.fromDateTimeToJson(createdAt),
         'fromMe': fromMe,
       };
 }

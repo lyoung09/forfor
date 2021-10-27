@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
-import 'package:forfor/login/screen/login_main.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/login/screen/show.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_strings.dart';

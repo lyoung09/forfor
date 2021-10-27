@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:bubble/bubble.dart';
@@ -13,8 +14,6 @@ import 'package:forfor/bottomScreen/infomation/sayAlarm.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
-
-import 'package:forfor/login/controller/bind/authcontroller.dart';
 
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';

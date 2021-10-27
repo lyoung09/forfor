@@ -1,22 +1,15 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/profile/my_update.dart';
 import 'package:forfor/bottomScreen/profile/profileDetail/myQ.dart';
 import 'package:forfor/bottomScreen/profile/settings.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
-import 'package:forfor/login/screen/hopeInfo.dart';
-import 'package:forfor/model/user.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
+
 import 'package:forfor/service/userdatabase.dart';
-import 'package:forfor/widget/img.dart';
 import 'package:forfor/widget/my_colors.dart';
-import 'package:forfor/widget/my_strings.dart';
 import 'package:forfor/widget/my_text.dart';
 import 'package:get/get.dart';
-
-import 'change_category.dart';
 
 // class MyProfile extends StatefulWidget {
 //   const MyProfile({Key? key}) : super(key: key);

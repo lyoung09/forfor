@@ -1,14 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/widget/button/signupButton/googlebutton.dart';
-import 'package:forfor/login/widget/button/signupButton/kakaobutton.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/home/bottom_navigation.dart';
+
 import 'package:forfor/login/screen/sigup_main.dart';
-import 'package:forfor/widget/custom_dialog.dart';
+
 import 'package:get/get.dart';
 
 class Login extends GetWidget<AuthController> {

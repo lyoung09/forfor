@@ -19,7 +19,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:kakao_flutter_sdk/user.dart' as kakaotalUser;
 
 import 'package:shared_preferences/shared_preferences.dart';

@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:forfor/home/bottom_navigation.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
+
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 

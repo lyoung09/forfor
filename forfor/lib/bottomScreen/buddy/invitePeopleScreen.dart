@@ -4,8 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/buddy/searchPage.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
+
 import 'package:forfor/model/scientist.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/model/userLocation.dart';

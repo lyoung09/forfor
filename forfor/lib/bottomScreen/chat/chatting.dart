@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:forfor/adapter/ChattingAdapter.dart';
 import 'package:forfor/data/user.dart';
 import 'package:forfor/model/message.dart';
-import 'package:forfor/utils/tools.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:forfor/widget/my_text.dart';
 

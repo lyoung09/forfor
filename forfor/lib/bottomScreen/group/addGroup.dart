@@ -1,5 +1,3 @@
-import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
-import 'package:custom_radio_grouped_button/CustomButtons/CustomCheckBoxGroup.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/widget/my_text.dart';
 
@@ -67,50 +65,6 @@ class _AddGroupState extends State<AddGroup> {
         ),
       ],
     );
-  }
-
-  Widget selectCategory() {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      CustomCheckBoxGroup(
-        buttonTextStyle: ButtonTextStyle(
-          selectedColor: Colors.red,
-          unSelectedColor: Colors.orange,
-          textStyle: TextStyle(
-            fontSize: 16,
-          ),
-        ),
-        unSelectedColor: Theme.of(context).canvasColor,
-        buttonLables: [
-          "M",
-          "T",
-          "W",
-          "T",
-          "F",
-          "S",
-          "S",
-        ],
-        buttonValuesList: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ],
-        checkBoxButtonValues: (values) {
-          print(values);
-        },
-        spacing: 0,
-        defaultSelected: null,
-        horizontal: false,
-        enableButtonWrap: false,
-        width: 40,
-        absoluteZeroSpacing: false,
-        selectedColor: Theme.of(context).accentColor,
-        padding: 10,
-      )
-    ]);
   }
 
   @override

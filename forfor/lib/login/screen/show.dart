@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:forfor/login/controller/bind/authcontroller.dart';
+
 import 'package:forfor/login/widget/button/signupButton/googlebutton.dart';
 import 'package:forfor/login/widget/button/signupButton/kakaobutton.dart';
 import 'package:get/get.dart';

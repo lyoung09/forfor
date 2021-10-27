@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/home/bottom_navigation.dart';
-import 'package:forfor/login/controller/bind/usercontroller.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
@@ -295,9 +295,9 @@ class AuthController extends GetxController {
 
   void googleCreteUser() async {
     try {
-      final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+          await googleUser!.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,

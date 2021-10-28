@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
-import 'package:forfor/controller/chatcontroller.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
+import 'package:forfor/controller/chatting/chatcontroller.dart';
+import 'package:forfor/controller/user/usercontroller.dart';
 
 import 'package:forfor/model/chat/chatUser.dart';
 import 'package:forfor/service/chat_firebase_api.dart';
+import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 
 import 'body.dart';
@@ -18,7 +22,15 @@ class ChatUserList extends StatefulWidget {
 
 class _ChatUserListState extends State<ChatUserList> {
   final controller = Get.put(AuthController());
-  final messageController = Get.put(ChatController());
+
+  final userController = Get.put(AllUserController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,19 +38,17 @@ class _ChatUserListState extends State<ChatUserList> {
             physics: BouncingScrollPhysics(),
             child: Column(children: [
               SafeArea(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 16, right: 16, top: 20, bottom: 15),
-                    child: Text(
-                      "Conversations",
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                    ),
+                  child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 15),
+                  child: Text(
+                    "Conversations",
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
+              )),
 
               Padding(
                 padding:
@@ -77,19 +87,25 @@ class _ChatUserListState extends State<ChatUserList> {
               //   },
               // ),
 
-              Obx(() => ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: messageController.todos.length,
-                  itemBuilder: (context, count) {
-                    final user = messageController.todos[count];
-                    return ConversationList(
-                        name: user.name!,
-                        messageText: user.messageText!,
-                        imageUrl: user.urlAvatar!,
-                        time: user.idUser!,
-                        isMessageRead: true);
-                  })),
+              StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(controller.user!.uid)
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container();
+                    }
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data!["chattingWith"].length,
+                        itemBuilder: (context, count) {
+                          return ConversationList(
+                            messageTo: snapshot.data!["chattingWith"][count],
+                          );
+                        });
+                  }),
             ])));
   }
 }

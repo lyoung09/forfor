@@ -1,24 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/model/chat/chatMessage.dart';
+import 'package:forfor/service/userdatabase.dart';
+import 'package:get/get.dart';
 
 class ChattingDetail extends StatefulWidget {
-  const ChattingDetail({Key? key}) : super(key: key);
+  final String messageFrom;
+  final String messageTo;
+
+  const ChattingDetail({
+    Key? key,
+    required this.messageTo,
+    required this.messageFrom,
+  }) : super(key: key);
 
   @override
   _ChattingDetailState createState() => _ChattingDetailState();
 }
 
 class _ChattingDetailState extends State<ChattingDetail> {
-  List<ChatMessage> messages = [
-    ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-    ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-        messageType: "sender"),
-    ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ];
+  final _firestore = FirebaseFirestore.instance;
+  final userController = Get.put(UserController());
+  TextEditingController message = new TextEditingController();
+  late DocumentReference ds;
+  late DateTime myDateTime;
+  @override
+  initState() {
+    super.initState();
+    ds = _firestore
+        .collection('message')
+        .doc('${widget.messageTo}-${widget.messageFrom}');
+    DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+    myDateTime = myTimeStamp.toDate();
+  }
+
+  /// Check If Document Exists
+  Future<bool> checkIfDocExists() async {
+    try {
+      var doc = await ds.get();
+
+      return doc.exists;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  firstMeet() async {
+    await _firestore.collection('users').doc(widget.messageFrom).update({
+      "chattingWith": FieldValue.arrayUnion([widget.messageTo])
+    });
+    await _firestore.collection('users').doc(widget.messageTo).update({
+      "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
+    });
+  }
+
+  sendMessage() async {
+    if (message.text.trim().isEmpty) {
+    } else {
+      try {
+        bool docExists = await checkIfDocExists();
+        if (!docExists) firstMeet();
+
+        await ds.collection('${widget.messageTo}-${widget.messageFrom}').add({
+          "messageFrom": widget.messageFrom,
+          "messageTo": widget.messageTo,
+          "messageText": message.text,
+          "messageTime": myDateTime,
+        });
+
+        message.clear();
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +103,10 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   SizedBox(
                     width: 2,
                   ),
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "<https://randomuser.me/api/portraits/men/5.jpg>"),
-                    maxRadius: 20,
-                  ),
+                  // CircleAvatar(
+                  //   backgroundImage: NetworkImage(widget.messageFrom),
+                  //   maxRadius: 20,
+                  // ),
                   SizedBox(
                     width: 12,
                   ),
@@ -58,7 +116,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Kriss Benwat",
+                          widget.messageFrom,
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),
@@ -82,92 +140,112 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ),
           ),
         ),
-        body: Stack(
-          children: <Widget>[
-            ListView.builder(
-              itemCount: messages.length,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Container(
-                  padding:
-                      EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-                  child: Align(
-                    alignment: (messages[index].messageType == "receiver"
-                        ? Alignment.topLeft
-                        : Alignment.topRight),
+        body: StreamBuilder<QuerySnapshot>(
+            stream: ds
+                .collection('${widget.messageTo}-${widget.messageFrom}')
+                .orderBy('messageTime', descending: false)
+                .snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Stack(
+                children: <Widget>[
+                  ListView.builder(
+                    reverse: true,
+                    itemCount: snapshot.data!.size,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.only(top: 10, bottom: 10),
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Row(
+                        children: [
+                          // snapshot.data!.docs[index]["writing"] ==
+                          //         widget.messageFrom
+                          //     ? CircleAvatar(
+                          //         radius: 25,
+                          //         backgroundImage:
+                          //             NetworkImage(widget.messageFrom),
+                          //       )
+                          //     : Container(),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              // color: (
+                              //   snapshot.data!.docs[index]["writing"] ==
+                              //         widget.messageFrom
+                              //     ? Colors.grey.shade200
+                              //     : Colors.blue[200]),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              snapshot.data!.docs[index]["messageText"],
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: (messages[index].messageType == "receiver"
-                            ? Colors.grey.shade200
-                            : Colors.grey.shade200),
-                      ),
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        messages[index].messageContent,
-                        style: TextStyle(fontSize: 15),
+                      padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                      height: 60,
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.lightBlue,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: message,
+                              validator: (value) {
+                                if (value!.isNotEmpty) message.text = value;
+                              },
+                              decoration: InputDecoration(
+                                  hintText: "Write message...",
+                                  hintStyle: TextStyle(color: Colors.black54),
+                                  border: InputBorder.none),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          FloatingActionButton(
+                            onPressed: sendMessage,
+                            child: Icon(
+                              Icons.send,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            backgroundColor: Colors.blue,
+                            elevation: 0,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                height: 60,
-                width: double.infinity,
-                color: Colors.white,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "Write message...",
-                            hintStyle: TextStyle(color: Colors.black54),
-                            border: InputBorder.none),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    FloatingActionButton(
-                      onPressed: () {},
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      backgroundColor: Colors.blue,
-                      elevation: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ));
+                ],
+              );
+            }));
   }
 }

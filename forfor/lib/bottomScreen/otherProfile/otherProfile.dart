@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:forfor/bottomScreen/chat/chatting_detail.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:http/http.dart' as http;
 
@@ -136,7 +137,12 @@ class _OtherProfileState extends State<OtherProfile> {
           //     ),
           //   )
           : InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.to(() => ChattingDetail(
+                      messageTo: widget.uid,
+                      messageFrom: controller.user!.uid,
+                    ));
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

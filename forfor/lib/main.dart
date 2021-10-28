@@ -229,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool userData = false;
   userDb(uid) async {
     DocumentSnapshot ds = await UserDatabase().getUserDs(uid);
-    print(ds);
+
     this.setState(() {
       userData = ds.exists;
     });

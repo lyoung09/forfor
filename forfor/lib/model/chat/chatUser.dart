@@ -6,30 +6,24 @@ class UserField {
 }
 
 class ChatUsers {
-  String? idUser;
-
-  String? name;
+  String? messageFrom;
+  String? messageTo;
   String? messageText;
-  String? urlAvatar;
-  Timestamp? lastMessageTime;
+  Timestamp? messageTime;
 
   ChatUsers({
-    this.name,
-    this.idUser,
+    this.messageTo,
+    this.messageFrom,
     this.messageText,
-    this.urlAvatar,
-    this.lastMessageTime,
+    this.messageTime,
   });
 
   ChatUsers.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
-    print(documentSnapshot.id);
-    print(documentSnapshot["datetime"]);
-    idUser = documentSnapshot.id;
-    name = documentSnapshot["name"];
+    messageFrom = documentSnapshot["messageFrom"];
+    messageTo = documentSnapshot["messageTo"];
     messageText = documentSnapshot["messageText"];
-    urlAvatar = documentSnapshot["urlAvatar"];
-    lastMessageTime = documentSnapshot["lastMessageTime"];
+    messageTime = documentSnapshot["messageTime"];
   }
 }

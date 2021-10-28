@@ -43,9 +43,9 @@ class UserModel {
     category = documentSnapshot["category"];
     timeStamp = documentSnapshot["timeStamp"];
     introduction = documentSnapshot["introduction"];
-    deviceId = documentSnapshot["deviceId"];
-    lat = documentSnapshot["lat"];
-    lng = documentSnapshot["lng"];
+    //deviceId = documentSnapshot["deviceId"];
+    lat = documentSnapshot["lat"].toDouble();
+    lng = documentSnapshot["lng"].toDouble();
     address = documentSnapshot["address"];
   }
 }

@@ -122,4 +122,43 @@ class UserDatabase {
       rethrow;
     }
   }
+
+  convertUsre() async {
+    try {
+      final userDb = FirebaseFirestore.instance
+          .collection('users')
+          .withConverter<UserModel>(
+            fromFirestore: (snapshot, _) =>
+                UserModel.fromJson(snapshot.data()!),
+            toFirestore: (movie, _) => movie.toJson(),
+          );
+      che();
+      return userDb;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  che() async {
+    print(UserModel().toJson());
+  }
+
+  changeUser() async {
+    try {
+      FirebaseFirestore.instance
+          .collection('users')
+          //.doc("Add")
+          .snapshots()
+          .listen((event) async {
+        event.docs.forEach((element) {
+          UserModel.fromJson(element.data());
+        });
+      });
+      che();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

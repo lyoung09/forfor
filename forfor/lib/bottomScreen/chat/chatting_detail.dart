@@ -8,12 +8,13 @@ import 'package:get/get.dart';
 class ChattingDetail extends StatefulWidget {
   final String messageFrom;
   final String messageTo;
-
-  const ChattingDetail({
-    Key? key,
-    required this.messageTo,
-    required this.messageFrom,
-  }) : super(key: key);
+  String? chatId;
+  ChattingDetail(
+      {Key? key,
+      required this.messageTo,
+      required this.messageFrom,
+      this.chatId})
+      : super(key: key);
 
   @override
   _ChattingDetailState createState() => _ChattingDetailState();
@@ -25,12 +26,16 @@ class _ChattingDetailState extends State<ChattingDetail> {
   TextEditingController message = new TextEditingController();
   late DocumentReference ds;
   late DateTime myDateTime;
+
   @override
   initState() {
     super.initState();
-    ds = _firestore
-        .collection('message')
-        .doc('${widget.messageTo}-${widget.messageFrom}');
+
+    if (widget.chatId == null) {
+      firstMeet();
+    } else {
+      ds = _firestore.collection('message').doc(widget.chatId);
+    }
     DateTime currentPhoneDate = DateTime.now(); //DateTime
 
     Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
@@ -50,27 +55,35 @@ class _ChattingDetailState extends State<ChattingDetail> {
   }
 
   firstMeet() async {
-    await _firestore.collection('users').doc(widget.messageFrom).update({
-      "chattingWith": FieldValue.arrayUnion([widget.messageTo])
+    // await _firestore.collection('users').doc(widget.messageFrom).update({
+    //   "chattingWith": FieldValue.arrayUnion([widget.messageTo])
+    // });
+    // await _firestore.collection('users').doc(widget.messageTo).update({
+    //   "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
+    // });
+    var z = await _firestore.collection('message').add({
+      "lastMessageTime": null,
+      "chattingWith":
+          FieldValue.arrayUnion([widget.messageFrom, widget.messageTo])
     });
-    await _firestore.collection('users').doc(widget.messageTo).update({
-      "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
-    });
+    ds = _firestore.collection('message').doc(z.id);
   }
 
   sendMessage() async {
     if (message.text.trim().isEmpty) {
     } else {
       try {
-        bool docExists = await checkIfDocExists();
-        if (!docExists) firstMeet();
+        // bool docExists = await checkIfDocExists();
+        // if (!docExists) firstMeet();
 
-        await ds.collection('${widget.messageTo}-${widget.messageFrom}').add({
+        await ds.collection('chatting').add({
           "messageFrom": widget.messageFrom,
           "messageTo": widget.messageTo,
           "messageText": message.text,
           "messageTime": myDateTime,
         });
+
+        await ds.update({"lastMessageTime": myDateTime});
 
         message.clear();
       } catch (e) {
@@ -142,7 +155,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
         ),
         body: StreamBuilder<QuerySnapshot>(
             stream: ds
-                .collection('${widget.messageTo}-${widget.messageFrom}')
+                .collection('chatting')
                 .orderBy('messageTime', descending: false)
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -159,23 +172,28 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return Row(
+                        crossAxisAlignment: snapshot.data!.docs[index]
+                                    ["messageFrom"] !=
+                                widget.messageFrom
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.end,
                         children: [
-                          // snapshot.data!.docs[index]["writing"] ==
-                          //         widget.messageFrom
-                          //     ? CircleAvatar(
-                          //         radius: 25,
-                          //         backgroundImage:
-                          //             NetworkImage(widget.messageFrom),
-                          //       )
-                          //     : Container(),
+                          snapshot.data!.docs[index]["messageFrom"] !=
+                                  widget.messageFrom
+                              ? CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage:
+                                      NetworkImage(widget.messageFrom),
+                                )
+                              : Container(),
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              // color: (
-                              //   snapshot.data!.docs[index]["writing"] ==
-                              //         widget.messageFrom
-                              //     ? Colors.grey.shade200
-                              //     : Colors.blue[200]),
+                              color: (snapshot.data!.docs[index]
+                                          ["messageFrom"] !=
+                                      widget.messageFrom
+                                  ? Colors.grey.shade200
+                                  : Colors.blue[200]),
                             ),
                             padding: EdgeInsets.all(16),
                             child: Text(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:forfor/model/chat/chatMessage.dart';
+import 'package:forfor/model/chat/chatRoom.dart';
 
 import 'package:forfor/model/chat/chatUser.dart';
 import 'package:forfor/model/message.dart';
@@ -10,19 +11,18 @@ import 'package:forfor/model/user.dart';
 class ChatFirebaseApi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<ChatUsers>> todoStream(String uid, String chatId) {
+  Stream<List<ChatRoom>> todoStream(String uid) {
     return _firestore
         .collection("message")
         // .doc(uid)
 
         .where('chattingWith', arrayContains: uid)
-        //.orderBy("dateCreated", descending: true)
-
+        .orderBy("lastMessageTime", descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
-      List<ChatUsers> retVal = [];
+      List<ChatRoom> retVal = [];
       query.docs.forEach((element) async {
-        retVal.add(ChatUsers.fromDocumentSnapshot(element));
+        retVal.add(ChatRoom.fromDocumentSnapshot(element));
       });
       return retVal;
     });

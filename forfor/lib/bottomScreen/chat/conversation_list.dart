@@ -10,10 +10,11 @@ import 'chatting_detail.dart';
 
 class ConversationList extends StatefulWidget {
   String messageTo;
-
+  List<String> talker;
   //bool isMessageRead;
   ConversationList({
     required this.messageTo,
+    required this.talker,
   });
   @override
   _ConversationListState createState() => _ConversationListState();
@@ -24,41 +25,30 @@ class _ConversationListState extends State<ConversationList> {
   var messageController;
   String? uid;
   String? chatId;
+
   @override
   void initState() {
-    hoit();
+    if (widget.talker[0] == controller.user!.uid) {
+      uid = widget.talker[0];
+      chatId = widget.talker[1];
+    }
+    if (widget.talker[1] == controller.user!.uid) {
+      chatId = widget.talker[0];
+      uid = widget.talker[1];
+    } else {
+      print("?");
+    }
+//    hoit();
 
     super.initState();
   }
 
-  late DocumentReference ds;
-  hoit() async {
-    ds = FirebaseFirestore.instance
-        .collection('message')
-        .doc('${widget.messageTo}-${controller.user!.uid}');
-    bool docExists = await checkIfDocExists(ds);
+  // hoit() async {
+  //   ds = FirebaseFirestore.instance
+  //       .collection('message')
+  //       .doc('${widget.messageTo}-${controller.user!.uid}');
 
-    if (docExists) {
-      uid = controller.user!.uid;
-      chatId = widget.messageTo;
-    } else {
-      uid = widget.messageTo;
-      chatId = controller.user!.uid;
-    }
-    ds = FirebaseFirestore.instance
-        .collection('message')
-        .doc('${chatId}-${uid}');
-  }
-
-  Future<bool> checkIfDocExists(ds) async {
-    try {
-      var doc = await ds.get();
-
-      return doc.exists;
-    } catch (e) {
-      throw e;
-    }
-  }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +56,17 @@ class _ConversationListState extends State<ConversationList> {
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return ChattingDetail(
-            messageTo: widget.messageTo,
-            messageFrom: controller.user!.uid,
+            chatId: widget.messageTo,
+            messageTo: chatId!,
+            messageFrom: uid!,
           );
         }));
       },
       child: StreamBuilder<QuerySnapshot>(
-          stream: ds
-              .collection("${chatId}-${uid}")
+          stream: FirebaseFirestore.instance
+              .collection('message')
+              .doc(widget.messageTo)
+              .collection("chatting")
               .orderBy("messageTime", descending: true)
               .limit(1)
               .snapshots(),
@@ -81,6 +74,7 @@ class _ConversationListState extends State<ConversationList> {
             if (!snapshot.hasData) {
               return Container();
             }
+
             // return ListView.builder(
             //     shrinkWrap: false,
             //     itemCount: messageController.todos.length,
@@ -151,9 +145,12 @@ class _ConversationListState extends State<ConversationList> {
                 itemCount: snapshot.data!.size,
                 shrinkWrap: true,
                 itemBuilder: (context, count) {
-                  return ListTile(
-                    leading: Text(snapshot.data!.docs[count]["messageText"]),
-                  );
+                  return snapshot.data!.docs[count].id.isEmpty
+                      ? Text("")
+                      : ListTile(
+                          leading:
+                              Text(snapshot.data!.docs[count]["messageText"]),
+                        );
                 });
           }),
     );

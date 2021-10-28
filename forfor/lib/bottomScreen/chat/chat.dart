@@ -22,8 +22,7 @@ class ChatUserList extends StatefulWidget {
 
 class _ChatUserListState extends State<ChatUserList> {
   final controller = Get.put(AuthController());
-
-  final userController = Get.put(AllUserController());
+  final chatController = Get.put(ChatController());
 
   @override
   void initState() {
@@ -87,25 +86,16 @@ class _ChatUserListState extends State<ChatUserList> {
               //   },
               // ),
 
-              StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(controller.user!.uid)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Container();
-                    }
-                    return ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data!["chattingWith"].length,
-                        itemBuilder: (context, count) {
-                          return ConversationList(
-                            messageTo: snapshot.data!["chattingWith"][count],
-                          );
-                        });
-                  }),
+              Obx(() => ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: chatController.todos.length,
+                  itemBuilder: (context, count) {
+                    return ConversationList(
+                      talker: chatController.todos[count].chattingwith!,
+                      messageTo: chatController.todos[count].chatRoomId!,
+                    );
+                  }))
             ])));
   }
 }

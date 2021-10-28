@@ -48,4 +48,20 @@ class UserModel {
     lng = documentSnapshot["lng"].toDouble();
     address = documentSnapshot["address"];
   }
+
+  UserModel.fromJson(Map<String, Object?> json)
+      : this(
+            id: json['id']! as String,
+            email: json['email']! as String,
+            nickname: json['nickname']! as String,
+            url: json['url'] as String);
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'email': id,
+      'nickname': nickname,
+      'url': url,
+    };
+  }
 }

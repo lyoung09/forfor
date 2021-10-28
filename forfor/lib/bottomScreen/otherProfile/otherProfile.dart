@@ -84,6 +84,32 @@ class _OtherProfileState extends State<OtherProfile> {
     );
   }
 
+  Future<bool> checkIfDocExists(ds) async {
+    try {
+      var doc = await ds.get();
+
+      return doc.exists;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  final _firestore = FirebaseFirestore.instance;
+  Future<String> firstMeet() async {
+    // await _firestore.collection('users').doc(widget.messageFrom).update({
+    //   "chattingWith": FieldValue.arrayUnion([widget.messageTo])
+    // });
+    // await _firestore.collection('users').doc(widget.messageTo).update({
+    //   "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
+    // });
+    var z = await _firestore.collection('message').add({
+      "chattingWith": FieldValue.arrayUnion([controller.user!.uid, widget.uid])
+    });
+
+    // ds = _firestore.collection('message').doc(z.id);
+    return z.id;
+  }
+
   Widget bottom(snapshot) {
     return Container(
       width: MediaQuery.of(context).size.width,

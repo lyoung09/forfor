@@ -21,13 +21,22 @@ class ChatUserList extends StatefulWidget {
 }
 
 class _ChatUserListState extends State<ChatUserList> {
-  final controller = Get.put(AuthController());
   final chatController = Get.put(ChatController());
-
+  final controller = Get.put(AuthController());
+  bool search = false;
+  TextEditingController searchController = new TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    searchController.clear();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -53,9 +62,25 @@ class _ChatUserListState extends State<ChatUserList> {
                 padding:
                     EdgeInsets.only(top: 16, left: 25, right: 25, bottom: 16),
                 child: TextFormField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      setState(() {
+                        search = true;
+                      });
+                      return null;
+                    }
+                    if (value.isEmpty) {
+                      setState(() {
+                        search = false;
+                      });
+                      return null;
+                    }
+                    return null;
+                  },
                   cursorColor: Colors.black26,
                   decoration: InputDecoration(
-                    hintText: "",
+                    hintText: "write",
                     hintStyle: TextStyle(color: Colors.grey.shade600),
                     prefixIcon: Icon(
                       Icons.search,
@@ -75,27 +100,57 @@ class _ChatUserListState extends State<ChatUserList> {
                 ),
               ),
 
-              // GetX<ChatController>(
-              //   init: Get.put<ChatController>(ChatController()),
-              //   builder: (ChatController chatController) {
-              //     if (chatController.todos.isNotEmpty) {
-              //       return ChatBodyWidget(users: chatController.todos);
-              //     } else {
-              //       return Text("loading...");
-              //     }
-              //   },
-              // ),
-
-              Obx(() => ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: chatController.todos.length,
-                  itemBuilder: (context, count) {
-                    return ConversationList(
-                      talker: chatController.todos[count].chattingwith!,
-                      messageTo: chatController.todos[count].chatRoomId!,
-                    );
-                  }))
+              // StreamBuilder<QuerySnapshot>(
+              //     stream: FirebaseFirestore.instance
+              //         .collection('message')
+              //         .where("chattingWith",
+              //             arrayContains: controller.user!.uid)
+              //         .snapshots(),
+              //     builder: (context, AsyncSnapshot<QuerySnapshot> tt) {
+              //       if (!tt.hasData) {
+              //         return Container();
+              //       }
+              //       return ListView.builder(
+              //           shrinkWrap: true,
+              //           physics: NeverScrollableScrollPhysics(),
+              //           itemCount: tt.data!.size,
+              //           itemBuilder: (context, count) {
+              //             // List<dynamic> st =
+              //             //     tt.data!.docs[count]["chattingWith"];
+              //             // String uid, chatId;
+              //             // if (st[0] == controller.user!.uid) {
+              //             //   uid = st[0];
+              //             //   chatId = st[1];
+              //             // }
+              //             // uid = st[1];
+              //             // chatId = st[0];
+              //             print(tt.data!.docs[count]["chattingWith"]);
+              //             print(tt.data!.docs[count]["lastMessageTime"]);
+              //             print(tt.data!.docs[count].id);
+              //             return ConversationList(
+              //               talker: tt.data!.docs[count]["chattingWith"],
+              //               lastTime: tt.data!.docs[count]["lastMessageTime"],
+              //               roomId: tt.data!.docs[count].id,
+              //             );
+              //           });
+              //     })
+              search == true
+                  ? Container(
+                      height: 20,
+                      width: 20,
+                      child: Text("@!211"),
+                    )
+                  : Obx(() => ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: chatController.todos.length,
+                      itemBuilder: (context, count) {
+                        return ConversationList(
+                          talker: chatController.todos[count].chattingwith!,
+                          lastTime: chatController.todos[count].lastTime!,
+                          roomId: chatController.todos[count].chatRoomId!,
+                        );
+                      }))
             ])));
   }
 }

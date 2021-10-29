@@ -1,18 +1,22 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/controller/bind/usercontroller.dart';
-import 'package:forfor/model/chat/chatMessage.dart';
-import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:get/get.dart';
 
 class ChattingDetail extends StatefulWidget {
   final String messageFrom;
   final String messageTo;
+  final String chatUserName;
+  final String chatUserUrl;
   String? chatId;
   ChattingDetail(
       {Key? key,
       required this.messageTo,
       required this.messageFrom,
+      required this.chatUserName,
+      required this.chatUserUrl,
       this.chatId})
       : super(key: key);
 
@@ -22,59 +26,35 @@ class ChattingDetail extends StatefulWidget {
 
 class _ChattingDetailState extends State<ChattingDetail> {
   final _firestore = FirebaseFirestore.instance;
-  final userController = Get.put(UserController());
+
   TextEditingController message = new TextEditingController();
   late DocumentReference ds;
-  late DateTime myDateTime;
+
+  late bool exist;
+  final me = Get.put(AuthController());
+  ScrollController _controller = ScrollController();
 
   @override
   initState() {
     super.initState();
-
-    if (widget.chatId == null) {
-      firstMeet();
-    } else {
-      ds = _firestore.collection('message').doc(widget.chatId);
-    }
-    DateTime currentPhoneDate = DateTime.now(); //DateTime
-
-    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
-
-    myDateTime = myTimeStamp.toDate();
+    ds = _firestore.collection('message').doc(widget.chatId);
   }
 
-  /// Check If Document Exists
-  Future<bool> checkIfDocExists() async {
-    try {
-      var doc = await ds.get();
-
-      return doc.exists;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  firstMeet() async {
-    // await _firestore.collection('users').doc(widget.messageFrom).update({
-    //   "chattingWith": FieldValue.arrayUnion([widget.messageTo])
-    // });
-    // await _firestore.collection('users').doc(widget.messageTo).update({
-    //   "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
-    // });
-    var z = await _firestore.collection('message').add({
-      "lastMessageTime": null,
-      "chattingWith":
-          FieldValue.arrayUnion([widget.messageFrom, widget.messageTo])
-    });
-    ds = _firestore.collection('message').doc(z.id);
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   sendMessage() async {
     if (message.text.trim().isEmpty) {
     } else {
       try {
-        // bool docExists = await checkIfDocExists();
-        // if (!docExists) firstMeet();
+        DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+        Timestamp myTimeStamp =
+            Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+        DateTime myDateTime = myTimeStamp.toDate();
 
         await ds.collection('chatting').add({
           "messageFrom": widget.messageFrom,
@@ -82,10 +62,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
           "messageText": message.text,
           "messageTime": myDateTime,
         });
+        message.clear();
+        Timer(Duration(milliseconds: 500),
+            () => _controller.jumpTo(_controller.position.minScrollExtent));
 
         await ds.update({"lastMessageTime": myDateTime});
-
-        message.clear();
       } catch (e) {
         print(e);
       }
@@ -99,64 +80,30 @@ class _ChattingDetailState extends State<ChattingDetail> {
           elevation: 0,
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          flexibleSpace: SafeArea(
-            child: Container(
-              padding: EdgeInsets.only(right: 16),
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  // CircleAvatar(
-                  //   backgroundImage: NetworkImage(widget.messageFrom),
-                  //   maxRadius: 20,
-                  // ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          widget.messageFrom,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Text(
-                          "Online",
-                          style: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.settings,
-                    color: Colors.black54,
-                  ),
-                ],
-              ),
-            ),
+          centerTitle: true,
+          title: Text(
+            "${widget.chatUserName}",
+            style: TextStyle(color: Colors.black54, fontSize: 25),
           ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black54),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: Colors.black54),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
         body: StreamBuilder<QuerySnapshot>(
             stream: ds
                 .collection('chatting')
-                .orderBy('messageTime', descending: false)
+                .orderBy('messageTime', descending: true)
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
@@ -164,42 +111,88 @@ class _ChattingDetailState extends State<ChattingDetail> {
               }
               return Stack(
                 children: <Widget>[
-                  ListView.builder(
+                  ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) =>
+                        SizedBox(
+                      height: 12,
+                    ),
+                    controller: _controller,
                     reverse: true,
                     itemCount: snapshot.data!.size,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    physics: NeverScrollableScrollPhysics(),
+                    //shrinkWrap: true,
+                    padding: EdgeInsets.only(
+                        top: 10, bottom: 80, left: 10, right: 10),
+                    physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
-                      return Row(
-                        crossAxisAlignment: snapshot.data!.docs[index]
-                                    ["messageFrom"] !=
-                                widget.messageFrom
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.end,
+                      return Column(
                         children: [
-                          snapshot.data!.docs[index]["messageFrom"] !=
-                                  widget.messageFrom
-                              ? CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage:
-                                      NetworkImage(widget.messageFrom),
-                                )
-                              : Container(),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: (snapshot.data!.docs[index]
-                                          ["messageFrom"] !=
+                          Row(
+                            mainAxisAlignment: snapshot.data!.docs[index]
+                                        ["messageFrom"] ==
+                                    me.user!.uid
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            children: [
+                              snapshot.data!.docs[index]["messageFrom"] !=
                                       widget.messageFrom
-                                  ? Colors.grey.shade200
-                                  : Colors.blue[200]),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Text(
-                              snapshot.data!.docs[index]["messageText"],
-                              style: TextStyle(fontSize: 15),
-                            ),
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 5),
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage:
+                                            NetworkImage(widget.chatUserUrl),
+                                      ),
+                                    )
+                                  : Container(),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: snapshot.data!.docs[index]
+                                              ["messageFrom"] !=
+                                          widget.messageFrom
+                                      ? BorderRadius.only(
+                                          topRight: Radius.circular(30.0),
+                                          bottomRight: Radius.circular(30.0),
+                                          bottomLeft: Radius.circular(20.0),
+                                          topLeft: Radius.circular(30.0),
+                                        )
+                                      : BorderRadius.only(
+                                          topRight: Radius.circular(30.0),
+                                          topLeft: Radius.circular(30.0),
+                                          bottomRight: Radius.circular(20.0),
+                                          bottomLeft: Radius.circular(30.0),
+                                        ),
+                                  color: (snapshot.data!.docs[index]
+                                              ["messageFrom"] !=
+                                          widget.messageFrom
+                                      ? Colors.white70
+                                      : Colors.orange[50]),
+                                ),
+                                padding: snapshot.data!.docs[index]
+                                            ["messageFrom"] !=
+                                        widget.messageFrom
+                                    ? EdgeInsets.only(
+                                        left: 12,
+                                        right: 17.5,
+                                        top: 15,
+                                        bottom: 15)
+                                    : EdgeInsets.only(
+                                        left: 17.5,
+                                        right: 12,
+                                        top: 15,
+                                        bottom: 15),
+                                child: Text(
+                                  snapshot.data!.docs[index]["messageText"],
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              ),
+                              // Container(
+                              //     child: Text(
+                              //   snapshot.data!.docs[index]["messageTime"]
+                              //       .toString(),
+                              //   style: TextStyle(fontSize: 15),
+                              // ))
+                            ],
                           ),
                         ],
                       );
@@ -235,6 +228,12 @@ class _ChattingDetailState extends State<ChattingDetail> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              onTap: () {
+                                Timer(
+                                    Duration(milliseconds: 300),
+                                    () => _controller.jumpTo(
+                                        _controller.position.minScrollExtent));
+                              },
                               controller: message,
                               validator: (value) {
                                 if (value!.isNotEmpty) message.text = value;

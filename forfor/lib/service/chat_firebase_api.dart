@@ -14,8 +14,6 @@ class ChatFirebaseApi {
   Stream<List<ChatRoom>> todoStream(String uid) {
     return _firestore
         .collection("message")
-        // .doc(uid)
-
         .where('chattingWith', arrayContains: uid)
         .orderBy("lastMessageTime", descending: true)
         .snapshots()

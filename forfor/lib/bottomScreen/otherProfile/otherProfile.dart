@@ -84,32 +84,6 @@ class _OtherProfileState extends State<OtherProfile> {
     );
   }
 
-  Future<bool> checkIfDocExists(ds) async {
-    try {
-      var doc = await ds.get();
-
-      return doc.exists;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  final _firestore = FirebaseFirestore.instance;
-  Future<String> firstMeet() async {
-    // await _firestore.collection('users').doc(widget.messageFrom).update({
-    //   "chattingWith": FieldValue.arrayUnion([widget.messageTo])
-    // });
-    // await _firestore.collection('users').doc(widget.messageTo).update({
-    //   "chattingWith": FieldValue.arrayUnion([widget.messageFrom])
-    // });
-    var z = await _firestore.collection('message').add({
-      "chattingWith": FieldValue.arrayUnion([controller.user!.uid, widget.uid])
-    });
-
-    // ds = _firestore.collection('message').doc(z.id);
-    return z.id;
-  }
-
   Widget bottom(snapshot) {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -163,8 +137,39 @@ class _OtherProfileState extends State<OtherProfile> {
           //     ),
           //   )
           : InkWell(
-              onTap: () {
+              onTap: () async {
+                String chatId;
+                List<String> ss = [];
+                List<String> tt = [];
+                ss.add(widget.uid);
+                ss.add(controller.user!.uid);
+
+                tt.add(controller.user!.uid);
+                tt.add(widget.uid);
+                var xx = await FirebaseFirestore.instance
+                    .collection('message')
+                    .where('chattingWith', whereIn: [ss, tt]).get();
+
+                if (xx.docs.isNotEmpty) {
+                  QueryDocumentSnapshot doc = xx.docs[0];
+
+                  chatId = doc.id;
+                } else {
+                  var t = await FirebaseFirestore.instance
+                      .collection('message')
+                      .add({
+                    "lastMessageTime": null,
+                    "pin": false,
+                    "chattingWith": FieldValue.arrayUnion(
+                        [widget.uid, controller.user!.uid])
+                  });
+                  chatId = t.id;
+                }
+
                 Get.to(() => ChattingDetail(
+                      chatUserName: widget.userName,
+                      chatUserUrl: widget.userImage,
+                      chatId: chatId,
                       messageTo: widget.uid,
                       messageFrom: controller.user!.uid,
                     ));
@@ -287,6 +292,7 @@ class _OtherProfileState extends State<OtherProfile> {
         .replaceAll("minutes", "분")
         .replaceAll("a minute", "1분")
         .replaceAll("a day", "1일")
+        .replaceAll("days", "일전")
         .replaceAll("a moment", "방금")
         .replaceAll("ago", "전")
         .replaceAll("about", "")

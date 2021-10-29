@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
-class UserField {
-  static final String lastMessageTime = 'lastMessageTime';
-}
-
 class ChatUsers {
   String? messageFrom;
   String? messageTo;

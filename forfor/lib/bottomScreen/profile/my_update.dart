@@ -237,11 +237,7 @@ class _UserUpdateState extends State<UserUpdate> {
         await ref.putFile(File(_image));
 
         urlProfileImageApi = await ref.getDownloadURL().then((value) {
-          var downloadURL = "";
-          setState(() {
-            downloadURL = value;
-          });
-          return downloadURL;
+          return value;
         });
       } else {
         urlProfileImageApi = user!.url!;

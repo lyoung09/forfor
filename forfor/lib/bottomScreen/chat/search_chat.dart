@@ -10,22 +10,25 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'chatting_detail.dart';
 
-class ConversationList extends StatefulWidget {
+class SearchChat extends StatefulWidget {
   Timestamp lastTime;
   final String roomId;
-
+  String userName;
+  String userAvatar;
   List<dynamic> talker;
   //bool isMessageRead;
-  ConversationList({
+  SearchChat({
     required this.roomId,
+    required this.userName,
+    required this.userAvatar,
     required this.lastTime,
     required this.talker,
   });
   @override
-  _ConversationListState createState() => _ConversationListState();
+  _SearchChatState createState() => _SearchChatState();
 }
 
-class _ConversationListState extends State<ConversationList> {
+class _SearchChatState extends State<SearchChat> {
   final controller = Get.put(AuthController());
   var messageController;
   late String uid;
@@ -34,15 +37,12 @@ class _ConversationListState extends State<ConversationList> {
 
   @override
   void initState() {
-    print(widget.talker);
-    print(controller.user!.uid);
+    print('serarch ${widget.talker}');
     if (widget.talker[0] == controller.user!.uid) {
-      print("hello");
       uid = widget.talker[0];
       chatId = widget.talker[1];
     }
     if (widget.talker[1] == controller.user!.uid) {
-      print("world");
       chatId = widget.talker[0];
       uid = widget.talker[1];
     } else {}
@@ -111,85 +111,38 @@ class _ConversationListState extends State<ConversationList> {
                           );
                         }));
                       },
-                      leading: FutureBuilder<DocumentSnapshot>(
-                          future: UserDatabase().getUserDs(chatId),
-                          builder: (context, ss) {
-                            if (!ss.hasData) {
-                              return Container(
-                                width: 0,
-                                height: 0,
-                              );
-                            }
-
-                            return CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.amber,
-                              backgroundImage: NetworkImage(ss.data!["url"]),
-                            );
-                          }),
-                      title: FutureBuilder<DocumentSnapshot>(
-                          future: UserDatabase().getUserDs(chatId),
-                          builder: (context, ss) {
-                            if (!ss.hasData) {
-                              return Container();
-                            }
-
-                            return Text(
-                              ss.data!["nickname"],
+                      leading: CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.amber,
+                        backgroundImage: NetworkImage(widget.userAvatar),
+                      ),
+                      title: Text(
+                        widget.userName,
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                      ),
+                      subtitle: snapshot.data!.docs[count]["messageText"] ==
+                              null
+                          ? Text("[image]",
                               style: TextStyle(
                                   color: Colors.black87,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600),
-                              maxLines: 1,
-                            );
-                          }),
-                      subtitle:
-                          snapshot.data!.docs[count]["messageText"] == null
-                              ? Text("[image]",
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300),
-                                  maxLines: 1)
-                              : Text(snapshot.data!.docs[count]["messageText"],
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300),
-                                  maxLines: 1),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w300),
+                              maxLines: 1)
+                          : Text(
+                              snapshot.data!.docs[count]["messageText"] ?? "",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w300),
+                              maxLines: 1),
                       trailing: Text("26th oct"),
                     ),
                   ),
                 );
-                // return FutureBuilder<DocumentSnapshot>(
-                //     future: UserDatabase().getUserDs(chatId),
-                //     // stream: FirebaseFirestore.instance
-                //     //     .collection('users')
-                //     //     .doc(chatId)
-                //     //     .snapshots(),
-                //     builder: (context,  ss) {
-                //       if (!ss.hasData) {
-                //         Text("");
-                //       }
-
-                //       return ListTile(
-                //         leading: ss.data!["url"] == null
-                //             ? CircleAvatar(
-                //                 backgroundColor: Colors.amber,
-                //               )
-                //             : CircleAvatar(
-                //                 backgroundColor: Colors.amber,
-                //                 backgroundImage:
-                //                     NetworkImage(ss.data!["url"]),
-                //               ),
-                //         title: ss.data!["nickname"] == null
-                //             ? Text("")
-                //             : Text(ss.data!["nickname"]),
-                //         subtitle:
-                //             Text(snapshot.data!.docs[count]["messageText"]),
-                //         trailing: Text("26th oct"),
-                //       );
-                //     });
               });
         });
   }

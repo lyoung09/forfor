@@ -167,8 +167,6 @@ class _OtherProfileState extends State<OtherProfile> {
                 }
 
                 Get.to(() => ChattingDetail(
-                      chatUserName: widget.userName,
-                      chatUserUrl: widget.userImage,
                       chatId: chatId,
                       messageTo: widget.uid,
                       messageFrom: controller.user!.uid,

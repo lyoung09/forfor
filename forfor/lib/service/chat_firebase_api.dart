@@ -15,6 +15,7 @@ class ChatFirebaseApi {
     return _firestore
         .collection("message")
         .where('chattingWith', arrayContains: uid)
+        //.where('pin',isEqualTo: true)
         .orderBy("lastMessageTime", descending: true)
         .snapshots()
         .map((QuerySnapshot query) {

@@ -265,24 +265,6 @@ class _UserInfomationState extends State<UserInfomation>
     final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
     _file = imageFile != null ? File(imageFile.path) : null;
     _cropImage();
-
-    // showSave();
-    // showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) => CupertinoAlertDialog(
-    //           title: Text('이미지로 저장하시겠습니까?'),
-    //           actions: <Widget>[
-    //             CupertinoDialogAction(
-    //               child: Text('아니요'),
-    //               onPressed: () => Navigator.of(context).pop(),
-    //             ),
-    //             CupertinoDialogAction(
-    //                 child: Text('네'),
-    //                 onPressed: () {
-    //                   Navigator.of(context).pop();
-    //                 }),
-    //           ],
-    //         ));
   }
 
   String urlProfileImageApi = "";
@@ -337,8 +319,6 @@ class _UserInfomationState extends State<UserInfomation>
         });
         return downloadURL;
       });
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
 
       controller.addUserInformation(
         _gender.toString(),

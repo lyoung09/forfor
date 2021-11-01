@@ -94,8 +94,6 @@ class _SayWritingState extends State<SayWriting> {
                 .child('posting/${value.id}/${i}');
 
             await ref.putFile(writePicList[i]).whenComplete(() async {
-              print(writePicList[i]);
-              print(value.id);
               await ref.getDownloadURL().then((url) {
                 print(url);
                 FirebaseFirestore.instance

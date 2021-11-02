@@ -360,6 +360,8 @@ PODS:
     - Flutter
   - device_info (0.0.1):
     - Flutter
+  - emoji_picker_flutter (0.0.1):
+    - Flutter
   - Firebase/Auth (8.8.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.8.0)
@@ -457,6 +459,8 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - gallery_saver (0.0.1):
+    - Flutter
   - geocoder (0.0.1):
     - Flutter
   - google_maps_flutter (0.0.1):
@@ -563,6 +567,7 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
+  - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
@@ -571,6 +576,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_absolute_path (from `.symlinks/plugins/flutter_absolute_path/ios`)
   - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
+  - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - geocoder (from `.symlinks/plugins/geocoder/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
@@ -624,6 +630,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/cloud_functions/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
+  emoji_picker_flutter:
+    :path: ".symlinks/plugins/emoji_picker_flutter/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -640,6 +648,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_absolute_path/ios"
   flutter_web_auth:
     :path: ".symlinks/plugins/flutter_web_auth/ios"
+  gallery_saver:
+    :path: ".symlinks/plugins/gallery_saver/ios"
   geocoder:
     :path: ".symlinks/plugins/geocoder/ios"
   google_maps_flutter:
@@ -679,6 +689,7 @@ SPEC CHECKSUMS:
   cloud_firestore: 814002a5be7dc955deaa18216ebe8c2e8be15d10
   cloud_functions: bd1bf3640509a57f1b078b76a70d7ec4fc559654
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
+  emoji_picker_flutter: 4f9a1ac31d355e1bf9622a1e821a809149130127
   Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
   firebase_auth: 0b7168e2db1bff6e5b40a7dc268447b8dedb59c1
   firebase_core: 3b4c707f5a8eff38f52fd5580895bcd89357bf42
@@ -698,6 +709,7 @@ SPEC CHECKSUMS:
   flutter_absolute_path: 5adb13678c88f0bdfba527f3851f9543d01dde66
   flutter_web_auth: eae2fc62b97d9a44c5c2a1ed0404a6ce396e3d7f
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   geocoder: 3cfab70531a0b367e917bafe82df4c30f6d4c45a
   google_maps_flutter: 279865bd07e2d8751f43a3bc64bac7f6075d0c93
   google_sign_in: de494e5e993986afae63e22a32441e30c35c9823

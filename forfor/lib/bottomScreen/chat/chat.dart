@@ -139,13 +139,16 @@ class _ChatUserListState extends State<ChatUserList> {
                               itemBuilder: (context, number) {
                                 print(
                                     'here i am ${search.data!.docs[number]["uid"]}');
+
+                                List t = [];
+                                t.add(
+                                  search.data!.docs[number]["uid"],
+                                );
+                                t.add(controller.user!.uid);
                                 return StreamBuilder<QuerySnapshot>(
                                     stream: FirebaseFirestore.instance
                                         .collection("message")
-                                        .where('chattingWith', whereIn: [
-                                      search.data!.docs[number]["uid"],
-                                      controller.user!.uid
-                                    ])
+                                        .where('chattingWith', whereIn: t)
                                         //.where('pin', isEqualTo: true)
                                         //.orderBy("lastMessageTime", descending: true)
                                         .snapshots(),

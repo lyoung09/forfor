@@ -11,7 +11,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'chatting_detail.dart';
 
 class SearchChat extends StatefulWidget {
-  Timestamp lastTime;
+  String lastTime;
   final String roomId;
   String userName;
   String userAvatar;
@@ -37,7 +37,6 @@ class _SearchChatState extends State<SearchChat> {
 
   @override
   void initState() {
-    print('serarch ${widget.talker}');
     if (widget.talker[0] == controller.user!.uid) {
       uid = widget.talker[0];
       chatId = widget.talker[1];
@@ -102,6 +101,7 @@ class _SearchChatState extends State<SearchChat> {
                     ],
                     child: ListTile(
                       onTap: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return ChattingDetail(
@@ -139,7 +139,7 @@ class _SearchChatState extends State<SearchChat> {
                                   fontSize: 15,
                                   fontWeight: FontWeight.w300),
                               maxLines: 1),
-                      trailing: Text("26th oct"),
+                      trailing: Text("${widget.lastTime}"),
                     ),
                   ),
                 );

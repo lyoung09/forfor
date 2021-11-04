@@ -4,12 +4,12 @@ class ChatRoom {
   String? chatRoomId;
   List<dynamic>? chattingwith;
   Timestamp? lastTime;
-  //bool? pin;
+  int? pin;
   ChatRoom({
     this.chatRoomId,
     this.chattingwith,
     this.lastTime,
-    //this.pin,
+    this.pin,
   });
 
   ChatRoom.fromDocumentSnapshot(
@@ -18,6 +18,6 @@ class ChatRoom {
     chatRoomId = documentSnapshot.id;
     chattingwith = documentSnapshot["chattingWith"];
     lastTime = documentSnapshot["lastMessageTime"];
-    //pin = documentSnapshot["pin"];
+    pin = documentSnapshot["pin"];
   }
 }

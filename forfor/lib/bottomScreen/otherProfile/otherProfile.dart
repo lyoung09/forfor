@@ -159,7 +159,7 @@ class _OtherProfileState extends State<OtherProfile> {
                       .collection('message')
                       .add({
                     "lastMessageTime": null,
-                    "pin": false,
+                    "pin": 1,
                     "chattingWith": FieldValue.arrayUnion(
                         [widget.uid, controller.user!.uid])
                   });

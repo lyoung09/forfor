@@ -14,13 +14,14 @@ import 'chatting_detail.dart';
 class ConversationList extends StatefulWidget {
   String lastTime;
   final String roomId;
-
+  int pin;
   List<dynamic> talker;
   //bool isMessageRead;
   ConversationList({
     required this.roomId,
     required this.lastTime,
     required this.talker,
+    required this.pin,
   });
   @override
   _ConversationListState createState() => _ConversationListState();
@@ -36,8 +37,6 @@ class _ConversationListState extends State<ConversationList> {
 
   @override
   void initState() {
-    print(widget.talker);
-    print(controller.user!.uid);
     if (widget.talker[0] == controller.user!.uid) {
       uid = widget.talker[0];
       chatId = widget.talker[1];
@@ -51,7 +50,11 @@ class _ConversationListState extends State<ConversationList> {
   }
 
   pinRoom(roomId) async {
-    await _firebase.collection('message').doc(roomId).update({"pin": true});
+    await _firebase.collection('message').doc(roomId).update({"pin": 0});
+  }
+
+  pinEraseRoom(roomId) async {
+    await _firebase.collection('message').doc(roomId).update({"pin": 1});
   }
 
   deleteRoom(roomId) async {
@@ -80,86 +83,101 @@ class _ConversationListState extends State<ConversationList> {
               itemBuilder: (context, count) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Slidable(
-                    controller: slidableController,
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    secondaryActions: <Widget>[
-                      IconSlideAction(
-                        caption: 'Pin',
-                        color: Colors.black45,
-                        icon: Icons.push_pin_outlined,
+                  child: GestureDetector(
+                    onTap: () {
+                      print("12");
+                    },
+                    child: Slidable(
+                      key: Key(snapshot.data!.docs[count].toString()),
+                      //controller: slidableController,
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      secondaryActions: <Widget>[
+                        widget.pin == 0
+                            ? IconSlideAction(
+                                caption: 'pin 제거',
+                                color: Colors.black45,
+                                icon: Icons.push_pin_rounded,
+                                onTap: () {
+                                  pinEraseRoom(widget.roomId);
+                                },
+                              )
+                            : IconSlideAction(
+                                caption: 'Pin',
+                                color: Colors.black45,
+                                icon: Icons.push_pin_outlined,
+                                onTap: () {
+                                  pinRoom(widget.roomId);
+                                },
+                              ),
+                        IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                          onTap: () {
+                            deleteRoom(widget.roomId);
+                          },
+                        ),
+                      ],
+                      child: ListTile(
                         onTap: () {
-                          pinRoom(widget.roomId);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ChattingDetail(
+                              chatId: widget.roomId,
+                              messageTo: chatId,
+                              messageFrom: uid,
+                            );
+                          }));
                         },
-                      ),
-                      IconSlideAction(
-                        caption: 'Delete',
-                        color: Colors.red,
-                        icon: Icons.delete,
-                        onTap: () {
-                          deleteRoom(widget.roomId);
-                        },
-                      ),
-                    ],
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return ChattingDetail(
-                            chatId: widget.roomId,
-                            messageTo: chatId,
-                            messageFrom: uid,
-                          );
-                        }));
-                      },
-                      leading: FutureBuilder<DocumentSnapshot>(
-                          future: UserDatabase().getUserDs(chatId),
-                          builder: (context, ss) {
-                            if (!ss.hasData) {
-                              return Container(
-                                width: 0,
-                                height: 0,
+                        leading: FutureBuilder<DocumentSnapshot>(
+                            future: UserDatabase().getUserDs(chatId),
+                            builder: (context, ss) {
+                              if (!ss.hasData) {
+                                return Container(
+                                  width: 0,
+                                  height: 0,
+                                );
+                              }
+
+                              return CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.amber,
+                                backgroundImage: NetworkImage(ss.data!["url"]),
                               );
-                            }
+                            }),
+                        title: FutureBuilder<DocumentSnapshot>(
+                            future: UserDatabase().getUserDs(chatId),
+                            builder: (context, ss) {
+                              if (!ss.hasData) {
+                                return Container();
+                              }
 
-                            return CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.amber,
-                              backgroundImage: NetworkImage(ss.data!["url"]),
-                            );
-                          }),
-                      title: FutureBuilder<DocumentSnapshot>(
-                          future: UserDatabase().getUserDs(chatId),
-                          builder: (context, ss) {
-                            if (!ss.hasData) {
-                              return Container();
-                            }
-
-                            return Text(
-                              ss.data!["nickname"],
-                              style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600),
-                              maxLines: 1,
-                            );
-                          }),
-                      subtitle:
-                          snapshot.data!.docs[count]["messageText"] == null
-                              ? Text("[image]",
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300),
-                                  maxLines: 1)
-                              : Text(snapshot.data!.docs[count]["messageText"],
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300),
-                                  maxLines: 1),
-                      trailing: Text("${widget.lastTime}"),
+                              return Text(
+                                ss.data!["nickname"],
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600),
+                                maxLines: 1,
+                              );
+                            }),
+                        subtitle: snapshot.data!.docs[count]["messageText"] ==
+                                null
+                            ? Text("[image]",
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w300),
+                                maxLines: 1)
+                            : Text(snapshot.data!.docs[count]["messageText"],
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w300),
+                                maxLines: 1),
+                        trailing: Text("${widget.lastTime}"),
+                      ),
                     ),
                   ),
                 );

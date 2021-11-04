@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:forfor/bottomScreen/chat/chatDatabase/chat_firebase.dart';
 import 'package:forfor/bottomScreen/chat/widget/reply_widget.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/integration/app_localizations.dart';
 import 'package:forfor/model/message.dart';
 import 'package:forfor/utils/date_formatter.dart';
@@ -764,7 +765,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black54),
           onPressed: () {
-            Navigator.pop(context);
+            Get.to(() => BottomNavigation(index: 1));
           },
         ),
         // actions: [
@@ -812,10 +813,28 @@ class _ChattingDetailState extends State<ChattingDetail> {
                                   top: 10, bottom: 320, left: 10, right: 10),
                   physics: BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    if (widget.messageTo ==
-                        snapshot.data!.docs[index]["messageFrom"]) {
-                      x.isRead();
-                    }
+                    x.isRead();
+                    // if (widget.messageTo ==
+                    //     snapshot.data!.docs[index]["messageFrom"]) {
+                    //   FirebaseFirestore.instance
+                    //       .collection('message')
+                    //       .doc(widget.chatId)
+                    //       .collection('chatting')
+                    //       .where('messageFrom', isEqualTo: widget.messageTo)
+                    //       .where('isRead', isEqualTo: false)
+                    //       .snapshots()
+                    //       .listen((value) {
+                    //     value.docs.forEach((element) {
+                    //       print('123 ${element.id}');
+                    //       FirebaseFirestore.instance
+                    //           .collection('message')
+                    //           .doc(widget.chatId)
+                    //           .collection('chatting')
+                    //           .doc(element.id)
+                    //           .update({"isRead": true});
+                    //     });
+                    //   });
+                    // }
 
                     return snapshot.data!.docs[index]["messageFrom"] ==
                             widget.messageFrom

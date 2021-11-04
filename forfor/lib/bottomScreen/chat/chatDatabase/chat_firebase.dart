@@ -52,9 +52,9 @@ class ChatFirebase {
         "messageText": null,
         "replyName": "",
         "isRead": false
+      }).then((value) {
+        cs.doc(chatId).update({"lastMessageTime": now()});
       });
-
-      await cs.doc(chatId).update({"lastMessageTime": now()});
     } catch (e) {
       print(e);
     }
@@ -72,10 +72,10 @@ class ChatFirebase {
           "messageText": message.text,
           "messageTime": now(),
           "isRead": false
+        }).then((value) {
+          cs.doc(chatId).update({"lastMessageTime": now()});
         });
         message.clear();
-
-        await cs.doc(chatId).update({"lastMessageTime": now()});
       } catch (e) {
         print(e);
       }
@@ -97,10 +97,10 @@ class ChatFirebase {
           "messageText": message.text,
           "messageTime": now(),
           "isRead": false
+        }).then((value) {
+          cs.doc(chatId).update({"lastMessageTime": now()});
         });
         message.clear();
-
-        await cs.doc(chatId).update({"lastMessageTime": now()});
       } catch (e) {
         print(e);
       }
@@ -108,12 +108,19 @@ class ChatFirebase {
   }
 
   isRead() async {
+    print('heelo');
+    print(messageTo);
+    print(chatId);
+
     cs
+        .doc(chatId)
+        .collection('chatting')
         .where('messageFrom', isEqualTo: messageTo)
+        .where('isRead', isEqualTo: false)
         .snapshots()
-        .listen((QuerySnapshot value) {
-      value.docs.forEach((element) {
-        cs
+        .listen((value) {
+      value.docs.forEach((element) async {
+        await cs
             .doc(chatId)
             .collection('chatting')
             .doc(element.id)

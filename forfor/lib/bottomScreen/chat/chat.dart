@@ -138,18 +138,16 @@ class _ChatUserListState extends State<ChatUserList> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: search.data!.size,
                               itemBuilder: (context, number) {
-                                print(
-                                    'here i am ${search.data!.docs[number]["uid"]}');
-
                                 List t = [];
                                 t.add(
                                   search.data!.docs[number]["uid"],
                                 );
                                 t.add(controller.user!.uid);
+
                                 return StreamBuilder<QuerySnapshot>(
                                     stream: FirebaseFirestore.instance
                                         .collection("message")
-                                        .where('chattingWith', whereIn: t)
+                                        .where('chattingWith', whereIn: [t])
                                         //.where('pin', isEqualTo: true)
                                         //.orderBy("lastMessageTime", descending: true)
                                         .snapshots(),
@@ -164,8 +162,10 @@ class _ChatUserListState extends State<ChatUserList> {
                                               NeverScrollableScrollPhysics(),
                                           itemCount: snapshot.data!.size,
                                           itemBuilder: (context, count) {
-                                            print(
-                                                'ttt${snapshot.data!.docs[count]["chattingWith"]}');
+                                            String ss = DatetimeFunction().ago(
+                                                snapshot.data!.docs[count]
+                                                    ["lastMessageTime"]);
+
                                             return SearchChat(
                                               userName: search.data!
                                                   .docs[number]["nickname"],
@@ -173,9 +173,7 @@ class _ChatUserListState extends State<ChatUserList> {
                                                   .data!.docs[number]["url"],
                                               talker: snapshot.data!.docs[count]
                                                   ["chattingWith"],
-                                              lastTime:
-                                                  snapshot.data!.docs[count]
-                                                      ["lastMessageTime"],
+                                              lastTime: ss,
                                               roomId:
                                                   snapshot.data!.docs[count].id,
                                             );
@@ -192,10 +190,10 @@ class _ChatUserListState extends State<ChatUserList> {
                               .ago(chatController.todos[count].lastTime!);
 
                           return ConversationList(
-                            talker: chatController.todos[count].chattingwith!,
-                            lastTime: ss,
-                            roomId: chatController.todos[count].chatRoomId!,
-                          );
+                              talker: chatController.todos[count].chattingwith!,
+                              lastTime: ss,
+                              roomId: chatController.todos[count].chatRoomId!,
+                              pin: chatController.todos[count].pin!);
                         }))
               ]),
             )));

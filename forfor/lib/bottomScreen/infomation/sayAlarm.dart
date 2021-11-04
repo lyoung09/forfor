@@ -2,9 +2,10 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
+
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -205,7 +206,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
   Widget reply() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection("posting")
+            .collectionGroup("reply")
             .where("authorId", isEqualTo: widget.uid)
             //.orderBy("datetime")
             .snapshots(),
@@ -238,8 +239,8 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                               .snapshots(),
                       builder: (context, replyUser) {
                         Map<int, String> ago = new Map<int, String>();
-                        ago[index] = QnA().ago(snapshot.data!.docs[index]
-                            ["reply"][count]["datetime"]);
+                        ago[index] = DatetimeFunction().ago(snapshot
+                            .data!.docs[index]["reply"][count]["datetime"]);
 
                         if (!replyUser.hasData) {
                           return Container();
@@ -556,12 +557,14 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
         stream: FirebaseFirestore.instance
             .collectionGroup('likes')
             .where("authorId", isEqualTo: widget.uid)
-            .orderBy("likeDatetime", descending: true)
+            //.orderBy("likeDatetime", descending: true)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> users) {
           if (!users.hasData) {
-            return Container();
+            return Container(
+                child: Text("!23", style: TextStyle(color: Colors.black)));
           }
+
           return ListView.builder(
             shrinkWrap: true,
             physics: BouncingScrollPhysics(),
@@ -569,8 +572,9 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
             itemBuilder: (context, count) {
               Map<int, String> ago = new Map<int, String>();
 
-              ago[count] = QnA().ago(users.data!.docs[count]["likeDatetime"]);
-
+              ago[count] = DatetimeFunction()
+                  .ago(users.data!.docs[count]["likeDatetime"]);
+              print(ago[count]);
               return StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("posting")
@@ -762,6 +766,52 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
     // });
   }
 
+  Widget showFavorite() {
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('posting')
+            .where('authorId', isEqualTo: widget.uid)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> userPosting) {
+          if (!userPosting.hasData) {
+            return Container();
+          }
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: userPosting.data!.size,
+              itemBuilder: (context, postingCount) {
+                return StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        // .collection('posting')
+                        // .doc(userPosting.data!.docs[postingCount].id)
+                        .collectionGroup('likes')
+                        .where('authorId', isEqualTo: widget.uid)
+                        //.orderBy("likeDatetime", descending: true)
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
+                      if (!likes.hasData) {
+                        return Container(
+                            child: Text("1234",
+                                style: TextStyle(color: Colors.black)));
+                      }
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: likes.data!.size,
+                          itemBuilder: (context, likesCount) {
+                            return Column(
+                              children: [
+                                Text(DatetimeFunction().ago(likes
+                                    .data!.docs[likesCount]["likeDatetime"])),
+                                Text(
+                                    "${likes.data!.docs[likesCount]["postingId"]}"),
+                              ],
+                            );
+                          });
+                    });
+              });
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -800,7 +850,7 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
               //all(),
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
-                child: favorite(),
+                child: showFavorite(),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),

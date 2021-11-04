@@ -7,7 +7,6 @@ class DateFormatter {
   AppLocalizations localizations;
 
   String getVerboseDateTimeRepresentation(DateTime dateTime) {
-    print(dateTime);
     DateTime now = DateTime.now();
     DateTime justNow = now.subtract(Duration(minutes: 1));
     DateTime localDateTime = dateTime.toLocal();

@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/infomation/favoriteList.dart';
-import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/home/bottom_navigation.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 
 class SayReply extends StatefulWidget {
@@ -428,7 +428,7 @@ class _SayReplyState extends State<SayReply> {
         itemBuilder: (BuildContext context, int index) {
           Map<int, String> ago = new Map<int, String>();
 
-          ago[index] = QnA().ago(review[index]["datetime"]);
+          ago[index] = DatetimeFunction().ago(review[index]["datetime"]);
           return StreamBuilder<QuerySnapshot>(
               stream: _userRef
                   .where("uid", isEqualTo: review[index]["replyId"])

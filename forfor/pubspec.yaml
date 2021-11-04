@@ -85,7 +85,6 @@ dependencies:
   swipe_to: ^0.0.1+8
   gallery_saver: ^0.0.5
   emoji_picker_flutter: ^1.0.7
-  
 dev_dependencies:
   flutter_test:
     sdk: flutter

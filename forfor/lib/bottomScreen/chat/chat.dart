@@ -9,6 +9,7 @@ import 'package:forfor/controller/user/usercontroller.dart';
 import 'package:forfor/model/chat/chatUser.dart';
 import 'package:forfor/service/chat_firebase_api.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 
 import 'body.dart';
@@ -187,9 +188,12 @@ class _ChatUserListState extends State<ChatUserList> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: chatController.todos.length,
                         itemBuilder: (context, count) {
+                          String ss = DatetimeFunction()
+                              .ago(chatController.todos[count].lastTime!);
+
                           return ConversationList(
                             talker: chatController.todos[count].chattingwith!,
-                            lastTime: chatController.todos[count].lastTime!,
+                            lastTime: ss,
                             roomId: chatController.todos[count].chatRoomId!,
                           );
                         }))

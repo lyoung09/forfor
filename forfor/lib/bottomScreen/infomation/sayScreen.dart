@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:forfor/bottomScreen/infomation/qnaFunc.dart';
+
 import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:bubble/bubble.dart';
@@ -195,6 +196,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   }
 
   var count;
+  Map<String, int> likes = new Map<String, int>();
   check(posting, index, favorite) async {
     DateTime currentPhoneDate = DateTime.now(); //DateTime
 
@@ -206,6 +208,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         FirebaseFirestore.instance.collection('posting').doc(posting[index].id);
     ref.collection('likes');
 
+    ref.collection('likes').get().then((value) {
+      setState(() {
+        likes[posting[index].id] = value.docs.length;
+      });
+    });
+
     if (favorite[index]) {
       ref.collection("likes").doc(controller.user!.uid).set({
         "likeId": controller.user!.uid,
@@ -213,16 +221,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "authorId": posting[index]["authorId"],
         "postingId": posting[index].id
       });
-      ref.update({
-        "count": FieldValue.increment(1),
-      });
+
+      // ref.update({
+      //   "count": ref.collection("likes"),
+      // });
     }
     if (!favorite[index]) {
       ref.collection('likes').doc(controller.user!.uid).delete();
-      ref.update({
-        "count": FieldValue.increment(-1),
-      });
-    } else {}
+    }
   }
 
   CollectionReference ref = FirebaseFirestore.instance.collection('posting');
@@ -324,7 +330,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   Widget otherUserQnA(posting, index, favorite, user, count) {
     Map<int, String> ago = new Map<int, String>();
-    ago[index] = QnA().ago(posting[index]["timestamp"]);
+    ago[index] = DatetimeFunction().ago(posting[index]["timestamp"]);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18, left: 10, right: 10),
@@ -564,7 +570,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   Widget myQnA(posting, index, favorite, uid, name, url, country, introduction,
       address) {
     Map<int, String> ago = new Map<int, String>();
-    ago[index] = QnA().ago(posting[index]["timestamp"]);
+    ago[index] = DatetimeFunction().ago(posting[index]["timestamp"]);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18, right: 10),
@@ -740,16 +746,26 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 },
                               );
                             }),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: Text(
-                            posting[index]["count"] == null ||
-                                    posting[index]["count"] < 1
-                                ? ""
-                                : "${posting[index]["count"]} ",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
+                        StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posting')
+                                .doc(posting[index].id)
+                                .collection('likes')
+                                .snapshots(),
+                            builder: (context, num) {
+                              if (!num.hasData) {
+                                return Container();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: Text(
+                                  num.data!.size < 1
+                                      ? ""
+                                      : "${num.data!.size.toString()} ",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              );
+                            }),
                         SizedBox(
                           width: 5,
                         ),

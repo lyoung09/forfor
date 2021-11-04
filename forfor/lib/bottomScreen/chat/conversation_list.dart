@@ -8,10 +8,11 @@ import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+import 'chatDatabase/chat_firebase.dart';
 import 'chatting_detail.dart';
 
 class ConversationList extends StatefulWidget {
-  Timestamp lastTime;
+  String lastTime;
   final String roomId;
 
   List<dynamic> talker;
@@ -31,23 +32,30 @@ class _ConversationListState extends State<ConversationList> {
   late String uid;
   late String chatId, chatUserUrl, chatUserName;
   final SlidableController slidableController = SlidableController();
+  final _firebase = FirebaseFirestore.instance;
 
   @override
   void initState() {
     print(widget.talker);
     print(controller.user!.uid);
     if (widget.talker[0] == controller.user!.uid) {
-      print("hello");
       uid = widget.talker[0];
       chatId = widget.talker[1];
     }
     if (widget.talker[1] == controller.user!.uid) {
-      print("world");
       chatId = widget.talker[0];
       uid = widget.talker[1];
     } else {}
 
     super.initState();
+  }
+
+  pinRoom(roomId) async {
+    await _firebase.collection('message').doc(roomId).update({"pin": true});
+  }
+
+  deleteRoom(roomId) async {
+    await _firebase.collection('message').doc(roomId).delete();
   }
 
   @override
@@ -82,10 +90,7 @@ class _ConversationListState extends State<ConversationList> {
                         color: Colors.black45,
                         icon: Icons.push_pin_outlined,
                         onTap: () {
-                          FirebaseFirestore.instance
-                              .collection('message')
-                              .doc(widget.roomId)
-                              .update({"pin": true});
+                          pinRoom(widget.roomId);
                         },
                       ),
                       IconSlideAction(
@@ -93,10 +98,7 @@ class _ConversationListState extends State<ConversationList> {
                         color: Colors.red,
                         icon: Icons.delete,
                         onTap: () {
-                          FirebaseFirestore.instance
-                              .collection('message')
-                              .doc(widget.roomId)
-                              .delete();
+                          deleteRoom(widget.roomId);
                         },
                       ),
                     ],
@@ -157,7 +159,7 @@ class _ConversationListState extends State<ConversationList> {
                                       fontSize: 15,
                                       fontWeight: FontWeight.w300),
                                   maxLines: 1),
-                      trailing: Text("26th oct"),
+                      trailing: Text("${widget.lastTime}"),
                     ),
                   ),
                 );

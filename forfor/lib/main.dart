@@ -41,6 +41,7 @@ import 'controller/bind/authbinding.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'integration/app_localizations.dart';
 import 'login/screen/show.dart';
 
 void main() async {

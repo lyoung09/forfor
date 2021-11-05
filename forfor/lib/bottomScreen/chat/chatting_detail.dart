@@ -461,14 +461,12 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   height: 30,
                   width: 30,
                   decoration: BoxDecoration(
-                    color: Colors.lightBlue,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: SvgPicture.asset(
-                    "assets/svg/album.svg",
-                    fit: BoxFit.fitWidth,
-                    width: 15,
-                    height: 15,
+                  child: Icon(
+                    Icons.photo_size_select_actual_outlined,
+                    size: 25,
                   ),
                 ),
               ),
@@ -478,6 +476,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
               Expanded(
                 child: TextFormField(
                   focusNode: _focus,
+                  maxLines: 5,
+                  minLines: 1,
                   readOnly: isShowSticker ? true : false,
                   onTap: () {
                     setState(() {
@@ -508,7 +508,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     }
                   },
                   decoration: InputDecoration(
-                      hintText: "Write message...",
+                      isDense: true,
+                      hintText: "",
                       hintStyle: TextStyle(color: Colors.black54),
                       border: InputBorder.none),
                 ),
@@ -540,9 +541,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   ),
                 ),
                 color: Colors.white,
-              ),
-              SizedBox(
-                width: 7,
               ),
               IconButton(
                 icon: Icon(Icons.send),
@@ -608,7 +606,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
       children: [
         Container(
           padding: EdgeInsets.only(left: 10, bottom: 15, top: 10),
-          height: 60,
+          height: Platform.isAndroid ? 65 : 80,
           width: double.infinity,
           color: Colors.white,
           child: Row(
@@ -619,14 +617,12 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   height: 30,
                   width: 30,
                   decoration: BoxDecoration(
-                    color: Colors.lightBlue,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: SvgPicture.asset(
-                    "assets/svg/album.svg",
-                    fit: BoxFit.fitWidth,
-                    width: 15,
-                    height: 15,
+                  child: Icon(
+                    Icons.photo_size_select_actual_outlined,
+                    size: 25,
                   ),
                 ),
               ),
@@ -636,6 +632,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
               Expanded(
                 child: TextFormField(
                   readOnly: isShowSticker ? true : false,
+                  maxLines: 5,
+                  minLines: 1,
                   onTap: () {
                     setState(() {
                       isShowSticker = false;
@@ -664,7 +662,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     }
                   },
                   decoration: InputDecoration(
-                      hintText: "Write message...",
+                      isDense: true,
+                      hintText: "",
                       hintStyle: TextStyle(color: Colors.black54),
                       border: InputBorder.none),
                 ),
@@ -689,9 +688,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   ),
                 ),
                 color: Colors.white,
-              ),
-              SizedBox(
-                width: 7,
               ),
               IconButton(
                 icon: Icon(Icons.send),
@@ -744,313 +740,319 @@ class _ChattingDetailState extends State<ChattingDetail> {
   String replyStory = "";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: StreamBuilder<DocumentSnapshot>(
-            stream: userDs.snapshots(),
-            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+    return WillPopScope(
+      onWillPop: () {
+        Get.to(() => BottomNavigation(index: 1));
+        return new Future(() => true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: StreamBuilder<DocumentSnapshot>(
+              stream: userDs.snapshots(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (!snapshot.hasData) {
+                  return Container();
+                }
+                replymessageName = snapshot.data!["nickname"];
+                return Text(
+                  snapshot.data!["nickname"],
+                  style: TextStyle(color: Colors.black54, fontSize: 25),
+                );
+              }),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black54),
+            onPressed: () {
+              Get.to(() => BottomNavigation(index: 1));
+            },
+          ),
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.settings, color: Colors.black54),
+          //     onPressed: () {
+          //       Navigator.pop(context);
+          //     },
+          //   ),
+          // ],
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+            stream: ds
+                .collection('chatting')
+                .orderBy('messageTime', descending: true)
+                .snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Container();
               }
-              replymessageName = snapshot.data!["nickname"];
-              return Text(
-                snapshot.data!["nickname"],
-                style: TextStyle(color: Colors.black54, fontSize: 25),
+
+              return Stack(
+                children: <Widget>[
+                  ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) =>
+                        SizedBox(
+                      height: 12,
+                    ),
+                    controller: _controller,
+                    reverse: true,
+                    itemCount: snapshot.data!.size,
+                    //shrinkWrap: true,
+                    padding: reply == true && isShowSticker == false
+                        ? EdgeInsets.only(
+                            top: 10, bottom: 150, left: 10, right: 10)
+                        : reply == false && isShowSticker == false
+                            ? EdgeInsets.only(
+                                top: 10, bottom: 80, left: 10, right: 10)
+                            : reply == true && isShowSticker == true
+                                ? EdgeInsets.only(
+                                    top: 10, bottom: 420, left: 10, right: 10)
+                                :
+                                //그 리플없이 이모티콘만
+                                EdgeInsets.only(
+                                    top: 10, bottom: 320, left: 10, right: 10),
+                    physics: BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      x.isRead();
+                      // if (widget.messageTo ==
+                      //     snapshot.data!.docs[index]["messageFrom"]) {
+                      //   FirebaseFirestore.instance
+                      //       .collection('message')
+                      //       .doc(widget.chatId)
+                      //       .collection('chatting')
+                      //       .where('messageFrom', isEqualTo: widget.messageTo)
+                      //       .where('isRead', isEqualTo: false)
+                      //       .snapshots()
+                      //       .listen((value) {
+                      //     value.docs.forEach((element) {
+                      //       print('123 ${element.id}');
+                      //       FirebaseFirestore.instance
+                      //           .collection('message')
+                      //           .doc(widget.chatId)
+                      //           .collection('chatting')
+                      //           .doc(element.id)
+                      //           .update({"isRead": true});
+                      //     });
+                      //   });
+                      // }
+
+                      return snapshot.data!.docs[index]["messageFrom"] ==
+                              widget.messageFrom
+                          ? myWidget(snapshot, index)
+                          : otherWidget(snapshot, index);
+
+                      // SwipeTo(
+                      //   onRightSwipe: () {
+                      //     setState(() {
+                      //       isShowSticker = false;
+
+                      //       if (snapshot.data!.docs[index]["messageText"] ==
+                      //               null ||
+                      //           snapshot.data!.docs[index]["messageText"] == "") {
+                      //         replyStory = "image";
+                      //         replymessage =
+                      //             snapshot.data!.docs[index]["messageUrl"];
+                      //       } else {
+                      //         replyStory = "text";
+                      //         replymessage =
+                      //             snapshot.data!.docs[index]["messageText"];
+                      //       }
+
+                      //       reply = true;
+                      //     });
+
+                      //     _focus.requestFocus();
+                      //   },
+                      //   child: Column(
+                      //     children: [
+                      //       Row(
+                      //         mainAxisAlignment: snapshot.data!.docs[index]
+                      //                     ["messageFrom"] ==
+                      //                 me.user!.uid
+                      //             ? MainAxisAlignment.end
+                      //             : MainAxisAlignment.start,
+                      //         children: [
+                      //           snapshot.data!.docs[index]["messageFrom"] !=
+                      //                   widget.messageFrom
+                      //               ? StreamBuilder<DocumentSnapshot>(
+                      //                   stream: FirebaseFirestore.instance
+                      //                       .collection('users')
+                      //                       .doc(widget.messageTo)
+                      //                       .snapshots(),
+                      //                   builder: (context,
+                      //                       AsyncSnapshot<DocumentSnapshot>
+                      //                           snapshot) {
+                      //                     if (!snapshot.hasData) {
+                      //                       return Container();
+                      //                     }
+                      //                     return Padding(
+                      //                         padding: const EdgeInsets.only(
+                      //                             left: 8.0, right: 5),
+                      //                         child: CircleAvatar(
+                      //                           radius: 20,
+                      //                           backgroundImage: NetworkImage(
+                      //                               snapshot.data!["url"]),
+                      //                         ));
+                      //                   })
+                      //               : Container(
+                      //                   alignment: Alignment.centerLeft,
+                      //                   padding: EdgeInsets.only(right: 6),
+                      //                   child: snapshot.data!.docs[index]
+                      //                               ["isRead"] ==
+                      //                           true
+                      //                       ? Text(
+                      //                           "",
+                      //                           style: TextStyle(fontSize: 15),
+                      //                         )
+                      //                       : Text("1")),
+                      //           snapshot.data!.docs[index]["messageText"] == null
+                      //               ? Container(
+                      //                   padding: snapshot.data!.docs[index]
+                      //                               ["messageFrom"] !=
+                      //                           widget.messageFrom
+                      //                       ? EdgeInsets.only(
+                      //                           left: 12,
+                      //                           right: 17.5,
+                      //                           top: 15,
+                      //                           bottom: 15)
+                      //                       : EdgeInsets.only(
+                      //                           left: 17.5,
+                      //                           right: 12,
+                      //                           top: 15,
+                      //                           bottom: 15),
+                      //                   height: 130,
+                      //                   width: 130,
+                      //                   child: Image.network(snapshot
+                      //                       .data!.docs[index]["messageUrl"]))
+                      //               : Container(
+                      //                   decoration: BoxDecoration(
+                      //                     borderRadius: snapshot.data!.docs[index]
+                      //                                 ["messageFrom"] !=
+                      //                             widget.messageFrom
+                      //                         ? BorderRadius.only(
+                      //                             topRight: Radius.circular(30.0),
+                      //                             bottomRight:
+                      //                                 Radius.circular(30.0),
+                      //                             bottomLeft:
+                      //                                 Radius.circular(20.0),
+                      //                             topLeft: Radius.circular(30.0),
+                      //                           )
+                      //                         : BorderRadius.only(
+                      //                             topRight: Radius.circular(30.0),
+                      //                             topLeft: Radius.circular(30.0),
+                      //                             bottomRight:
+                      //                                 Radius.circular(20.0),
+                      //                             bottomLeft:
+                      //                                 Radius.circular(30.0),
+                      //                           ),
+                      //                     color: (snapshot.data!.docs[index]
+                      //                                 ["messageFrom"] !=
+                      //                             widget.messageFrom
+                      //                         ? Colors.white70
+                      //                         : Colors.orange[50]),
+                      //                   ),
+                      //                   padding: snapshot.data!.docs[index]
+                      //                               ["messageFrom"] !=
+                      //                           widget.messageFrom
+                      //                       ? EdgeInsets.only(
+                      //                           left: 12,
+                      //                           right: 17.5,
+                      //                           top: 15,
+                      //                           bottom: 15)
+                      //                       : EdgeInsets.only(
+                      //                           left: 17.5,
+                      //                           right: 12,
+                      //                           top: 15,
+                      //                           bottom: 15),
+                      //                   child:
+                      //                   Column(
+                      //                     children: [
+                      //                       snapshot.data!.docs[index]["reply"] !=
+                      //                                   null &&
+                      //                               snapshot.data!.docs[index]
+                      //                                       ["reply"] !=
+                      //                                   ""
+                      //                           ? Container(
+                      //                               alignment:
+                      //                                   Alignment.centerLeft,
+                      //                               decoration: BoxDecoration(
+                      //                                   border: Border(
+                      //                                       bottom: BorderSide(
+                      //                                           width: 0.6))),
+                      //                               child: Column(
+                      //                                 children: [
+                      //                                   Text(
+                      //                                       snapshot.data!
+                      //                                               .docs[index]
+                      //                                           ["replyId"],
+                      //                                       style: TextStyle(
+                      //                                           color: Colors
+                      //                                               .black54)),
+                      //                                   Padding(
+                      //                                     padding:
+                      //                                         EdgeInsets.only(
+                      //                                             top: 8),
+                      //                                   ),
+                      //                                   Align(
+                      //                                     alignment: Alignment
+                      //                                         .centerLeft,
+                      //                                     child: Text(
+                      //                                         snapshot.data!
+                      //                                                 .docs[index]
+                      //                                             ["reply"],
+                      //                                         maxLines: 1,
+                      //                                         overflow:
+                      //                                             TextOverflow
+                      //                                                 .clip,
+                      //                                         style: TextStyle(
+                      //                                             color: Colors
+                      //                                                 .black54)),
+                      //                                   ),
+                      //                                 ],
+                      //                               ),
+                      //                             )
+                      //                           : Container(height: 0),
+                      //                       Text(
+                      //                         snapshot.data!.docs[index]
+                      //                             ["messageText"],
+                      //                         style: TextStyle(fontSize: 15),
+                      //                       ),
+                      //                     ],
+                      //                   ),
+                      //                 ),
+                      //         ],
+                      //       ),
+                      //       snapshot.data!.docs[index]["messageFrom"] !=
+                      //               widget.messageFrom
+                      //           ? Container(
+                      //               alignment: Alignment.centerLeft,
+                      //               child: Text(
+                      //                 snapshot.data!.docs[index]["messageTime"] ==
+                      //                         null
+                      //                     ? ""
+                      //                     : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"]!.toDate().toString()))}",
+                      //                 style: TextStyle(fontSize: 15),
+                      //               ))
+                      //           : Container(
+                      //               alignment: Alignment.centerRight,
+                      //               child: Text(
+                      //                 snapshot.data!.docs[index]["messageTime"] ==
+                      //                         null
+                      //                     ? ""
+                      //                     : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"].toDate().toString()))}",
+                      //                 style: TextStyle(fontSize: 15),
+                      //               )),
+                      //     ],
+                      //   ),
+                      // );
+                    },
+                  ),
+                  reply == true ? replyKeyboard() : keyboard(),
+                ],
               );
             }),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black54),
-          onPressed: () {
-            Get.to(() => BottomNavigation(index: 1));
-          },
-        ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.settings, color: Colors.black54),
-        //     onPressed: () {
-        //       Navigator.pop(context);
-        //     },
-        //   ),
-        // ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: ds
-              .collection('chatting')
-              .orderBy('messageTime', descending: true)
-              .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Container();
-            }
-
-            return Stack(
-              children: <Widget>[
-                ListView.separated(
-                  separatorBuilder: (BuildContext context, int index) =>
-                      SizedBox(
-                    height: 12,
-                  ),
-                  controller: _controller,
-                  reverse: true,
-                  itemCount: snapshot.data!.size,
-                  //shrinkWrap: true,
-                  padding: reply == true && isShowSticker == false
-                      ? EdgeInsets.only(
-                          top: 10, bottom: 150, left: 10, right: 10)
-                      : reply == false && isShowSticker == false
-                          ? EdgeInsets.only(
-                              top: 10, bottom: 80, left: 10, right: 10)
-                          : reply == true && isShowSticker == true
-                              ? EdgeInsets.only(
-                                  top: 10, bottom: 420, left: 10, right: 10)
-                              :
-                              //그 리플없이 이모티콘만
-                              EdgeInsets.only(
-                                  top: 10, bottom: 320, left: 10, right: 10),
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    x.isRead();
-                    // if (widget.messageTo ==
-                    //     snapshot.data!.docs[index]["messageFrom"]) {
-                    //   FirebaseFirestore.instance
-                    //       .collection('message')
-                    //       .doc(widget.chatId)
-                    //       .collection('chatting')
-                    //       .where('messageFrom', isEqualTo: widget.messageTo)
-                    //       .where('isRead', isEqualTo: false)
-                    //       .snapshots()
-                    //       .listen((value) {
-                    //     value.docs.forEach((element) {
-                    //       print('123 ${element.id}');
-                    //       FirebaseFirestore.instance
-                    //           .collection('message')
-                    //           .doc(widget.chatId)
-                    //           .collection('chatting')
-                    //           .doc(element.id)
-                    //           .update({"isRead": true});
-                    //     });
-                    //   });
-                    // }
-
-                    return snapshot.data!.docs[index]["messageFrom"] ==
-                            widget.messageFrom
-                        ? myWidget(snapshot, index)
-                        : otherWidget(snapshot, index);
-
-                    // SwipeTo(
-                    //   onRightSwipe: () {
-                    //     setState(() {
-                    //       isShowSticker = false;
-
-                    //       if (snapshot.data!.docs[index]["messageText"] ==
-                    //               null ||
-                    //           snapshot.data!.docs[index]["messageText"] == "") {
-                    //         replyStory = "image";
-                    //         replymessage =
-                    //             snapshot.data!.docs[index]["messageUrl"];
-                    //       } else {
-                    //         replyStory = "text";
-                    //         replymessage =
-                    //             snapshot.data!.docs[index]["messageText"];
-                    //       }
-
-                    //       reply = true;
-                    //     });
-
-                    //     _focus.requestFocus();
-                    //   },
-                    //   child: Column(
-                    //     children: [
-                    //       Row(
-                    //         mainAxisAlignment: snapshot.data!.docs[index]
-                    //                     ["messageFrom"] ==
-                    //                 me.user!.uid
-                    //             ? MainAxisAlignment.end
-                    //             : MainAxisAlignment.start,
-                    //         children: [
-                    //           snapshot.data!.docs[index]["messageFrom"] !=
-                    //                   widget.messageFrom
-                    //               ? StreamBuilder<DocumentSnapshot>(
-                    //                   stream: FirebaseFirestore.instance
-                    //                       .collection('users')
-                    //                       .doc(widget.messageTo)
-                    //                       .snapshots(),
-                    //                   builder: (context,
-                    //                       AsyncSnapshot<DocumentSnapshot>
-                    //                           snapshot) {
-                    //                     if (!snapshot.hasData) {
-                    //                       return Container();
-                    //                     }
-                    //                     return Padding(
-                    //                         padding: const EdgeInsets.only(
-                    //                             left: 8.0, right: 5),
-                    //                         child: CircleAvatar(
-                    //                           radius: 20,
-                    //                           backgroundImage: NetworkImage(
-                    //                               snapshot.data!["url"]),
-                    //                         ));
-                    //                   })
-                    //               : Container(
-                    //                   alignment: Alignment.centerLeft,
-                    //                   padding: EdgeInsets.only(right: 6),
-                    //                   child: snapshot.data!.docs[index]
-                    //                               ["isRead"] ==
-                    //                           true
-                    //                       ? Text(
-                    //                           "",
-                    //                           style: TextStyle(fontSize: 15),
-                    //                         )
-                    //                       : Text("1")),
-                    //           snapshot.data!.docs[index]["messageText"] == null
-                    //               ? Container(
-                    //                   padding: snapshot.data!.docs[index]
-                    //                               ["messageFrom"] !=
-                    //                           widget.messageFrom
-                    //                       ? EdgeInsets.only(
-                    //                           left: 12,
-                    //                           right: 17.5,
-                    //                           top: 15,
-                    //                           bottom: 15)
-                    //                       : EdgeInsets.only(
-                    //                           left: 17.5,
-                    //                           right: 12,
-                    //                           top: 15,
-                    //                           bottom: 15),
-                    //                   height: 130,
-                    //                   width: 130,
-                    //                   child: Image.network(snapshot
-                    //                       .data!.docs[index]["messageUrl"]))
-                    //               : Container(
-                    //                   decoration: BoxDecoration(
-                    //                     borderRadius: snapshot.data!.docs[index]
-                    //                                 ["messageFrom"] !=
-                    //                             widget.messageFrom
-                    //                         ? BorderRadius.only(
-                    //                             topRight: Radius.circular(30.0),
-                    //                             bottomRight:
-                    //                                 Radius.circular(30.0),
-                    //                             bottomLeft:
-                    //                                 Radius.circular(20.0),
-                    //                             topLeft: Radius.circular(30.0),
-                    //                           )
-                    //                         : BorderRadius.only(
-                    //                             topRight: Radius.circular(30.0),
-                    //                             topLeft: Radius.circular(30.0),
-                    //                             bottomRight:
-                    //                                 Radius.circular(20.0),
-                    //                             bottomLeft:
-                    //                                 Radius.circular(30.0),
-                    //                           ),
-                    //                     color: (snapshot.data!.docs[index]
-                    //                                 ["messageFrom"] !=
-                    //                             widget.messageFrom
-                    //                         ? Colors.white70
-                    //                         : Colors.orange[50]),
-                    //                   ),
-                    //                   padding: snapshot.data!.docs[index]
-                    //                               ["messageFrom"] !=
-                    //                           widget.messageFrom
-                    //                       ? EdgeInsets.only(
-                    //                           left: 12,
-                    //                           right: 17.5,
-                    //                           top: 15,
-                    //                           bottom: 15)
-                    //                       : EdgeInsets.only(
-                    //                           left: 17.5,
-                    //                           right: 12,
-                    //                           top: 15,
-                    //                           bottom: 15),
-                    //                   child:
-                    //                   Column(
-                    //                     children: [
-                    //                       snapshot.data!.docs[index]["reply"] !=
-                    //                                   null &&
-                    //                               snapshot.data!.docs[index]
-                    //                                       ["reply"] !=
-                    //                                   ""
-                    //                           ? Container(
-                    //                               alignment:
-                    //                                   Alignment.centerLeft,
-                    //                               decoration: BoxDecoration(
-                    //                                   border: Border(
-                    //                                       bottom: BorderSide(
-                    //                                           width: 0.6))),
-                    //                               child: Column(
-                    //                                 children: [
-                    //                                   Text(
-                    //                                       snapshot.data!
-                    //                                               .docs[index]
-                    //                                           ["replyId"],
-                    //                                       style: TextStyle(
-                    //                                           color: Colors
-                    //                                               .black54)),
-                    //                                   Padding(
-                    //                                     padding:
-                    //                                         EdgeInsets.only(
-                    //                                             top: 8),
-                    //                                   ),
-                    //                                   Align(
-                    //                                     alignment: Alignment
-                    //                                         .centerLeft,
-                    //                                     child: Text(
-                    //                                         snapshot.data!
-                    //                                                 .docs[index]
-                    //                                             ["reply"],
-                    //                                         maxLines: 1,
-                    //                                         overflow:
-                    //                                             TextOverflow
-                    //                                                 .clip,
-                    //                                         style: TextStyle(
-                    //                                             color: Colors
-                    //                                                 .black54)),
-                    //                                   ),
-                    //                                 ],
-                    //                               ),
-                    //                             )
-                    //                           : Container(height: 0),
-                    //                       Text(
-                    //                         snapshot.data!.docs[index]
-                    //                             ["messageText"],
-                    //                         style: TextStyle(fontSize: 15),
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //         ],
-                    //       ),
-                    //       snapshot.data!.docs[index]["messageFrom"] !=
-                    //               widget.messageFrom
-                    //           ? Container(
-                    //               alignment: Alignment.centerLeft,
-                    //               child: Text(
-                    //                 snapshot.data!.docs[index]["messageTime"] ==
-                    //                         null
-                    //                     ? ""
-                    //                     : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"]!.toDate().toString()))}",
-                    //                 style: TextStyle(fontSize: 15),
-                    //               ))
-                    //           : Container(
-                    //               alignment: Alignment.centerRight,
-                    //               child: Text(
-                    //                 snapshot.data!.docs[index]["messageTime"] ==
-                    //                         null
-                    //                     ? ""
-                    //                     : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"].toDate().toString()))}",
-                    //                 style: TextStyle(fontSize: 15),
-                    //               )),
-                    //     ],
-                    //   ),
-                    // );
-                  },
-                ),
-                reply == true ? replyKeyboard() : keyboard(),
-              ],
-            );
-          }),
     );
   }
 }

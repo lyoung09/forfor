@@ -7,6 +7,7 @@ import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/utils/datetime.dart';
+import 'package:forfor/widget/safe_tap.dart';
 import 'package:get/get.dart';
 
 class SayReply extends StatefulWidget {
@@ -315,6 +316,9 @@ class _SayReplyState extends State<SayReply> {
                 Divider(),
                 Row(
                   children: [
+                    SizedBox(
+                      width: 15,
+                    ),
                     StreamBuilder<DocumentSnapshot>(
                         stream: _postingRef
                             .doc(widget.postingId)
@@ -329,27 +333,32 @@ class _SayReplyState extends State<SayReply> {
                           if (likeUser.hasData) {
                             favoriteThis = likeUser.data!.exists;
 
-                            return IconButton(
-                              iconSize: 15,
-                              icon: Icon(
+                            return SafeOnTap(
+                              onSafeTap: () {
+                                favoriteThis = !favoriteThis;
+                                check();
+                              },
+                              child: Icon(
                                 Icons.favorite,
                                 color: favoriteThis == true
                                     ? Colors.red[400]
                                     : Colors.grey[300],
                               ),
-                              onPressed: () {
-                                favoriteThis = !favoriteThis;
-                                check();
-                              },
                             );
                           }
                           return Container();
                         }),
-                    Text(
-                      post!["count"] == 0 || post!["count"] < 1
-                          ? ""
-                          : "${post!["count"]} ",
-                      style: TextStyle(fontSize: 12),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        post!["count"] == 0 || post!["count"] < 1
+                            ? ""
+                            : "${post!["count"]} ",
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                     IconButton(
                       iconSize: 12,

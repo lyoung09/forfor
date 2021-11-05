@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/utils/datetime.dart';
+import 'package:forfor/widget/safe_tap.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:bubble/bubble.dart';
@@ -222,11 +223,20 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "postingId": posting[index].id
       });
 
-      // ref.update({
-      //   "count": ref.collection("likes"),
-      // });
+      ref.update({
+        "count": FieldValue.increment(1),
+      });
     }
     if (!favorite[index]) {
+      // await FirebaseFirestore.instance.runTransaction((transaction) async {
+      //   DocumentSnapshot snapshot = await transaction.get(ref);
+      //   int likesCount = snapshot.get("count");
+      //   print(likesCount);
+      //   await transaction.update(ref, {'count': likesCount - 1});
+      // });
+      ref.update({
+        "count": FieldValue.increment(-1),
+      });
       ref.collection('likes').doc(controller.user!.uid).delete();
     }
   }
@@ -476,6 +486,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        SizedBox(width: 15),
                         StreamBuilder<DocumentSnapshot>(
                             stream: _postingref
                                 .doc(posting[index].id)
@@ -490,22 +501,22 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return IconButton(
-                                iconSize: 17.5,
-                                icon: Icon(
+                              return SafeOnTap(
+                                onSafeTap: () {
+                                  favorite[index] = !favorite[index];
+                                  check(posting, index, favorite);
+                                },
+                                child: Icon(
                                   Icons.favorite,
                                   color: favorite[index] == true
                                       ? Colors.red[400]
                                       : Colors.grey[300],
                                 ),
-                                onPressed: () {
-                                  favorite[index] = !favorite[index];
-                                  check(posting, index, favorite);
-                                },
                               );
                             }),
+                        SizedBox(width: 15),
                         Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
+                          padding: const EdgeInsets.only(right: 8.0),
                           child: Text(
                             posting[index]["count"] == null ||
                                     posting[index]["count"] < 1
@@ -718,6 +729,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        SizedBox(width: 15),
                         StreamBuilder<DocumentSnapshot>(
                             stream: _postingref
                                 .doc(posting[index].id)
@@ -732,42 +744,28 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return IconButton(
-                                iconSize: 17.5,
-                                icon: Icon(
+                              return SafeOnTap(
+                                onSafeTap: () {
+                                  favorite[index] = !favorite[index];
+                                  check(posting, index, favorite);
+                                },
+                                child: Icon(
                                   Icons.favorite,
                                   color: favorite[index] == true
                                       ? Colors.red[400]
                                       : Colors.grey[300],
                                 ),
-                                onPressed: () {
-                                  favorite[index] = !favorite[index];
-                                  check(posting, index, favorite);
-                                },
                               );
                             }),
-                        StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('posting')
-                                .doc(posting[index].id)
-                                .collection('likes')
-                                .snapshots(),
-                            builder: (context, num) {
-                              if (!num.hasData) {
-                                return Container();
-                              }
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: Text(
-                                  num.data!.size < 1
-                                      ? ""
-                                      : "${num.data!.size.toString()} ",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              );
-                            }),
-                        SizedBox(
-                          width: 5,
+                        SizedBox(width: 15),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Text(
+                            posting[index]["count"] < 1
+                                ? ""
+                                : "${posting[index]["count"]} ",
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                         IconButton(
                           iconSize: 17.5,

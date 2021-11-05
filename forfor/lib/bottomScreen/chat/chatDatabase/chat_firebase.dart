@@ -90,7 +90,7 @@ class ChatFirebase {
     } else {
       try {
         await cs.doc(chatId).collection('chatting').add({
-          "reply": replymessage,
+          "reply": replymessage ?? null,
           "replyId": replymessageName,
           "messageFrom": messageFrom,
           "messageTo": messageTo,
@@ -108,10 +108,6 @@ class ChatFirebase {
   }
 
   isRead() async {
-    print('heelo');
-    print(messageTo);
-    print(chatId);
-
     cs
         .doc(chatId)
         .collection('chatting')

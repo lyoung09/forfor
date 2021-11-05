@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
@@ -49,7 +50,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     if (widget.index != null) _selectedIndex = widget.index!;
   }
 

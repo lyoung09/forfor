@@ -33,7 +33,6 @@ class _SearchChatState extends State<SearchChat> {
   var messageController;
   late String uid;
   late String chatId, chatUserUrl, chatUserName;
-  final SlidableController slidableController = SlidableController();
 
   @override
   void initState() {
@@ -71,76 +70,45 @@ class _SearchChatState extends State<SearchChat> {
               itemBuilder: (context, count) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Slidable(
-                    controller: slidableController,
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    secondaryActions: <Widget>[
-                      IconSlideAction(
-                        caption: 'Pin',
-                        color: Colors.black45,
-                        icon: Icons.push_pin_outlined,
-                        onTap: () {
-                          FirebaseFirestore.instance
-                              .collection('message')
-                              .doc(widget.roomId)
-                              .update({"pin": true});
-                        },
-                      ),
-                      IconSlideAction(
-                        caption: 'Delete',
-                        color: Colors.red,
-                        icon: Icons.delete,
-                        onTap: () {
-                          FirebaseFirestore.instance
-                              .collection('message')
-                              .doc(widget.roomId)
-                              .delete();
-                        },
-                      ),
-                    ],
-                    child: ListTile(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return ChattingDetail(
-                            chatId: widget.roomId,
-                            messageTo: chatId,
-                            messageFrom: uid,
-                          );
-                        }));
-                      },
-                      leading: CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Colors.amber,
-                        backgroundImage: NetworkImage(widget.userAvatar),
-                      ),
-                      title: Text(
-                        widget.userName,
-                        style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                      ),
-                      subtitle: snapshot.data!.docs[count]["messageText"] ==
-                              null
-                          ? Text("[image]",
-                              style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w300),
-                              maxLines: 1)
-                          : Text(
-                              snapshot.data!.docs[count]["messageText"] ?? "",
-                              style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w300),
-                              maxLines: 1),
-                      trailing: Text("${widget.lastTime}"),
+                  child: ListTile(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return ChattingDetail(
+                          chatId: widget.roomId,
+                          messageTo: chatId,
+                          messageFrom: uid,
+                        );
+                      }));
+                    },
+                    leading: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.amber,
+                      backgroundImage: NetworkImage(widget.userAvatar),
                     ),
+                    title: Text(
+                      widget.userName,
+                      style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                    ),
+                    subtitle: snapshot.data!.docs[count]["messageText"] == null
+                        ? Text("[image]",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w300),
+                            maxLines: 1)
+                        : Text(snapshot.data!.docs[count]["messageText"] ?? "",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w300),
+                            maxLines: 1),
+                    trailing: Text("${widget.lastTime}"),
                   ),
                 );
               });

@@ -4,6 +4,7 @@ import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:forfor/bottomScreen/chat/chatting_detail.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/widget/safe_tap.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -140,15 +141,14 @@ class _OtherProfileState extends State<OtherProfile> {
               onTap: () async {
                 String chatId;
                 List<String> ss = [];
-                List<String> tt = [];
+
                 ss.add(widget.uid);
                 ss.add(controller.user!.uid);
 
-                tt.add(controller.user!.uid);
-                tt.add(widget.uid);
                 var xx = await FirebaseFirestore.instance
                     .collection('message')
-                    .where('chattingWith', whereIn: [ss, tt]).get();
+                    .where('chattingWith',
+                        whereIn: [ss, ss.reversed.toList()]).get();
 
                 if (xx.docs.isNotEmpty) {
                   QueryDocumentSnapshot doc = xx.docs[0];
@@ -158,7 +158,7 @@ class _OtherProfileState extends State<OtherProfile> {
                   var t = await FirebaseFirestore.instance
                       .collection('message')
                       .add({
-                    "lastMessageTime": null,
+                    "lastMessageTime": DateTime.now(),
                     "pin": 1,
                     "chattingWith": FieldValue.arrayUnion(
                         [widget.uid, controller.user!.uid])
@@ -266,7 +266,6 @@ class _OtherProfileState extends State<OtherProfile> {
     ref.collection('likes');
 
     if (favorite[index]) {
-      print("helo");
       ref.collection("likes").doc(controller.user!.uid).set({
         "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
@@ -699,17 +698,16 @@ class _OtherProfileState extends State<OtherProfile> {
           if (likeUser.hasData) {
             favorite[index] = likeUser.data!.exists;
           }
-          return IconButton(
-            iconSize: 17.5,
-            icon: Icon(
+          return SafeOnTap(
+            onSafeTap: () {
+              favorite[index] = !favorite[index];
+              check(posting, index, favorite);
+            },
+            child: Icon(
               Icons.favorite,
               color:
                   favorite[index] == true ? Colors.red[400] : Colors.grey[300],
             ),
-            onPressed: () {
-              favorite[index] = !favorite[index];
-              check(posting, index, favorite);
-            },
           );
         });
   }

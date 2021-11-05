@@ -15,7 +15,7 @@ class ChatFirebaseApi {
     return _firestore
         .collection("message")
         .where('chattingWith', arrayContains: uid)
-        //.where('pin', isEqualTo: true)
+        //.orderBy('pin')
         .orderBy("lastMessageTime", descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
@@ -23,8 +23,6 @@ class ChatFirebaseApi {
 
       query.docs.forEach((element) async {
         retVal.add(ChatRoom.fromDocumentSnapshot(element));
-
-        retVal.sort((a, b) => (a.pin!).compareTo(b.pin!));
       });
       return retVal;
     });

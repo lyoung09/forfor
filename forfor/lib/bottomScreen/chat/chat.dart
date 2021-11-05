@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forfor/bottomScreen/chat/search_chat.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
@@ -31,8 +32,8 @@ class _ChatUserListState extends State<ChatUserList> {
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
-    searchController.clear();
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -43,6 +44,12 @@ class _ChatUserListState extends State<ChatUserList> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  bool enable = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +96,21 @@ class _ChatUserListState extends State<ChatUserList> {
                         color: Colors.grey.shade600,
                         size: 20,
                       ),
+                      suffixIcon:
+                          searchController.text.trim().isNotEmpty == true
+                              ? IconButton(
+                                  onPressed: () {
+                                    FocusScope.of(context).unfocus();
+                                    setState(() {
+                                      searchController.clear();
+                                      search = false;
+                                    });
+                                  },
+                                  icon: Icon(Icons.close_rounded,
+                                      color: Colors.grey.shade600),
+                                  iconSize: 20,
+                                )
+                              : Text(""),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(color: Colors.grey.shade100)),
@@ -147,7 +169,8 @@ class _ChatUserListState extends State<ChatUserList> {
                                 return StreamBuilder<QuerySnapshot>(
                                     stream: FirebaseFirestore.instance
                                         .collection("message")
-                                        .where('chattingWith', whereIn: [t])
+                                        .where('chattingWith',
+                                            whereIn: [t, t.reversed.toList()])
                                         //.where('pin', isEqualTo: true)
                                         //.orderBy("lastMessageTime", descending: true)
                                         .snapshots(),
@@ -156,6 +179,7 @@ class _ChatUserListState extends State<ChatUserList> {
                                       if (!snapshot.hasData) {
                                         return Container();
                                       }
+
                                       return ListView.builder(
                                           shrinkWrap: true,
                                           physics:
@@ -188,9 +212,20 @@ class _ChatUserListState extends State<ChatUserList> {
                         itemBuilder: (context, count) {
                           String ss = DatetimeFunction()
                               .ago(chatController.todos[count].lastTime!);
+                          late String other;
+                          if (chatController.todos[count].chattingwith![0] ==
+                              controller.user!.uid) {
+                            other =
+                                chatController.todos[count].chattingwith![1];
+                          }
+                          if (chatController.todos[count].chattingwith![1] ==
+                              controller.user!.uid) {
+                            other =
+                                chatController.todos[count].chattingwith![0];
+                          }
 
                           return ConversationList(
-                              talker: chatController.todos[count].chattingwith!,
+                              talker: other,
                               lastTime: ss,
                               roomId: chatController.todos[count].chatRoomId!,
                               pin: chatController.todos[count].pin!);

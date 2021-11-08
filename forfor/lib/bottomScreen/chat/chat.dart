@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:forfor/bottomScreen/chat/search_chat.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
@@ -28,7 +29,7 @@ class _ChatUserListState extends State<ChatUserList> {
   final controller = Get.put(AuthController());
   bool search = false;
   TextEditingController searchController = new TextEditingController();
-
+  final SlidableController slidableController = SlidableController();
   @override
   void initState() {
     // TODO: implement initState
@@ -37,6 +38,7 @@ class _ChatUserListState extends State<ChatUserList> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  final _unKey = UniqueKey();
   @override
   void setState(fn) {
     if (mounted) {
@@ -186,13 +188,30 @@ class _ChatUserListState extends State<ChatUserList> {
                                               NeverScrollableScrollPhysics(),
                                           itemCount: snapshot.data!.size,
                                           itemBuilder: (context, count) {
+                                            late String other;
+                                            if (chatController.todos[count]
+                                                    .chattingwith![0] ==
+                                                controller.user!.uid) {
+                                              other = chatController
+                                                  .todos[count]
+                                                  .chattingwith![1];
+                                            }
+                                            if (chatController.todos[count]
+                                                    .chattingwith![1] ==
+                                                controller.user!.uid) {
+                                              other = chatController
+                                                  .todos[count]
+                                                  .chattingwith![0];
+                                            }
+
                                             return SearchChat(
+                                              pin: snapshot.data!.docs[count]
+                                                  ['pin'],
                                               userName: search.data!
                                                   .docs[number]["nickname"],
                                               userAvatar: search
                                                   .data!.docs[number]["url"],
-                                              talker: snapshot.data!.docs[count]
-                                                  ["chattingWith"],
+                                              talker: other,
                                               lastTime:
                                                   snapshot.data!.docs[count]
                                                       ["lastMessageTime"],
@@ -203,44 +222,51 @@ class _ChatUserListState extends State<ChatUserList> {
                                     });
                               });
                         })
-                    : Obx(() => ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: chatController.todos.length,
-                        itemBuilder: (context, count) {
-                          late String other;
-                          if (chatController.todos[count].chattingwith![0] ==
-                              controller.user!.uid) {
-                            other =
-                                chatController.todos[count].chattingwith![1];
-                          }
-                          if (chatController.todos[count].chattingwith![1] ==
-                              controller.user!.uid) {
-                            other =
-                                chatController.todos[count].chattingwith![0];
-                          }
+                    : Form(
+                        key: _unKey,
+                        child: Obx(() => ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: chatController.todos.length,
+                            itemBuilder: (context, count) {
+                              late String other;
+                              if (chatController
+                                      .todos[count].chattingwith![0] ==
+                                  controller.user!.uid) {
+                                other = chatController
+                                    .todos[count].chattingwith![1];
+                              }
+                              if (chatController
+                                      .todos[count].chattingwith![1] ==
+                                  controller.user!.uid) {
+                                other = chatController
+                                    .todos[count].chattingwith![0];
+                              }
 
-                          return StreamBuilder<DocumentSnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(other)
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Container();
-                                }
-                                return ConversationList(
-                                  talker: other,
-                                  lastTime:
-                                      chatController.todos[count].lastTime!,
-                                  roomId:
-                                      chatController.todos[count].chatRoomId!,
-                                  pin: chatController.todos[count].pin!,
-                                  nickname: snapshot.data!["nickname"],
-                                  url: snapshot.data!["url"],
-                                );
-                              });
-                        }))
+                              return StreamBuilder<DocumentSnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(other)
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Container();
+                                    }
+                                    return ConversationList(
+                                      controller: slidableController,
+                                      key: _unKey,
+                                      talker: other,
+                                      lastTime:
+                                          chatController.todos[count].lastTime!,
+                                      roomId: chatController
+                                          .todos[count].chatRoomId!,
+                                      pin: chatController.todos[count].pin!,
+                                      nickname: snapshot.data!["nickname"],
+                                      url: snapshot.data!["url"],
+                                    );
+                                  });
+                            })),
+                      )
               ]),
             )));
   }

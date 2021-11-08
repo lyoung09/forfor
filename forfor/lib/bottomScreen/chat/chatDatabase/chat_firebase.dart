@@ -67,6 +67,7 @@ class ChatFirebase {
         await cs.doc(chatId).collection('chatting').add({
           "reply": "",
           "replyId": "",
+          "replyImage": "",
           "messageFrom": messageFrom,
           "messageTo": messageTo,
           "messageText": message.text,
@@ -85,13 +86,14 @@ class ChatFirebase {
   String replymessageName = "";
   String replymessage = "";
 
-  sendReply(message, replymessage, replymessageName) async {
+  sendReply(message, replymessage, replymessageName, replyImage) async {
     if (message.text.trim().isEmpty) {
     } else {
       try {
         await cs.doc(chatId).collection('chatting').add({
-          "reply": replymessage ?? null,
-          "replyId": replymessageName,
+          "reply": replymessage == null ? null : replymessage,
+          "replyId": replymessageName == null ? null : replymessageName,
+          "replyImage": replyImage == null ? null : replyImage,
           "messageFrom": messageFrom,
           "messageTo": messageTo,
           "messageText": message.text,

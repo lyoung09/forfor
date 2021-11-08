@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/controller/chatting/chatcontroller.dart';
@@ -16,7 +17,8 @@ class SearchChat extends StatefulWidget {
   final String roomId;
   String userName;
   String userAvatar;
-  List<dynamic> talker;
+  String talker;
+  int? pin;
   //bool isMessageRead;
   SearchChat({
     required this.roomId,
@@ -24,6 +26,7 @@ class SearchChat extends StatefulWidget {
     required this.userAvatar,
     required this.lastTime,
     required this.talker,
+    required this.pin,
   });
   @override
   _SearchChatState createState() => _SearchChatState();
@@ -35,19 +38,37 @@ class _SearchChatState extends State<SearchChat> {
   late String uid;
   late String chatId, chatUserUrl, chatUserName;
   late String time;
+  final SlidableController slidableController = SlidableController();
+
   @override
   void initState() {
     time = DatetimeFunction().ago(widget.lastTime);
-    if (widget.talker[0] == controller.user!.uid) {
-      uid = widget.talker[0];
-      chatId = widget.talker[1];
-    }
-    if (widget.talker[1] == controller.user!.uid) {
-      chatId = widget.talker[0];
-      uid = widget.talker[1];
-    } else {}
+    oo();
 
     super.initState();
+  }
+
+  String? introduction;
+  String? country;
+  String? address;
+  oo() async {
+    var ll = await UserDatabase().getUserDs(widget.talker);
+
+    setState(() {
+      introduction = ll.get('introduction');
+      country = ll.get('country');
+      address = ll.get('address');
+    });
+  }
+
+  otherProfile() {
+    Get.to(() => OtherProfile(
+        uid: widget.talker,
+        userName: widget.userName,
+        userImage: widget.userAvatar,
+        introduction: introduction!,
+        country: country!,
+        address: address!));
   }
 
   @override
@@ -69,49 +90,111 @@ class _SearchChatState extends State<SearchChat> {
               physics: ClampingScrollPhysics(),
               itemCount: snapshot.data!.size,
               shrinkWrap: true,
-              itemBuilder: (context, count) {
+              itemBuilder: (BuildContext context, count) {
+                print(snapshot.data!.docs[count].id);
+
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return ChattingDetail(
-                          chatId: widget.roomId,
-                          messageTo: chatId,
-                          messageFrom: uid,
-                          lastTime: widget.lastTime,
-                        );
-                      }));
-                    },
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.amber,
-                      backgroundImage: NetworkImage(widget.userAvatar),
+                  child: Slidable(
+                    key: Key(snapshot.data!.docs[count].id),
+                    controller: slidableController,
+                    actionPane: SlidableDrawerActionPane(
+                      key: Key(snapshot.data!.docs[count].id),
                     ),
-                    title: Text(
-                      widget.userName,
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600),
-                      maxLines: 1,
-                    ),
-                    subtitle: snapshot.data!.docs[count]["messageText"] == null
-                        ? Text("[image]",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w300),
-                            maxLines: 1)
-                        : Text(snapshot.data!.docs[count]["messageText"] ?? "",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w300),
-                            maxLines: 1),
-                    trailing: Text("${widget.lastTime}"),
+                    child: Builder(
+                        key: Key(widget.roomId),
+                        builder: (context) {
+                          return ListTile(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return ChattingDetail(
+                                    chatId: widget.roomId,
+                                    messageTo: widget.talker,
+                                    messageFrom: controller.user!.uid,
+                                    lastTime: widget.lastTime);
+                              }));
+                            },
+                            leading: GestureDetector(
+                              onTap: otherProfile,
+                              child: widget.userAvatar.isEmpty
+                                  ? Text("")
+                                  : CircleAvatar(
+                                      radius: 35,
+                                      backgroundColor: Colors.amber,
+                                      backgroundImage:
+                                          NetworkImage(widget.userAvatar)),
+                            ),
+                            title: widget.pin == 0
+                                ? Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 4,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              widget.userName,
+                                              style: TextStyle(
+                                                  color: Colors.black87,
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w600),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(right: 7)),
+                                            CircleAvatar(
+                                                radius: 13,
+                                                backgroundColor:
+                                                    Colors.orange[50],
+                                                child: Icon(
+                                                    Icons.push_pin_outlined,
+                                                    color: Colors.black,
+                                                    size: 15))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          widget.userName,
+                                          style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            subtitle: snapshot.data!.docs[count]
+                                        ["messageText"] ==
+                                    null
+                                ? Text("[image]",
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w300),
+                                    maxLines: 1)
+                                : Text(
+                                    snapshot.data!.docs[count]["messageText"],
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w300),
+                                    maxLines: 1),
+                            trailing: Text(widget.lastTime == null
+                                ? ""
+                                : "${DatetimeFunction().ago(widget.lastTime)}"),
+                          );
+                        }),
                   ),
                 );
               });

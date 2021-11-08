@@ -5,13 +5,14 @@ import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/controller/chatting/chatcontroller.dart';
 import 'package:forfor/service/chat_firebase_api.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'chatting_detail.dart';
 
 class SearchChat extends StatefulWidget {
-  String lastTime;
+  Timestamp lastTime;
   final String roomId;
   String userName;
   String userAvatar;
@@ -33,9 +34,10 @@ class _SearchChatState extends State<SearchChat> {
   var messageController;
   late String uid;
   late String chatId, chatUserUrl, chatUserName;
-
+  late String time;
   @override
   void initState() {
+    time = DatetimeFunction().ago(widget.lastTime);
     if (widget.talker[0] == controller.user!.uid) {
       uid = widget.talker[0];
       chatId = widget.talker[1];
@@ -79,6 +81,7 @@ class _SearchChatState extends State<SearchChat> {
                           chatId: widget.roomId,
                           messageTo: chatId,
                           messageFrom: uid,
+                          lastTime: widget.lastTime,
                         );
                       }));
                     },

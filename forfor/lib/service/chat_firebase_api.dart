@@ -23,6 +23,8 @@ class ChatFirebaseApi {
 
       query.docs.forEach((element) async {
         retVal.add(ChatRoom.fromDocumentSnapshot(element));
+
+        retVal.sort((a, b) => a.pin!.compareTo(b.pin!));
       });
       return retVal;
     });

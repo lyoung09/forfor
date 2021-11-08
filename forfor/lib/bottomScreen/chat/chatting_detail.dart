@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,12 +26,13 @@ import 'package:swipe_to/swipe_to.dart';
 class ChattingDetail extends StatefulWidget {
   final String messageFrom;
   final String messageTo;
-
+  Timestamp? lastTime;
   String? chatId;
   ChattingDetail(
       {Key? key,
       required this.messageTo,
       required this.messageFrom,
+      this.lastTime,
       this.chatId})
       : super(key: key);
 
@@ -149,12 +151,13 @@ class _ChattingDetailState extends State<ChattingDetail> {
           "messageText": message.text,
           "messageTime": myDateTime,
           "isRead": false
+        }).then((value) {
+          ds.update({"lastMessageTime": myDateTime});
         });
+
         message.clear();
         Timer(Duration(milliseconds: 500),
             () => _controller.jumpTo(_controller.position.minScrollExtent));
-
-        await ds.update({"lastMessageTime": myDateTime});
       } catch (e) {
         print(e);
       }
@@ -183,12 +186,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
           "messageText": message.text,
           "messageTime": myDateTime,
           "isRead": false
-        });
+        }).then((value) => ds.update({"lastMessageTime": myDateTime}));
+
         message.clear();
         Timer(Duration(milliseconds: 500),
             () => _controller.jumpTo(_controller.position.minScrollExtent));
-
-        await ds.update({"lastMessageTime": myDateTime});
       } catch (e) {
         print(e);
       }
@@ -207,6 +209,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
   }
 
   Widget myWidget(snapshot, index) {
+    print(widget.lastTime);
+    print(snapshot.data!.docs[0]["messageTime"]);
     return SwipeTo(
       onLeftSwipe: () {
         setState(() {
@@ -276,14 +280,16 @@ class _ChattingDetailState extends State<ChattingDetail> {
                   )
           ],
         ),
-        Container(
-            alignment: Alignment.centerRight,
-            child: Text(
-              snapshot.data!.docs[index]["messageTime"] == null
-                  ? ""
-                  : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"].toDate().toString()))}",
-              style: TextStyle(fontSize: 15),
-            ))
+        0 == index && snapshot.data!.docs[index]["messageTime"] != null
+            ? Container(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
+                  style: TextStyle(fontSize: 15),
+                ))
+            : Container(
+                height: 7.5,
+              )
       ]),
     );
   }
@@ -317,6 +323,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     if (!snapshot.hasData) {
                       return Container();
                     }
+
                     return Padding(
                         padding: const EdgeInsets.only(left: 8.0, right: 5),
                         child: CircleAvatar(
@@ -362,14 +369,16 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     )
             ],
           ),
-          Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                snapshot.data!.docs[index]["messageTime"] == null
-                    ? ""
-                    : "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[index]["messageTime"]!.toDate().toString()))}",
-                style: TextStyle(fontSize: 15),
-              ))
+          0 == index && snapshot.data!.docs[index]["messageTime"] != null
+              ? Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
+                    style: TextStyle(fontSize: 15),
+                  ))
+              : Container(
+                  height: 7.5,
+                )
         ]));
   }
 
@@ -381,7 +390,10 @@ class _ChattingDetailState extends State<ChattingDetail> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('${snapshot.data!.docs[index]["replyId"]}에게 답장',
+            child: Text(
+                snapshot.data!.docs[index]["replyId"] == me.user!.uid
+                    ? '나에게 답장'
+                    : '${snapshot.data!.docs[index]["replyId"]}에게 답장',
                 style: TextStyle(color: Colors.black54)),
           ),
           Padding(
@@ -815,32 +827,50 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       x.isRead();
-                      // if (widget.messageTo ==
-                      //     snapshot.data!.docs[index]["messageFrom"]) {
-                      //   FirebaseFirestore.instance
-                      //       .collection('message')
-                      //       .doc(widget.chatId)
-                      //       .collection('chatting')
-                      //       .where('messageFrom', isEqualTo: widget.messageTo)
-                      //       .where('isRead', isEqualTo: false)
-                      //       .snapshots()
-                      //       .listen((value) {
-                      //     value.docs.forEach((element) {
-                      //       print('123 ${element.id}');
-                      //       FirebaseFirestore.instance
-                      //           .collection('message')
-                      //           .doc(widget.chatId)
-                      //           .collection('chatting')
-                      //           .doc(element.id)
-                      //           .update({"isRead": true});
-                      //     });
-                      //   });
-                      // }
+                      Map<int, String> pp = new Map<int, String>();
+                      if (snapshot.data!.docs[index]["messageTime"] != null) {
+                        Map<int, String> ttt = new Map<int, String>();
+                        List<dynamic> aa = [];
+                        for (int i = 0; i < snapshot.data!.size; i++) {
+                          ttt[i] = DatetimeFunction().diffDay(DateTime.parse(
+                              snapshot.data!.docs[i]["messageTime"]!
+                                  .toDate()
+                                  .toString()));
+                        }
 
-                      return snapshot.data!.docs[index]["messageFrom"] ==
-                              widget.messageFrom
-                          ? myWidget(snapshot, index)
-                          : otherWidget(snapshot, index);
+                        ttt.forEach((key, value) => aa.add(value));
+                        print(ttt);
+                        for (int z = snapshot.data!.size - 1; 0 <= z; z--) {
+                          if (ttt[z] == aa[z]) {
+                            if (pp.containsValue(aa[z]))
+                              pp[z] = "";
+                            else
+                              pp[z] = aa[z];
+                          }
+                        }
+                      } else {
+                        pp[index] = "";
+                      }
+                      return Column(
+                        children: [
+                          snapshot.data!.docs[index]["messageTime"] != null &&
+                                  pp[index]!.isNotEmpty
+                              ? Center(
+                                  child: Padding(
+                                  padding: pp[index] == ""
+                                      ? EdgeInsets.all(0)
+                                      : EdgeInsets.only(bottom: 30.0),
+                                  child: Text(pp[index]!),
+                                ))
+                              : Container(
+                                  height: 0,
+                                ),
+                          snapshot.data!.docs[index]["messageFrom"] ==
+                                  widget.messageFrom
+                              ? myWidget(snapshot, index)
+                              : otherWidget(snapshot, index),
+                        ],
+                      );
 
                       // SwipeTo(
                       //   onRightSwipe: () {
@@ -1054,5 +1084,17 @@ class _ChattingDetailState extends State<ChattingDetail> {
             }),
       ),
     );
+  }
+}
+
+class Customer {
+  String datetime;
+  int index;
+
+  Customer(this.index, this.datetime);
+
+  @override
+  String toString() {
+    return '{ ${this.datetime}, ${this.index} }';
   }
 }

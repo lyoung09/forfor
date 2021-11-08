@@ -89,7 +89,7 @@ class _ChatUserListState extends State<ChatUserList> {
                     },
                     cursorColor: Colors.black26,
                     decoration: InputDecoration(
-                      hintText: "write",
+                      hintText: "",
                       hintStyle: TextStyle(color: Colors.grey.shade600),
                       prefixIcon: Icon(
                         Icons.search,
@@ -186,10 +186,6 @@ class _ChatUserListState extends State<ChatUserList> {
                                               NeverScrollableScrollPhysics(),
                                           itemCount: snapshot.data!.size,
                                           itemBuilder: (context, count) {
-                                            String ss = DatetimeFunction().ago(
-                                                snapshot.data!.docs[count]
-                                                    ["lastMessageTime"]);
-
                                             return SearchChat(
                                               userName: search.data!
                                                   .docs[number]["nickname"],
@@ -197,7 +193,9 @@ class _ChatUserListState extends State<ChatUserList> {
                                                   .data!.docs[number]["url"],
                                               talker: snapshot.data!.docs[count]
                                                   ["chattingWith"],
-                                              lastTime: ss,
+                                              lastTime:
+                                                  snapshot.data!.docs[count]
+                                                      ["lastMessageTime"],
                                               roomId:
                                                   snapshot.data!.docs[count].id,
                                             );
@@ -210,8 +208,6 @@ class _ChatUserListState extends State<ChatUserList> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: chatController.todos.length,
                         itemBuilder: (context, count) {
-                          String ss = DatetimeFunction()
-                              .ago(chatController.todos[count].lastTime!);
                           late String other;
                           if (chatController.todos[count].chattingwith![0] ==
                               controller.user!.uid) {
@@ -224,11 +220,26 @@ class _ChatUserListState extends State<ChatUserList> {
                                 chatController.todos[count].chattingwith![0];
                           }
 
-                          return ConversationList(
-                              talker: other,
-                              lastTime: ss,
-                              roomId: chatController.todos[count].chatRoomId!,
-                              pin: chatController.todos[count].pin!);
+                          return StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(other)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Container();
+                                }
+                                return ConversationList(
+                                  talker: other,
+                                  lastTime:
+                                      chatController.todos[count].lastTime!,
+                                  roomId:
+                                      chatController.todos[count].chatRoomId!,
+                                  pin: chatController.todos[count].pin!,
+                                  nickname: snapshot.data!["nickname"],
+                                  url: snapshot.data!["url"],
+                                );
+                              });
                         }))
               ]),
             )));

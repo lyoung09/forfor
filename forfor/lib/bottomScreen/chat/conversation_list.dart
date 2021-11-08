@@ -4,8 +4,10 @@ import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/controller/chatting/chatcontroller.dart';
+import 'package:forfor/home/bottom_navigation.dart';
 import 'package:forfor/service/chat_firebase_api.dart';
 import 'package:forfor/service/userdatabase.dart';
+import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -13,16 +15,20 @@ import 'chatDatabase/chat_firebase.dart';
 import 'chatting_detail.dart';
 
 class ConversationList extends StatefulWidget {
-  String lastTime;
+  Timestamp lastTime;
   String roomId;
   int pin;
   String talker;
+  String nickname;
+  String url;
   //bool isMessageRead;
   ConversationList({
     required this.roomId,
     required this.lastTime,
     required this.talker,
     required this.pin,
+    required this.nickname,
+    required this.url,
   });
   @override
   _ConversationListState createState() => _ConversationListState();
@@ -42,16 +48,14 @@ class _ConversationListState extends State<ConversationList> {
     super.initState();
   }
 
-  String? username;
   String? introduction;
   String? country;
   String? address;
-  String? url;
+  String? time;
   oo() async {
     var ll = await UserDatabase().getUserDs(widget.talker);
+
     setState(() {
-      username = ll.get('nickname');
-      url = ll.get('url');
       introduction = ll.get('introduction');
       country = ll.get('country');
       address = ll.get('address');
@@ -71,15 +75,24 @@ class _ConversationListState extends State<ConversationList> {
   }
 
   deleteRoom(roomId) async {
-    print(roomId);
+    await _firebase
+        .collection('message')
+        .doc(roomId)
+        .collection('chatting')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
     await _firebase.collection('message').doc(roomId).delete();
   }
 
   otherProfile() {
     Get.to(() => OtherProfile(
         uid: widget.talker,
-        userName: username!,
-        userImage: url!,
+        userName: widget.nickname,
+        userImage: widget.url,
         introduction: introduction!,
         country: country!,
         address: address!));
@@ -112,7 +125,7 @@ class _ConversationListState extends State<ConversationList> {
                     controller: slidableController,
                     actionPane: SlidableDrawerActionPane(),
                     actionExtentRatio: 0.25,
-                    secondaryActions: <Widget>[
+                    actions: <Widget>[
                       widget.pin == 0
                           ? IconSlideAction(
                               caption: 'pin 제거',
@@ -130,12 +143,14 @@ class _ConversationListState extends State<ConversationList> {
                                 pinRoom(widget.roomId);
                               },
                             ),
+                    ],
+                    secondaryActions: <Widget>[
                       IconSlideAction(
                         caption: 'Delete',
                         color: Colors.red,
                         icon: Icons.delete,
-                        onTap: () async {
-                          await deleteRoom(widget.roomId);
+                        onTap: () {
+                          deleteRoom(widget.roomId);
                         },
                       ),
                     ],
@@ -153,10 +168,10 @@ class _ConversationListState extends State<ConversationList> {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return ChattingDetail(
-                                    chatId: widget.roomId,
-                                    messageTo: widget.talker,
-                                    messageFrom: controller.user!.uid,
-                                  );
+                                      chatId: widget.roomId,
+                                      messageTo: widget.talker,
+                                      messageFrom: controller.user!.uid,
+                                      lastTime: widget.lastTime);
                                 }));
                               }
                             },
@@ -179,21 +194,42 @@ class _ConversationListState extends State<ConversationList> {
                             //
                             leading: GestureDetector(
                               onTap: otherProfile,
-                              child: url == null
+                              child: widget.url == null
                                   ? Text("")
                                   : CircleAvatar(
                                       radius: 35,
                                       backgroundColor: Colors.amber,
-                                      backgroundImage: NetworkImage(url!)),
+                                      backgroundImage:
+                                          NetworkImage(widget.url)),
                             ),
-                            title: Text(
-                              username ?? "",
-                              style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600),
-                              maxLines: 1,
-                            ),
+                            title: widget.pin == 0
+                                ? Row(
+                                    children: [
+                                      Text(
+                                        widget.nickname,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w600),
+                                        maxLines: 1,
+                                      ),
+                                      Padding(
+                                          padding: EdgeInsets.only(right: 7)),
+                                      CircleAvatar(
+                                          radius: 13,
+                                          backgroundColor: Colors.orange[50],
+                                          child: Icon(Icons.push_pin_outlined,
+                                              color: Colors.black, size: 15))
+                                    ],
+                                  )
+                                : Text(
+                                    widget.nickname,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600),
+                                    maxLines: 1,
+                                  ),
 
                             subtitle: snapshot.data!.docs[count]
                                         ["messageText"] ==
@@ -212,7 +248,9 @@ class _ConversationListState extends State<ConversationList> {
                                         fontSize: 15,
                                         fontWeight: FontWeight.w300),
                                     maxLines: 1),
-                            trailing: Text("${widget.lastTime}"),
+                            trailing: Text(widget.lastTime == null
+                                ? ""
+                                : "${DatetimeFunction().ago(widget.lastTime)}"),
                           );
                         }),
                   ),

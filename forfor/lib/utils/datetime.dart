@@ -23,18 +23,6 @@ class DatetimeFunction {
   String readTimeStamp(DateTime date) {
     DateTime t = DateTime.now();
 
-    if (date.day != t.day) {
-      var output1 = DateFormat('dd-hh mm a').format(date);
-      return output1;
-    }
-    if (date.year != t.year) {
-      var output1 = DateFormat('yy-MM-dd').format(date);
-      return output1;
-    }
-    if (date.month != t.month) {
-      var output1 = DateFormat('MM-dd hh a').format(date);
-      return output1;
-    }
     if (date.hour != t.hour) {
       var output1 = DateFormat('hh mm a').format(date);
       return output1;
@@ -43,6 +31,29 @@ class DatetimeFunction {
       var format = new DateFormat.Hm(); // My Format 08:00
 
       return output1;
+    }
+  }
+
+  String diffDay(DateTime date) {
+    final now = DateTime.now();
+    DateTime t = DateTime(now.year, now.month, now.day + 1);
+
+    if (date.day != t.day) {
+      var output1 = DateFormat('yyyy-MM-dd').format(date);
+      return output1;
+    }
+    if (date.year != t.year) {
+      var output1 = DateFormat('yyyy-MM-dd').format(date);
+      return output1;
+    }
+    if (date.month != t.month) {
+      var output1 = DateFormat('yyyy-MM-dd').format(date);
+      return output1;
+    }
+    if (date.hour != t.hour) {
+      return "";
+    } else {
+      return "";
     }
   }
 }

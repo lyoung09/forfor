@@ -43,6 +43,7 @@ class MyText {
     return Theme.of(context).textTheme.bodyText2;
   }
 
+  static const size_A = TextStyle(fontSize: 10, color: Colors.black);
   static TextStyle? caption(BuildContext context) {
     return Theme.of(context).textTheme.caption;
   }

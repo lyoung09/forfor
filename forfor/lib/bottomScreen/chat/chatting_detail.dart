@@ -90,124 +90,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
           TextSelection.fromPosition(TextPosition(offset: message.text.length));
   }
 
-  File? _file;
-  var _image;
-  String urlProfileImageApi = "";
-
-  _imgFromGallery() async {
-    ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
-    _file = imageFile != null ? File(imageFile.path) : null;
-
-    DateTime currentPhoneDate = DateTime.now(); //DateTime
-
-    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
-
-    DateTime myDateTime = myTimeStamp.toDate();
-    try {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child("chatting/${widget.chatId}/${myDateTime}");
-
-      await ref.putFile(_file!);
-
-      urlProfileImageApi = await ref.getDownloadURL().then((value) {
-        return value;
-      });
-      await ds.collection('chatting').add({
-        "messageFrom": widget.messageFrom,
-        "messageTo": widget.messageTo,
-        "messageUrl": urlProfileImageApi,
-        "messageTime": myDateTime,
-        "messageText": null,
-        "replyName": "",
-        "isRead": false
-      });
-      message.clear();
-      Timer(Duration(milliseconds: 500),
-          () => _controller.jumpTo(_controller.position.minScrollExtent));
-
-      await ds.update({"lastMessageTime": myDateTime});
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  sendMessage() async {
-    if (message.text.trim().isEmpty) {
-    } else {
-      try {
-        DateTime currentPhoneDate = DateTime.now(); //DateTime
-
-        Timestamp myTimeStamp =
-            Timestamp.fromDate(currentPhoneDate); //To TimeStamp
-
-        DateTime myDateTime = myTimeStamp.toDate();
-
-        await ds.collection('chatting').add({
-          "reply": "",
-          "replyId": "",
-          "messageFrom": widget.messageFrom,
-          "messageTo": widget.messageTo,
-          "messageText": message.text,
-          "messageTime": myDateTime,
-          "isRead": false
-        }).then((value) {
-          ds.update({"lastMessageTime": myDateTime});
-        });
-
-        message.clear();
-        Timer(Duration(milliseconds: 500),
-            () => _controller.jumpTo(_controller.position.minScrollExtent));
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
-
   String? replymessageName = "";
   String replymessage = "";
 
-  sendReply(replymessage) async {
-    if (message.text.trim().isEmpty) {
-    } else {
-      try {
-        DateTime currentPhoneDate = DateTime.now(); //DateTime
-
-        Timestamp myTimeStamp =
-            Timestamp.fromDate(currentPhoneDate); //To TimeStamp
-
-        DateTime myDateTime = myTimeStamp.toDate();
-
-        await ds.collection('chatting').add({
-          "reply": replymessage,
-          "replyId": replymessageName == null ? null : replymessageName,
-          "replyImage": replyImage == null ? null : replyImage,
-          "messageFrom": widget.messageFrom,
-          "messageTo": widget.messageTo,
-          "messageText": message.text,
-          "messageTime": myDateTime,
-          "isRead": false
-        }).then((value) => ds.update({"lastMessageTime": myDateTime}));
-
-        message.clear();
-        Timer(Duration(milliseconds: 500),
-            () => _controller.jumpTo(_controller.position.minScrollExtent));
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    setState(() {
-      reply = false;
-      replymessage = "";
-      replymessageName = "";
-    });
-  }
-
   changeController() {
-    Timer(Duration(milliseconds: 500),
-        () => _controller.jumpTo(_controller.position.minScrollExtent));
+    _controller.jumpTo(_controller.position.minScrollExtent);
   }
 
   Widget myWidget(snapshot, index) {
@@ -232,16 +119,30 @@ class _ChattingDetailState extends State<ChattingDetail> {
       child: Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(right: 6),
-                child: snapshot.data!.docs[index]["isRead"] == true
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                snapshot.data!.docs[index]["isRead"] == true
                     ? Text(
                         "",
-                        style: TextStyle(fontSize: 15),
                       )
-                    : Text("1")),
+                    : Container(
+                        padding: EdgeInsets.only(bottom: 10, right: 10),
+                        child: Text("1",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w500))),
+                0 == index && snapshot.data!.docs[index]["messageTime"] != null
+                    ? Container(
+                        padding: EdgeInsets.only(bottom: 10, right: 10),
+                        child: Text(
+                          "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
+                          style: TextStyle(fontSize: 15),
+                        ))
+                    : Container(height: 0)
+              ],
+            ),
             snapshot.data!.docs[index]["messageText"] == null
                 ? Container(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
@@ -264,7 +165,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     padding: EdgeInsets.only(
                         right: 12, left: 10, top: 15, bottom: 15),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         snapshot.data!.docs[index]["reply"] != null &&
                                     snapshot.data!.docs[index]["reply"] != "" ||
@@ -274,26 +175,19 @@ class _ChattingDetailState extends State<ChattingDetail> {
                                         ""
                             ? replyExpand(snapshot, index)
                             : Container(height: 0),
-                        Text(
-                          snapshot.data!.docs[index]["messageText"],
-                          maxLines: null,
-                          style: TextStyle(fontSize: 15),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            snapshot.data!.docs[index]["messageText"],
+                            maxLines: null,
+                            style: TextStyle(fontSize: 15),
+                          ),
                         ),
                       ],
                     ),
                   )
           ],
         ),
-        0 == index && snapshot.data!.docs[index]["messageTime"] != null
-            ? Container(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
-                  style: TextStyle(fontSize: 15),
-                ))
-            : Container(
-                height: 7.5,
-              )
       ]),
     );
   }
@@ -301,97 +195,111 @@ class _ChattingDetailState extends State<ChattingDetail> {
   bool? amI;
   Widget otherWidget(snapshot, index) {
     return SwipeTo(
-        onRightSwipe: () {
-          setState(() {
-            isShowSticker = false;
+      onRightSwipe: () {
+        setState(() {
+          isShowSticker = false;
 
-            amI = false;
-            if (snapshot.data!.docs[index]["messageText"] == null ||
-                snapshot.data!.docs[index]["messageText"] == "") {
-              replyStory = "image";
-              replyImage = snapshot.data!.docs[index]["messageUrl"];
-            } else {
-              replyStory = "text";
-              replymessage = snapshot.data!.docs[index]["messageText"];
-            }
+          amI = false;
+          if (snapshot.data!.docs[index]["messageText"] == null ||
+              snapshot.data!.docs[index]["messageText"] == "") {
+            replyStory = "image";
+            replyImage = snapshot.data!.docs[index]["messageUrl"];
+          } else {
+            replyStory = "text";
+            replymessage = snapshot.data!.docs[index]["messageText"];
+          }
 
-            reply = true;
-          });
-          _focus.requestFocus();
-        },
-        child: Column(children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              StreamBuilder<DocumentSnapshot>(
-                  stream: userDs.snapshots(),
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Container();
-                    }
-                    replymessageName = snapshot.data!["nickname"];
-                    return Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 5),
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(snapshot.data!["url"]),
-                        ));
-                  }),
-              snapshot.data!.docs[index]["messageText"] == null
-                  ? Container(
-                      padding: EdgeInsets.only(top: 15, bottom: 15),
-                      height: 130,
-                      width: 150,
-                      child: Image.network(
-                          snapshot.data!.docs[index]["messageUrl"]))
-                  : Container(
-                      width:
-                          snapshot.data!.docs[index]["messageText"].length > 15
-                              ? 180
-                              : null,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(30.0),
-                            topLeft: Radius.circular(30.0),
-                            bottomRight: Radius.circular(20.0),
-                            bottomLeft: Radius.circular(30.0),
-                          ),
-                          color: Colors.white70),
-                      padding: EdgeInsets.only(
-                          left: 17.5, right: 12, top: 15, bottom: 15),
-                      child: Column(
-                        children: [
-                          snapshot.data!.docs[index]["reply"] != null &&
-                                      snapshot.data!.docs[index]["reply"] !=
-                                          "" ||
-                                  snapshot.data!.docs[index]["replyImage"] !=
-                                          null &&
-                                      snapshot.data!.docs[index]
-                                              ["replyImage"] !=
-                                          ""
-                              ? replyExpand(snapshot, index)
-                              : Container(height: 0),
-                          Text(
-                            snapshot.data!.docs[index]["messageText"],
-                            maxLines: null,
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
-                      ),
-                    )
-            ],
-          ),
-          0 == index && snapshot.data!.docs[index]["messageTime"] != null
+          reply = true;
+        });
+        _focus.requestFocus();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          StreamBuilder<DocumentSnapshot>(
+              stream: userDs.snapshots(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (!snapshot.hasData) {
+                  return Container();
+                }
+                replymessageName = snapshot.data!["nickname"];
+                return Center(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 5),
+                      child: CircleAvatar(
+                        radius: 22,
+                        backgroundImage: NetworkImage(snapshot.data!["url"]),
+                      )),
+                );
+              }),
+          snapshot.data!.docs[index]["messageText"] == null
               ? Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
-                    style: TextStyle(fontSize: 15),
-                  ))
+                  padding: EdgeInsets.only(top: 15, bottom: 15),
+                  height: 130,
+                  width: 150,
+                  child:
+                      Image.network(snapshot.data!.docs[index]["messageUrl"]))
               : Container(
-                  height: 7.5,
-                )
-        ]));
+                  alignment: Alignment.centerLeft,
+                  width: snapshot.data!.docs[index]["messageText"].length > 15
+                      ? 180
+                      : null,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(30.0),
+                        topLeft: Radius.circular(30.0),
+                        bottomRight: Radius.circular(20.0),
+                        bottomLeft: Radius.circular(30.0),
+                      ),
+                      color: Colors.white70),
+                  padding: EdgeInsets.only(
+                      left: 17.5, right: 12, top: 15, bottom: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      snapshot.data!.docs[index]["reply"] != null &&
+                                  snapshot.data!.docs[index]["reply"] != "" ||
+                              snapshot.data!.docs[index]["replyImage"] !=
+                                      null &&
+                                  snapshot.data!.docs[index]["replyImage"] != ""
+                          ? replyExpand(snapshot, index)
+                          : Container(height: 0),
+                      Text(
+                        snapshot.data!.docs[index]["messageText"],
+                        maxLines: null,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ],
+                  ),
+                ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              snapshot.data!.docs[index]["isRead"] == true
+                  ? Text(
+                      "",
+                    )
+                  : Container(
+                      padding: EdgeInsets.only(bottom: 10, right: 8),
+                      child: Text("1",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w500))),
+              0 == index && snapshot.data!.docs[index]["messageTime"] != null
+                  ? Container(
+                      padding: EdgeInsets.only(bottom: 10, right: 8),
+                      child: Text(
+                        "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
+                        style: TextStyle(fontSize: 15),
+                      ))
+                  : Container(
+                      height: 0,
+                    ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   Widget replyExpand(snapshot, index) {
@@ -442,8 +350,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Container(
-          padding: EdgeInsets.only(left: 10, bottom: 5),
-          height: replyStory == "text" ? 80 : 130,
+          height: replyStory == "text" ? 90 : 130,
           width: double.infinity,
           color: Colors.white,
           child: Column(
@@ -451,45 +358,87 @@ class _ChattingDetailState extends State<ChattingDetail> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      amI == true ? "나에게 답장하기" : '${replymessageName}에게 답장하기',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    child: amI == true
+                        ? Padding(
+                            padding: const EdgeInsets.all(25.0),
+                            child: Text(
+                              "나에게 답장하기",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.only(left: 25.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                replymessageName!.length > 20
+                                    ? Text(
+                                        "${replymessageName!.substring(0, 20)}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.clip,
+                                      )
+                                    : Text(
+                                        "${replymessageName}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.clip,
+                                      ),
+                                Text(
+                                  "에게 답장하기",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.clip,
+                                ),
+                              ],
+                            ),
+                          ),
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                        iconSize: 12,
-                        icon: Icon(Icons.ac_unit),
-                        onPressed: () {
-                          setState(() {
-                            reply = false;
-                          });
-                          // Timer(
-                          //     Duration(milliseconds: 500),
-                          //     () => _controller.jumpTo(
-                          //         _controller.position.minScrollExtent));
-                        }),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          iconSize: 15,
+                          icon: Icon(Icons.close_outlined),
+                          onPressed: () {
+                            setState(() {
+                              reply = false;
+                            });
+                            // Timer(
+                            //     Duration(milliseconds: 500),
+                            //     () => _controller.jumpTo(
+                            //         _controller.position.minScrollExtent));
+                          }),
+                    ),
                   )
                 ],
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: replyStory == "text"
-                    ? Text(replymessage,
-                        style: TextStyle(color: Colors.black54))
-                    : Image.network(
-                        replyImage!,
-                        width: 70,
-                        height: 60,
-                      ),
+              Padding(
+                padding: replyStory == "text"
+                    ? EdgeInsets.only(left: 25.0)
+                    : EdgeInsets.only(left: 5.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: replyStory == "text"
+                      ? Text(replymessage,
+                          style: TextStyle(color: Colors.black54))
+                      : Image.network(
+                          replyImage!,
+                          width: 120,
+                          height: 80,
+                        ),
+                ),
               ),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-          height: 60,
+          padding: EdgeInsets.only(left: 10, bottom: 5, top: 5),
+          height: 80,
           width: double.infinity,
           color: Colors.white,
           child: Row(
@@ -704,7 +653,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
               Expanded(
                 flex: 1,
                 child: TextFormField(
-                  autofocus: true,
                   readOnly: isShowSticker ? true : false,
                   maxLines: 5,
                   minLines: 1,
@@ -819,6 +767,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
 
                 return Text(
                   snapshot.data!["nickname"],
+                  overflow: TextOverflow.clip,
                   style: TextStyle(color: Colors.black54, fontSize: 25),
                 );
               }),

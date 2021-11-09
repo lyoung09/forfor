@@ -7,11 +7,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:forfor/bottomScreen/chat/chat.dart';
+import 'package:forfor/bottomScreen/chat/chatting_detail.dart';
 
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
+import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
@@ -44,12 +47,38 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'integration/app_localizations.dart';
 import 'login/screen/show.dart';
 
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    'This channel is used for important notifications.', // description
+    importance: Importance.high,
+    playSound: true);
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('A bg message just showed up :  ${message.messageId}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
-
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   runApp(MyApp());
 }
 
@@ -122,12 +151,56 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     getLoc();
 
-    FirebaseMessaging.instance.getToken().then((value) {
-      String? token = value;
-      print('token ${token}');
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                color: Colors.blue,
+                playSound: true,
+                icon: '@mipmap/ic_launcher',
+              ),
+            ));
+      }
     });
 
-    //permission();
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      final routeFromName = message.data["route"];
+      print(routeFromName);
+      Get.to(() => ChattingDetail(
+            messageFrom: '7Ldq42bdxmbqQIp1PG2Mxii6MnF3',
+            messageTo: '9UbDWOQrLOXirtzGQEwMUiuVnGb2',
+            chatId: "4AS8GIib2QUJ1cOo6pTH",
+          ));
+      if (notification != null && android != null) {}
+    });
+    hoit();
+  }
+
+  void hoit() {
+    flutterLocalNotificationsPlugin.show(
+        0,
+        "Testing 1234",
+        "How you doin ?",
+        NotificationDetails(
+            android: AndroidNotificationDetails(
+                channel.id, channel.name, channel.description,
+                importance: Importance.high,
+                color: Colors.blue,
+                playSound: true,
+                icon: '@mipmap/ic_launcher')));
   }
 
   final Location location = Location();
@@ -154,31 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       print('User declined or has not accepted permission');
     }
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Message clicked!');
-    });
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved 123");
-      print(event.notification!.title);
-      // showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return AlertDialog(
-      //         title: Text("Notification"),
-      //         content: Text(event.notification!.body!),
-      //         actions: [
-      //           TextButton(
-      //             child: Text("Ok"),
-      //             onPressed: () {
-      //               Navigator.of(context).pop();
-      //             },
-      //           )
-      //         ],
-      //       );
-      //     });
-    });
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;

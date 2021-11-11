@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,7 +83,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
         });
       }
     });
-    
   }
 
   @override
@@ -95,20 +94,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
     x.imgFromGallery();
     changeController();
     _focus.unfocus();
-  }
-
-  _onEmojiSelected(Emoji emoji) {
-    _message
-      ..text += emoji.emoji
-      ..selection = TextSelection.fromPosition(
-          TextPosition(offset: _message.text.length));
-  }
-
-  _onBackspacePressed() {
-    _message
-      ..text = _message.text.characters.skipLast(1).toString()
-      ..selection = TextSelection.fromPosition(
-          TextPosition(offset: _message.text.length));
   }
 
   String? replymessageName = "";
@@ -136,6 +121,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
         });
 
         _focus.requestFocus();
+        changeController();
       },
       child: Column(children: [
         Row(
@@ -144,19 +130,20 @@ class _ChattingDetailState extends State<ChattingDetail> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 snapshot.data!.docs[index]["isRead"] == true
                     ? Text(
                         "",
                       )
                     : Container(
-                        padding: EdgeInsets.only(bottom: 5, right: 10),
+                        padding: EdgeInsets.only(right: 8, top: 8),
                         child: Text("1",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w500))),
                 0 == index && snapshot.data!.docs[index]["messageTime"] != null
                     ? Container(
-                        padding: EdgeInsets.only(bottom: 1, right: 10),
+                        padding: EdgeInsets.only(right: 8, top: 5),
                         child: Text(
                           "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
                           style: TextStyle(fontSize: 15),
@@ -166,11 +153,12 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ),
             snapshot.data!.docs[index]["messageText"] == null
                 ? Container(
-                    padding: EdgeInsets.only(top: 15, bottom: 15),
+                    padding: EdgeInsets.only(top: 15),
                     height: 150,
                     width: 130,
-                    child:
-                        Image.network(snapshot.data!.docs[index]["messageUrl"]))
+                    child: Image.network(
+                      snapshot.data!.docs[index]["messageUrl"],
+                    ))
                 : Container(
                     width: snapshot.data!.docs[index]["messageText"].length > 15
                         ? 180
@@ -183,8 +171,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                           topLeft: Radius.circular(30.0),
                         ),
                         color: Colors.orange[50]),
-                    padding: EdgeInsets.only(
-                        right: 12, left: 10, top: 15, bottom: 15),
+                    padding: EdgeInsets.only(right: 12, left: 10, top: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -231,10 +218,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
           }
         });
         _focus.requestFocus();
+        changeController();
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           StreamBuilder<DocumentSnapshot>(
               stream: userDs.snapshots(),
@@ -254,9 +242,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
               }),
           snapshot.data!.docs[index]["messageText"] == null
               ? Container(
-                  padding: EdgeInsets.only(bottom: 15),
-                  height: 130,
-                  width: 150,
+                  padding: EdgeInsets.only(bottom: 15, top: 15),
+                  height: 150,
+                  width: 130,
                   child:
                       Image.network(snapshot.data!.docs[index]["messageUrl"]))
               : Container(
@@ -272,8 +260,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
                         bottomLeft: Radius.circular(30.0),
                       ),
                       color: Colors.white70),
-                  padding:
-                      EdgeInsets.only(left: 17.5, right: 12, top: 5, bottom: 5),
+                  padding: EdgeInsets.only(
+                      left: 17.5, right: 12, top: 15, bottom: 15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -294,19 +282,20 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               snapshot.data!.docs[index]["isRead"] == true
                   ? Text(
                       "",
                     )
                   : Container(
-                      padding: EdgeInsets.only(bottom: 5, right: 8),
+                      padding: EdgeInsets.only(right: 8, top: 5),
                       child: Text("1",
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.w500))),
               0 == index && snapshot.data!.docs[index]["messageTime"] != null
                   ? Container(
-                      padding: EdgeInsets.only(bottom: 1, right: 8),
+                      padding: EdgeInsets.only(right: 8, top: 5),
                       child: Text(
                         "${DatetimeFunction().readTimeStamp(DateTime.parse(snapshot.data!.docs[0]["messageTime"]!.toDate().toString()))}",
                         style: TextStyle(fontSize: 15),
@@ -319,6 +308,12 @@ class _ChattingDetailState extends State<ChattingDetail> {
         ],
       ),
     );
+  }
+
+  void onEmojiSelected(String emoji) {
+    setState(() {
+      _message.text = _message.text + emoji;
+    });
   }
 
   Widget replyExpand(snapshot, index) {
@@ -365,36 +360,35 @@ class _ChattingDetailState extends State<ChattingDetail> {
   }
 
   Widget chatForm() {
-    return  TextFormField(
-        key: _formKey,
-        readOnly: false,
-        maxLines: 5,
-        minLines: 1,
-        focusNode: _focus,
-        onTap: () {
-          setState(() {
-            if (isShowSticker) {
-              isShowSticker = false;
-            }
-          });
-          Timer(Duration(milliseconds: 300),
-              () => _controller.jumpTo(_controller.position.minScrollExtent));
-        },
-        controller: _message,
-        validator: (value) {
-          if (value!.isNotEmpty) {
-            _message.text = value;
+    return TextFormField(
+      key: _formKey,
+      readOnly: false,
+      maxLines: 5,
+      minLines: 1,
+      focusNode: _focus,
+      onTap: () {
+        setState(() {
+          if (isShowSticker) {
+            isShowSticker = false;
           }
-          
-        },
-        onChanged: (ch) {
-          setState(() {});
-        },
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          isDense: true,
-        ),
-      
+          _focus.requestFocus();
+        });
+        Timer(Duration(milliseconds: 300),
+            () => _controller.jumpTo(_controller.position.minScrollExtent));
+      },
+      controller: _message,
+      validator: (value) {
+        if (value!.isNotEmpty) {
+          _message.text = value;
+        }
+      },
+      onChanged: (ss) {
+        setState(() {});
+      },
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        isDense: true,
+      ),
     );
   }
 
@@ -404,7 +398,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
       children: [
         reply == true
             ? Container(
-                height: replyStory == "text" ? 90 : 130,
+                height: replyStory == "text" ? 95 : 140,
                 width: double.infinity,
                 color: Colors.white,
                 child: Column(
@@ -414,7 +408,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
                         Expanded(
                           child: amI == true
                               ? Padding(
-                                  padding: const EdgeInsets.all(25.0),
+                                  padding: replyStory == "text"
+                                      ? EdgeInsets.all(25.0)
+                                      : EdgeInsets.all(8.0),
                                   child: Text(
                                     "나에게 답장하기",
                                     style:
@@ -464,6 +460,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
                                 onPressed: () {
                                   setState(() {
                                     reply = false;
+                                    replymessage = "";
+                                    replymessageName = "";
+                                    replyImage = "";
                                   });
 
                                   // Timer(
@@ -496,8 +495,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
               )
             : Container(height: 0),
         Container(
-          padding: EdgeInsets.only(left: 10, bottom: 15, top: 10),
-          height: Platform.isAndroid ? 60 : 75,
+          padding: EdgeInsets.only(left: 10, bottom: 15),
+          height: 60,
           width: double.infinity,
           color: Colors.white,
           child: Row(
@@ -521,14 +520,21 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 width: 4,
               ),
               IconButton(
-                icon: new Icon(Icons.face),
+                icon: new Icon(isShowSticker == true
+                    ? Icons.keyboard_alt_outlined
+                    : Icons.face),
                 onPressed: () {
                   setState(() {
-                    _focus.unfocus();
-                    _focus.canRequestFocus = false;
-
                     isShowSticker = !isShowSticker;
                   });
+
+                  if (isShowSticker) {
+                    _focus.unfocus();
+                    _focus.canRequestFocus = false;
+                  }
+                  if (!isShowSticker) {
+                    _focus.requestFocus();
+                  }
                 },
                 color: Colors.blueGrey,
               ),
@@ -565,6 +571,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                           if (isShowSticker) {
                             isShowSticker = false;
                           }
+                          _focus.requestFocus();
                         });
                 },
               ),
@@ -574,62 +581,39 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ],
           ),
         ),
-        Center(
-          child: isShowSticker == true
-              ? Form(
-                  key: _formKey,
-                  child: SizedBox(
-                    height: 320,
-                    child: EmojiPicker(
-                        onEmojiSelected: (Category category, Emoji emoji) {
-                          _onEmojiSelected(emoji);
-                        },
-                        onBackspacePressed: () {
-                          _onBackspacePressed();
-                        },
-                        config: Config(
-                            columns: 7,
-                            // Issue: https://github.com/flutter/flutter/issues/28894
-                            emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                            verticalSpacing: 0,
-                            horizontalSpacing: 0,
-                            initCategory: Category.RECENT,
-                            bgColor: const Color(0xFFF2F2F2),
-                            indicatorColor: Colors.blue,
-                            iconColor: Colors.grey,
-                            iconColorSelected: Colors.blue,
-                            progressIndicatorColor: Colors.blue,
-                            backspaceColor: Colors.blue,
-                            showRecentsTab: false,
-                            recentsLimit: 28,
-                            noRecentsText: 'No Recents',
-                            noRecentsStyle: const TextStyle(
-                                fontSize: 20, color: Colors.black26),
-                            tabIndicatorAnimDuration: kTabScrollDuration,
-                            categoryIcons: const CategoryIcons(),
-                            buttonMode: ButtonMode.MATERIAL)),
-                  ),
-                )
-              : Text(""),
-        ),
+        Positioned(
+            bottom: 0, child: (isShowSticker == true ? emoji() : Container())),
       ],
     );
+  }
+
+  Widget emoji() {
+    return EmojiPicker(
+      onEmojiSelected: (emoji, category) => onEmojiSelected(emoji.emoji),
+      rows: 4,
+      columns: 7,
+      numRecommended: 10,
+      buttonMode:
+          Platform.isAndroid ? ButtonMode.MATERIAL : ButtonMode.CUPERTINO,
+    );
+  }
+
+  Future<bool> onBackPress() {
+    if (isShowSticker) {
+      setState(() {
+        isShowSticker = false;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+
+    return Future.value(false);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        if (isShowSticker) {
-          setState(() {
-            isShowSticker = false;
-          });
-          _focus.requestFocus();
-        } else {
-          Get.to(() => BottomNavigation(index: 1));
-        }
-        return new Future(() => false);
-      },
+      onWillPop: onBackPress,
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -678,13 +662,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      if (isShowSticker) {
-                        setState(() {
-                          isShowSticker = false;
-                        });
+                      setState(() {
+                        isShowSticker = false;
+                      });
 
-                        _focus.unfocus();
-                      }
+                      _focus.unfocus();
                     },
                     child: ListView.separated(
                       separatorBuilder: (BuildContext context, int index) =>
@@ -695,22 +677,33 @@ class _ChattingDetailState extends State<ChattingDetail> {
                       reverse: true,
                       itemCount: snapshot.data!.size,
                       //shrinkWrap: true,
-                      padding: reply == true && isShowSticker == false
+                      padding: reply == true &&
+                              isShowSticker == false &&
+                              replyStory == "text"
                           ? EdgeInsets.only(
-                              top: 10, bottom: 150, left: 10, right: 10)
-                          : reply == false && isShowSticker == false
+                              top: 10, bottom: 180, left: 10, right: 10)
+                          : reply == true &&
+                                  isShowSticker == false &&
+                                  replyStory == "image"
                               ? EdgeInsets.only(
-                                  top: 10, bottom: 80, left: 10, right: 10)
-                              : reply == true && isShowSticker == true
+                                  top: 10, bottom: 220, left: 10, right: 10)
+                              : reply == false && isShowSticker == false
                                   ? EdgeInsets.only(
-                                      top: 10, bottom: 420, left: 10, right: 10)
-                                  :
-                                  //그 리플없이 이모티콘만
-                                  EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 320,
-                                      left: 10,
-                                      right: 10),
+                                      top: 10, bottom: 80, left: 10, right: 10)
+                                  : reply == true && isShowSticker == true
+                                      ? EdgeInsets.only(
+                                          top: 10,
+                                          bottom: 420,
+                                          left: 10,
+                                          right: 10)
+                                      :
+
+                                      //그 리플없이 이모티콘만
+                                      EdgeInsets.only(
+                                          top: 10,
+                                          bottom: 340,
+                                          left: 10,
+                                          right: 10),
                       physics: BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         x.isRead();
@@ -751,19 +744,25 @@ class _ChattingDetailState extends State<ChattingDetail> {
                                 : Container(
                                     height: 0,
                                   ),
-                            snapshot.data!.docs[index]["messageFrom"] ==
-                                    widget.messageFrom
-                                ? myWidget(snapshot, index)
-                                : otherWidget(snapshot, index),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: snapshot.data!.docs[index]
+                                          ["messageFrom"] ==
+                                      widget.messageFrom
+                                  ? myWidget(snapshot, index)
+                                  : otherWidget(snapshot, index),
+                            ),
                           ],
                         );
                       },
                     ),
                   ),
+                  Padding(padding: EdgeInsets.all(60)),
                   keyboard(),
                 ],
               );
             }),
+        // bottomSheet: keyboard(),
       ),
     );
   }

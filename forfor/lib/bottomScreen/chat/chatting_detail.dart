@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:forfor/widget/loading.dart';
+import 'package:keyboard_attachable/keyboard_attachable.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
@@ -25,7 +29,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 
 class ChattingDetail extends StatefulWidget {
   final String messageFrom;
@@ -62,7 +66,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
   String? replyImage;
   final TextEditingController _message = new TextEditingController();
   String? replyStory;
-
+  double height = 0.0;
   @override
   initState() {
     isShowSticker = false;
@@ -92,7 +96,6 @@ class _ChattingDetailState extends State<ChattingDetail> {
 
   sendPic() async {
     x.imgFromGallery();
-    changeController();
     _focus.unfocus();
   }
 
@@ -118,10 +121,10 @@ class _ChattingDetailState extends State<ChattingDetail> {
             replyStory = "text";
             replymessage = snapshot.data!.docs[index]["messageText"];
           }
+          _focus.requestFocus();
         });
 
-        _focus.requestFocus();
-        changeController();
+        // changeController();
       },
       child: Column(children: [
         Row(
@@ -171,7 +174,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
                           topLeft: Radius.circular(30.0),
                         ),
                         color: Colors.orange[50]),
-                    padding: EdgeInsets.only(right: 12, left: 10, top: 15),
+                    padding: EdgeInsets.only(
+                        right: 12, left: 10, top: 15, bottom: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -183,13 +187,10 @@ class _ChattingDetailState extends State<ChattingDetail> {
                                         ""
                             ? replyExpand(snapshot, index)
                             : Container(height: 0),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            snapshot.data!.docs[index]["messageText"],
-                            maxLines: null,
-                            style: TextStyle(fontSize: 15),
-                          ),
+                        Text(
+                          snapshot.data!.docs[index]["messageText"],
+                          maxLines: null,
+                          style: TextStyle(fontSize: 15),
                         ),
                       ],
                     ),
@@ -216,9 +217,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
             replyStory = "text";
             replymessage = snapshot.data!.docs[index]["messageText"];
           }
+          _focus.requestFocus();
         });
-        _focus.requestFocus();
-        changeController();
+        // changeController();
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -366,16 +367,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
       maxLines: 5,
       minLines: 1,
       focusNode: _focus,
-      onTap: () {
-        setState(() {
-          if (isShowSticker) {
-            isShowSticker = false;
-          }
-          _focus.requestFocus();
-        });
-        Timer(Duration(milliseconds: 300),
-            () => _controller.jumpTo(_controller.position.minScrollExtent));
-      },
+      onTap: changeKeyboard,
       controller: _message,
       validator: (value) {
         if (value!.isNotEmpty) {
@@ -392,112 +384,125 @@ class _ChattingDetailState extends State<ChattingDetail> {
     );
   }
 
-  Widget keyboard() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        reply == true
-            ? Container(
-                height: replyStory == "text" ? 95 : 140,
-                width: double.infinity,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: amI == true
-                              ? Padding(
-                                  padding: replyStory == "text"
-                                      ? EdgeInsets.all(25.0)
-                                      : EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "나에게 답장하기",
+  Widget replyKeyboard() {
+    return Container(
+      height: replyStory == "text" ? 95 : 140,
+      width: double.infinity,
+      color: Colors.white,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: amI == true
+                    ? Padding(
+                        padding: replyStory == "text"
+                            ? EdgeInsets.all(25.0)
+                            : EdgeInsets.all(8.0),
+                        child: Text(
+                          "나에게 답장하기",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(left: 25.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            replymessageName!.length > 20
+                                ? Text(
+                                    "${replymessageName!.substring(0, 20)}",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.clip,
+                                  )
+                                : Text(
+                                    "${replymessageName}",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.clip,
                                   ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.only(left: 25.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.baseline,
-                                    textBaseline: TextBaseline.alphabetic,
-                                    children: [
-                                      replymessageName!.length > 20
-                                          ? Text(
-                                              "${replymessageName!.substring(0, 20)}",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.clip,
-                                            )
-                                          : Text(
-                                              "${replymessageName}",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.clip,
-                                            ),
-                                      Text(
-                                        "에게 답장하기",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.clip,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                            Text(
+                              "에게 답장하기",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.clip,
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 5.0),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                                iconSize: 15,
-                                icon: Icon(Icons.close_outlined),
-                                onPressed: () {
-                                  setState(() {
-                                    reply = false;
-                                    replymessage = "";
-                                    replymessageName = "";
-                                    replyImage = "";
-                                  });
-
-                                  // Timer(
-                                  //     Duration(milliseconds: 500),
-                                  //     () => _controller.jumpTo(
-                                  //         _controller.position.minScrollExtent));
-                                }),
-                          ),
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: replyStory == "text"
-                          ? EdgeInsets.only(left: 25.0)
-                          : EdgeInsets.only(left: 5.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: replyStory == "text"
-                            ? Text(replymessage,
-                                style: TextStyle(color: Colors.black54))
-                            : Image.network(
-                                replyImage!,
-                                width: 120,
-                                height: 80,
-                              ),
                       ),
-                    ),
-                  ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 5.0),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                      iconSize: 15,
+                      icon: Icon(Icons.close_outlined),
+                      onPressed: () {
+                        setState(() {
+                          reply = false;
+                          replymessage = "";
+                          replymessageName = "";
+                          replyImage = "";
+                        });
+
+                        // Timer(
+                        //     Duration(milliseconds: 500),
+                        //     () => _controller.jumpTo(
+                        //         _controller.position.minScrollExtent));
+                      }),
                 ),
               )
-            : Container(height: 0),
+            ],
+          ),
+          Padding(
+            padding: replyStory == "text"
+                ? EdgeInsets.only(left: 25.0)
+                : EdgeInsets.only(left: 5.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: replyStory == "text"
+                  ? Text(replymessage, style: TextStyle(color: Colors.black54))
+                  : Image.network(
+                      replyImage!,
+                      width: 120,
+                      height: 80,
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  changeEmoji() {
+    _focus.unfocus();
+    _focus.canRequestFocus = false;
+    setState(() {
+      isShowSticker = !isShowSticker;
+    });
+  }
+
+  changeKeyboard() {
+    setState(() {
+      if (isShowSticker) {
+        isShowSticker = false;
+      }
+      _focus.requestFocus();
+    });
+  }
+
+  Widget chatFormContainer() {
+    return Column(
+      children: [
         Container(
           padding: EdgeInsets.only(left: 10, bottom: 15),
           height: 60,
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width,
           color: Colors.white,
           child: Row(
             children: <Widget>[
@@ -520,22 +525,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 width: 4,
               ),
               IconButton(
-                icon: new Icon(isShowSticker == true
-                    ? Icons.keyboard_alt_outlined
-                    : Icons.face),
-                onPressed: () {
-                  setState(() {
-                    isShowSticker = !isShowSticker;
-                  });
-
-                  if (isShowSticker) {
-                    _focus.unfocus();
-                    _focus.canRequestFocus = false;
-                  }
-                  if (!isShowSticker) {
-                    _focus.requestFocus();
-                  }
-                },
+                icon: Icon(isShowSticker == true
+                    ? FontAwesomeIcons.keyboard
+                    : FontAwesomeIcons.smileWink),
+                onPressed: () =>
+                    isShowSticker == true ? changeKeyboard() : changeEmoji(),
                 color: Colors.blueGrey,
               ),
               SizedBox(
@@ -555,8 +549,13 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     : Colors.black,
                 iconSize: 18,
                 onPressed: () {
-                  x.sendMessage(_message);
-                  changeController();
+                  reply == true
+                      ? x.sendReply(
+                          _message, replymessage, replymessageName, replyImage)
+                      : x.sendMessage(_message);
+
+                  // changeController();
+
                   reply == true
                       ? setState(() {
                           reply = false;
@@ -581,10 +580,13 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ],
           ),
         ),
-        Positioned(
-            bottom: 0, child: (isShowSticker == true ? emoji() : Container())),
+        Offstage(offstage: !isShowSticker, child: emoji())
       ],
     );
+  }
+
+  Widget keyboard() {
+    return reply == true ? replyKeyboard() : Container(height: 0);
   }
 
   Widget emoji() {
@@ -658,111 +660,118 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 return Container();
               }
 
-              return Stack(
+              return Column(
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isShowSticker = false;
-                      });
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isShowSticker = false;
+                        });
 
-                      _focus.unfocus();
-                    },
-                    child: ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) =>
-                          SizedBox(
-                        height: 12,
-                      ),
-                      controller: _controller,
-                      reverse: true,
-                      itemCount: snapshot.data!.size,
-                      //shrinkWrap: true,
-                      padding: reply == true &&
-                              isShowSticker == false &&
-                              replyStory == "text"
-                          ? EdgeInsets.only(
-                              top: 10, bottom: 180, left: 10, right: 10)
-                          : reply == true &&
-                                  isShowSticker == false &&
-                                  replyStory == "image"
-                              ? EdgeInsets.only(
-                                  top: 10, bottom: 220, left: 10, right: 10)
-                              : reply == false && isShowSticker == false
-                                  ? EdgeInsets.only(
-                                      top: 10, bottom: 80, left: 10, right: 10)
-                                  : reply == true && isShowSticker == true
-                                      ? EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 420,
-                                          left: 10,
-                                          right: 10)
-                                      :
-
-                                      //그 리플없이 이모티콘만
-                                      EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 340,
-                                          left: 10,
-                                          right: 10),
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        x.isRead();
-                        Map<int, String> pp = new Map<int, String>();
-                        if (snapshot.data!.docs[index]["messageTime"] != null) {
-                          Map<int, String> ttt = new Map<int, String>();
-                          List<dynamic> aa = [];
-                          for (int i = 0; i < snapshot.data!.size; i++) {
-                            ttt[i] = DatetimeFunction().diffDay(DateTime.parse(
-                                snapshot.data!.docs[i]["messageTime"]!
-                                    .toDate()
-                                    .toString()));
-                          }
-
-                          ttt.forEach((key, value) => aa.add(value));
-                          for (int z = snapshot.data!.size - 1; 0 <= z; z--) {
-                            if (ttt[z] == aa[z]) {
-                              if (pp.containsValue(aa[z]))
-                                pp[z] = "";
-                              else
-                                pp[z] = aa[z];
-                            }
-                          }
-                        } else {
-                          pp[index] = "";
-                        }
-                        return Column(
-                          children: [
-                            snapshot.data!.docs[index]["messageTime"] != null &&
-                                    pp[index]!.isNotEmpty
-                                ? Center(
-                                    child: Padding(
-                                    padding: pp[index] == ""
-                                        ? EdgeInsets.all(0)
-                                        : EdgeInsets.only(bottom: 30.0),
-                                    child: Text(pp[index]!),
-                                  ))
-                                : Container(
-                                    height: 0,
-                                  ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: snapshot.data!.docs[index]
-                                          ["messageFrom"] ==
-                                      widget.messageFrom
-                                  ? myWidget(snapshot, index)
-                                  : otherWidget(snapshot, index),
-                            ),
-                          ],
-                        );
+                        _focus.unfocus();
                       },
+                      child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) =>
+                            SizedBox(
+                          height: 12,
+                        ),
+                        reverse: true,
+                        itemCount: snapshot.data!.size,
+                        shrinkWrap: false,
+                        padding:
+                            //  reply == true &&
+                            //         isShowSticker == false &&
+                            //         replyStory == "text"
+                            //     ? EdgeInsets.only(
+                            //         top: 10, bottom: 180, left: 10, right: 10)
+                            //     : reply == true &&
+                            //             isShowSticker == false &&
+                            //             replyStory == "image"
+                            //         ? EdgeInsets.only(
+                            //             top: 10, bottom: 220, left: 10, right: 10)
+                            //         : reply == false && isShowSticker == false
+                            //             ? EdgeInsets.only(
+                            //                 top: 10, bottom: 80, left: 10, right: 10)
+                            //             : reply == true && isShowSticker == true
+                            //                 ? EdgeInsets.only(
+                            //                     top: 10,
+                            //                     bottom: 420,
+                            //                     left: 10,
+                            //                     right: 10)
+                            //                 :
+
+                            //그 리플없이 이모티콘만
+                            EdgeInsets.only(
+                                top: 10, bottom: 10, left: 10, right: 10),
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          x.isRead();
+                          Map<int, String> pp = new Map<int, String>();
+                          if (snapshot.data!.docs[index]["messageTime"] !=
+                              null) {
+                            Map<int, String> ttt = new Map<int, String>();
+                            List<dynamic> aa = [];
+                            for (int i = 0; i < snapshot.data!.size; i++) {
+                              ttt[i] = DatetimeFunction().diffDay(
+                                  DateTime.parse(snapshot
+                                      .data!.docs[i]["messageTime"]!
+                                      .toDate()
+                                      .toString()));
+                            }
+
+                            ttt.forEach((key, value) => aa.add(value));
+                            for (int z = snapshot.data!.size - 1; 0 <= z; z--) {
+                              if (ttt[z] == aa[z]) {
+                                if (pp.containsValue(aa[z]))
+                                  pp[z] = "";
+                                else
+                                  pp[z] = aa[z];
+                              }
+                            }
+                          } else {
+                            pp[index] = "";
+                          }
+                          return Column(
+                            children: [
+                              snapshot.data!.docs[index]["messageTime"] !=
+                                          null &&
+                                      pp[index]!.isNotEmpty
+                                  ? Center(
+                                      child: Padding(
+                                      padding: pp[index] == ""
+                                          ? EdgeInsets.all(0)
+                                          : EdgeInsets.only(bottom: 10.0),
+                                      child: Text(pp[index]!),
+                                    ))
+                                  : Container(
+                                      height: 0,
+                                    ),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: snapshot.data!.docs[index]
+                                            ["messageFrom"] ==
+                                        widget.messageFrom
+                                    ? myWidget(snapshot, index)
+                                    : otherWidget(snapshot, index),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.all(60)),
-                  keyboard(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      keyboard(),
+                      chatFormContainer(),
+                      //Offstage(offstage: !isShowSticker, child: emoji())
+                    ],
+                  ),
                 ],
               );
             }),
-        // bottomSheet: keyboard(),
       ),
     );
   }

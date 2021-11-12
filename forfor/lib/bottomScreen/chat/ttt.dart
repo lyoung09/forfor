@@ -1,106 +1,149 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Content extends StatelessWidget {
-  final FocusNode _nodeText7 = FocusNode();
-  final FocusNode _nodeText8 = FocusNode();
-  //This is only for custom keyboards
-  final custom1Notifier = ValueNotifier<String>("0");
-  final custom2Notifier = ValueNotifier<Color>(Colors.blue);
+class BottomSendNavigation extends StatefulWidget {
+  @override
+  _BottomSendNavigationState createState() => _BottomSendNavigationState();
+}
 
-  /// Creates the [KeyboardActionsConfig] to hook up the fields
-  /// and their focus nodes to our [FormKeyboardActions].
-  KeyboardActionsConfig _buildConfig(BuildContext context) {
-    return KeyboardActionsConfig(
-      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-      keyboardBarColor: Colors.grey[200],
-      actions: [
-        KeyboardActionsItem(
-          focusNode: _nodeText7,
-          footerBuilder: (_) => CounterKeyboard(
-            notifier: custom1Notifier,
+class _BottomSendNavigationState extends State<BottomSendNavigation>
+    with SingleTickerProviderStateMixin {
+  TextEditingController _sendMessageController = TextEditingController();
+
+  bool showEmoji = false;
+
+  FocusNode focusNode = FocusNode();
+
+  Icon _emojiIcon = Icon(
+    FontAwesomeIcons.smileWink,
+    color: Colors.grey,
+    size: 20,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(
+      () {
+        if (focusNode.hasFocus) {
+          setState(() {
+            showEmoji = false;
+            _emojiIcon = Icon(
+              FontAwesomeIcons.smileWink,
+              color: Colors.grey,
+              size: 20,
+            );
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          height: 60,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 1.5,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: TextField(
+                          focusNode: focusNode,
+                          cursorColor: Colors.black,
+                          controller: _sendMessageController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Type Here",
+                            prefixIcon: IconButton(
+                              icon: _emojiIcon,
+                              onPressed: () {
+                                focusNode.unfocus();
+                                focusNode.canRequestFocus = false;
+                                setState(() {
+                                  showEmoji = !showEmoji;
+                                  _emojiIcon = Icon(FontAwesomeIcons.keyboard);
+                                });
+                              },
+                            ),
+                            suffixIcon: Icon(
+                              FontAwesomeIcons.paperclip,
+                              color: Colors.grey,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(right: 12),
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: Icon(
+                        FontAwesomeIcons.microphone,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                    ),
+                    SizedBox(width: 7),
+                    Container(
+                      padding: EdgeInsets.only(right: 5),
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black,
+                      ),
+                      child: Icon(
+                        FontAwesomeIcons.solidPaperPlane,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+        showEmoji ? showEmojiPicker() : Container(),
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return KeyboardActions(
-      config: _buildConfig(context),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              KeyboardCustomInput<String>(
-                focusNode: _nodeText7,
-                height: 65,
-                notifier: custom1Notifier,
-                builder: (context, val, hasFocus) {
-                  return Container(
-                    alignment: Alignment.center,
-                    color: hasFocus! ? Colors.grey[300] : Colors.white,
-                    child: Text(
-                      'message.text',
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A quick example "keyboard" widget for counter value.
-class CounterKeyboard extends StatelessWidget
-    with KeyboardCustomPanelMixin<String>
-    implements PreferredSizeWidget {
-  final ValueNotifier<String> notifier;
-
-  CounterKeyboard({Key? key, required this.notifier}) : super(key: key);
-
-  @override
-  Size get preferredSize => Size.fromHeight(200);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: preferredSize.height,
-      child: EmojiPicker(
-          onEmojiSelected: (Category category, Emoji emoji) {
-            // _onEmojiSelected(emoji);
-          },
-          onBackspacePressed: () {},
-          config: Config(
-              columns: 7,
-              // Issue: https://github.com/flutter/flutter/issues/28894
-              //emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-              verticalSpacing: 0,
-              horizontalSpacing: 0,
-              initCategory: Category.RECENT,
-              bgColor: const Color(0xFFF2F2F2),
-              indicatorColor: Colors.blue,
-              iconColor: Colors.grey,
-              iconColorSelected: Colors.blue,
-              progressIndicatorColor: Colors.blue,
-              backspaceColor: Colors.blue,
-              showRecentsTab: true,
-              recentsLimit: 28,
-              noRecentsText: 'No Recents',
-              noRecentsStyle:
-                  const TextStyle(fontSize: 20, color: Colors.black26),
-              tabIndicatorAnimDuration: kTabScrollDuration,
-              categoryIcons: const CategoryIcons(),
-              buttonMode: ButtonMode.MATERIAL)),
+  Widget showEmojiPicker() {
+    return EmojiPicker(
+      rows: 4,
+      columns: 7,
+      onEmojiSelected: (emoji, category) {
+        print(emoji);
+        _sendMessageController.text = _sendMessageController.text + emoji.emoji;
+      },
     );
   }
 }

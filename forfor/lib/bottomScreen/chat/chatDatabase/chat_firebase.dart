@@ -87,6 +87,8 @@ class ChatFirebase {
   String replymessage = "";
 
   sendReply(message, replymessage, replymessageName, replyImage) async {
+    print(replymessageName);
+    print(replymessage);
     if (message.text.trim().isEmpty) {
     } else {
       try {

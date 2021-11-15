@@ -487,6 +487,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
     });
   }
 
+  bool? isLoading;
   changeKeyboard() {
     setState(() {
       if (isShowSticker) {
@@ -500,14 +501,14 @@ class _ChattingDetailState extends State<ChattingDetail> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.only(left: 10, bottom: 15),
+          padding: EdgeInsets.only(left: 18, bottom: 15),
           height: 60,
           width: MediaQuery.of(context).size.width,
           color: Colors.white,
           child: Row(
             children: <Widget>[
               GestureDetector(
-                onTap: sendPic,
+                onTap: isShowSticker == true ? _onBackspacePressed : sendPic,
                 child: Container(
                   height: 30,
                   width: 30,
@@ -516,7 +517,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Icon(
-                    Icons.photo_size_select_actual_outlined,
+                    isShowSticker == true
+                        ? FontAwesomeIcons.eraser
+                        : Icons.photo_size_select_actual_outlined,
                     size: 25,
                   ),
                 ),
@@ -580,13 +583,33 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ],
           ),
         ),
-        Offstage(offstage: !isShowSticker, child: emoji())
+        isShowSticker == true && MediaQuery.of(context).viewInsets.bottom == 0.0
+            ? AnimatedContainer(
+                height: isShowSticker == true &&
+                        MediaQuery.of(context).viewInsets.bottom == 0.0
+                    ? null
+                    : 0,
+                duration: Duration(milliseconds: 0),
+                child: Offstage(offstage: !isShowSticker, child: emoji()))
+            : SizedBox(height: 0)
+        // AnimatedContainer(
+        //     height: isShowSticker == true ? null : 0,
+        //     width: isShowSticker == true ? null : 0,
+
+        //     duration: const Duration(milliseconds: 0),
+        //     child: emoji()),
       ],
     );
   }
 
   Widget keyboard() {
     return reply == true ? replyKeyboard() : Container(height: 0);
+  }
+
+  _onBackspacePressed() {
+    setState(() {
+      _message.text = _message.text.characters.skipLast(1).toString();
+    });
   }
 
   Widget emoji() {
@@ -671,93 +694,100 @@ class _ChattingDetailState extends State<ChattingDetail> {
 
                         _focus.unfocus();
                       },
-                      child: ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(
-                          height: 12,
-                        ),
-                        reverse: true,
-                        itemCount: snapshot.data!.size,
-                        shrinkWrap: false,
-                        padding:
-                            //  reply == true &&
-                            //         isShowSticker == false &&
-                            //         replyStory == "text"
-                            //     ? EdgeInsets.only(
-                            //         top: 10, bottom: 180, left: 10, right: 10)
-                            //     : reply == true &&
-                            //             isShowSticker == false &&
-                            //             replyStory == "image"
-                            //         ? EdgeInsets.only(
-                            //             top: 10, bottom: 220, left: 10, right: 10)
-                            //         : reply == false && isShowSticker == false
-                            //             ? EdgeInsets.only(
-                            //                 top: 10, bottom: 80, left: 10, right: 10)
-                            //             : reply == true && isShowSticker == true
-                            //                 ? EdgeInsets.only(
-                            //                     top: 10,
-                            //                     bottom: 420,
-                            //                     left: 10,
-                            //                     right: 10)
-                            //                 :
+                      child: AnimatedPadding(
+                        padding: MediaQuery.of(context).viewInsets,
+                        duration: const Duration(milliseconds: 100),
+                        curve: Curves.decelerate,
+                        child: ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) =>
+                              SizedBox(
+                            height: 12,
+                          ),
+                          reverse: true,
+                          itemCount: snapshot.data!.size,
+                          shrinkWrap: false,
+                          padding:
+                              //  reply == true &&
+                              //         isShowSticker == false &&
+                              //         replyStory == "text"
+                              //     ? EdgeInsets.only(
+                              //         top: 10, bottom: 180, left: 10, right: 10)
+                              //     : reply == true &&
+                              //             isShowSticker == false &&
+                              //             replyStory == "image"
+                              //         ? EdgeInsets.only(
+                              //             top: 10, bottom: 220, left: 10, right: 10)
+                              //         : reply == false && isShowSticker == false
+                              //             ? EdgeInsets.only(
+                              //                 top: 10, bottom: 80, left: 10, right: 10)
+                              //             : reply == true && isShowSticker == true
+                              //                 ? EdgeInsets.only(
+                              //                     top: 10,
+                              //                     bottom: 420,
+                              //                     left: 10,
+                              //                     right: 10)
+                              //                 :
 
-                            //그 리플없이 이모티콘만
-                            EdgeInsets.only(
-                                top: 10, bottom: 10, left: 10, right: 10),
-                        physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          x.isRead();
-                          Map<int, String> pp = new Map<int, String>();
-                          if (snapshot.data!.docs[index]["messageTime"] !=
-                              null) {
-                            Map<int, String> ttt = new Map<int, String>();
-                            List<dynamic> aa = [];
-                            for (int i = 0; i < snapshot.data!.size; i++) {
-                              ttt[i] = DatetimeFunction().diffDay(
-                                  DateTime.parse(snapshot
-                                      .data!.docs[i]["messageTime"]!
-                                      .toDate()
-                                      .toString()));
-                            }
-
-                            ttt.forEach((key, value) => aa.add(value));
-                            for (int z = snapshot.data!.size - 1; 0 <= z; z--) {
-                              if (ttt[z] == aa[z]) {
-                                if (pp.containsValue(aa[z]))
-                                  pp[z] = "";
-                                else
-                                  pp[z] = aa[z];
+                              //그 리플없이 이모티콘만
+                              EdgeInsets.only(
+                                  top: 10, bottom: 10, left: 10, right: 10),
+                          physics: BouncingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            x.isRead();
+                            Map<int, String> pp = new Map<int, String>();
+                            if (snapshot.data!.docs[index]["messageTime"] !=
+                                null) {
+                              Map<int, String> ttt = new Map<int, String>();
+                              List<dynamic> aa = [];
+                              for (int i = 0; i < snapshot.data!.size; i++) {
+                                ttt[i] = DatetimeFunction().diffDay(
+                                    DateTime.parse(snapshot
+                                        .data!.docs[i]["messageTime"]!
+                                        .toDate()
+                                        .toString()));
                               }
+
+                              ttt.forEach((key, value) => aa.add(value));
+                              for (int z = snapshot.data!.size - 1;
+                                  0 <= z;
+                                  z--) {
+                                if (ttt[z] == aa[z]) {
+                                  if (pp.containsValue(aa[z]))
+                                    pp[z] = "";
+                                  else
+                                    pp[z] = aa[z];
+                                }
+                              }
+                            } else {
+                              pp[index] = "";
                             }
-                          } else {
-                            pp[index] = "";
-                          }
-                          return Column(
-                            children: [
-                              snapshot.data!.docs[index]["messageTime"] !=
-                                          null &&
-                                      pp[index]!.isNotEmpty
-                                  ? Center(
-                                      child: Padding(
-                                      padding: pp[index] == ""
-                                          ? EdgeInsets.all(0)
-                                          : EdgeInsets.only(bottom: 10.0),
-                                      child: Text(pp[index]!),
-                                    ))
-                                  : Container(
-                                      height: 0,
-                                    ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: snapshot.data!.docs[index]
-                                            ["messageFrom"] ==
-                                        widget.messageFrom
-                                    ? myWidget(snapshot, index)
-                                    : otherWidget(snapshot, index),
-                              ),
-                            ],
-                          );
-                        },
+                            return Column(
+                              children: [
+                                snapshot.data!.docs[index]["messageTime"] !=
+                                            null &&
+                                        pp[index]!.isNotEmpty
+                                    ? Center(
+                                        child: Padding(
+                                        padding: pp[index] == ""
+                                            ? EdgeInsets.all(0)
+                                            : EdgeInsets.only(bottom: 10.0),
+                                        child: Text(pp[index]!),
+                                      ))
+                                    : Container(
+                                        height: 0,
+                                      ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: snapshot.data!.docs[index]
+                                              ["messageFrom"] ==
+                                          widget.messageFrom
+                                      ? myWidget(snapshot, index)
+                                      : otherWidget(snapshot, index),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

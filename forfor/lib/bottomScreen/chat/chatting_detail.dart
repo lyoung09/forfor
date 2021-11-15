@@ -583,15 +583,16 @@ class _ChattingDetailState extends State<ChattingDetail> {
             ],
           ),
         ),
-        isShowSticker == true && MediaQuery.of(context).viewInsets.bottom == 0.0
-            ? AnimatedContainer(
-                height: isShowSticker == true &&
-                        MediaQuery.of(context).viewInsets.bottom == 0.0
-                    ? null
-                    : 0,
-                duration: Duration(milliseconds: 0),
-                child: Offstage(offstage: !isShowSticker, child: emoji()))
-            : SizedBox(height: 0)
+        // isShowSticker == true && MediaQuery.of(context).viewInsets.bottom == 0.0
+        //     ?
+        AnimatedContainer(
+            height: isShowSticker == true &&
+                    MediaQuery.of(context).viewInsets.bottom == 0.0
+                ? null
+                : 0,
+            duration: Duration(milliseconds: 0),
+            child: Offstage(offstage: !isShowSticker, child: emoji()))
+        //     : SizedBox(height: 0)
         // AnimatedContainer(
         //     height: isShowSticker == true ? null : 0,
         //     width: isShowSticker == true ? null : 0,

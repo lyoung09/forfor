@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/utils/datetime.dart';
 import 'package:forfor/widget/safe_tap.dart';
@@ -57,6 +58,24 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     controller1.addListener(() {
       setState(() {});
     });
+  }
+
+  final HttpsCallable sendFCM =
+      FirebaseFunctions.instanceFor(region: 'europe-west1')
+          .httpsCallable('sendFCM'); // 호출할 Cloud Functions 의 함수명
+
+  void sendSampleFCM(String token) async {
+    try {
+      await sendFCM.call(
+        <dynamic, dynamic>{
+          "token": token,
+          "title": "Sample Title",
+          "body": "This is a Sample FCM"
+        },
+      );
+    } catch (e) {
+      print('${e} error');
+    }
   }
 
   String category = "all";
@@ -198,7 +217,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
 
   var count;
   Map<String, int> likes = new Map<String, int>();
-  check(posting, index, favorite) async {
+  check(posting, index, favorite, token) async {
     DateTime currentPhoneDate = DateTime.now(); //DateTime
 
     Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
@@ -226,6 +245,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       ref.update({
         "count": FieldValue.increment(1),
       });
+      print(token);
+      sendSampleFCM(token);
     }
     if (!favorite[index]) {
       // await FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -504,7 +525,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               return SafeOnTap(
                                 onSafeTap: () {
                                   favorite[index] = !favorite[index];
-                                  check(posting, index, favorite);
+                                  check(posting, index, favorite,
+                                      user[count]["token"]);
                                 },
                                 child: Icon(
                                   Icons.favorite,
@@ -579,7 +601,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   bool like = false;
 
   Widget myQnA(posting, index, favorite, uid, name, url, country, introduction,
-      address) {
+      address, token) {
     Map<int, String> ago = new Map<int, String>();
     ago[index] = DatetimeFunction().ago(posting[index]["timestamp"]);
 
@@ -747,7 +769,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               return SafeOnTap(
                                 onSafeTap: () {
                                   favorite[index] = !favorite[index];
-                                  check(posting, index, favorite);
+                                  check(posting, index, favorite, token);
                                 },
                                 child: Icon(
                                   Icons.favorite,
@@ -942,6 +964,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                         late String country;
                                         late String introduction;
                                         late String address;
+                                        late String token;
                                         if (controller.user!.uid ==
                                             snapshot.data!.docs[index]
                                                 ["authorId"]) {
@@ -954,6 +977,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                               ["introduction"];
                                           address =
                                               user.data!.docs[count]["address"];
+                                          token = user.data!.docs[count]
+                                                  ["token"] ??
+                                              "";
                                         }
                                         return controller.user!.uid ==
                                                 snapshot.data!.docs[index]
@@ -967,7 +993,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                                 url,
                                                 country,
                                                 introduction,
-                                                address)
+                                                address,
+                                                token)
                                             : otherUserQnA(
                                                 snapshot.data!.docs,
                                                 index,

@@ -9,6 +9,28 @@ import 'my_colors.dart';
 import 'my_strings.dart';
 import 'my_text.dart';
 
+class FcmMessage extends StatefulWidget {
+  final String title;
+  const FcmMessage({Key? key, required this.title}) : super(key: key);
+
+  @override
+  _FcmMessageState createState() => _FcmMessageState();
+}
+
+class _FcmMessageState extends State<FcmMessage> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: ListTile(title: Text(widget.title)),
+    );
+  }
+}
+
 class CustomDialogBox extends StatefulWidget {
   final String title, text;
   final List<dynamic> descriptions;

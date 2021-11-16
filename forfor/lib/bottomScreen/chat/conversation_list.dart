@@ -66,6 +66,13 @@ class _ConversationListState extends State<ConversationList> {
     });
   }
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<DocumentSnapshot<Object?>> user() async {
     return UserDatabase().getUserDs(widget.talker);
   }

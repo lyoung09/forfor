@@ -44,7 +44,6 @@ import 'controller/bind/authbinding.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'integration/app_localizations.dart';
 import 'login/screen/show.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -54,13 +53,30 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
     importance: Importance.high,
     playSound: true);
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+
+  print(message.data['title']);
   print('A bg message just showed up :  ${message.messageId}');
+
+  flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.data['title'],
+      message.data['body'],
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channel.description,
+          color: Colors.blue,
+          playSound: true,
+          icon: '@mipmap/ic_launcher',
+        ),
+      ));
 }
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -147,30 +163,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String? token;
   initState() {
     super.initState();
+
+    var initialzationsettingAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var initialzationsettingIos = IOSInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false);
+
+    var initSetting = InitializationSettings(
+        android: initialzationsettingAndroid, iOS: initialzationsettingIos);
+
+    flutterLocalNotificationsPlugin.initialize(initSetting);
+    getToken();
     getLoc();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null) {
+      Map<String, dynamic> data = message.data;
+      String? screen = data['screen'].toString();
+
+      if (message.data.isNotEmpty) {
+        print(screen);
         flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
+            message.notification.hashCode,
+            message.data['title'],
+            message.data['body'],
             NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                color: Colors.blue,
-                playSound: true,
-                icon: '@mipmap/ic_launcher',
-              ),
-            ));
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channel.description,
+                  color: Colors.blue,
+                  playSound: true,
+                  icon: '@mipmap/ic_launcher',
+                ),
+                iOS: IOSNotificationDetails(
+                    presentAlert: true, presentSound: true)),
+            payload: screen);
       }
     });
+
+    Future<dynamic> onSelectNotification(payload) async {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ChatUserList()));
+    }
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
@@ -178,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
       AndroidNotification? android = message.notification?.android;
 
       final routeFromName = message.data["route"];
-      print(routeFromName);
+      print('${routeFromName} asas');
       Get.to(() => ChattingDetail(
             messageFrom: '7Ldq42bdxmbqQIp1PG2Mxii6MnF3',
             messageTo: '9UbDWOQrLOXirtzGQEwMUiuVnGb2',
@@ -186,22 +226,26 @@ class _MyHomePageState extends State<MyHomePage> {
           ));
       if (notification != null && android != null) {}
     });
-    hoit();
   }
 
-  void hoit() {
-    flutterLocalNotificationsPlugin.show(
-        0,
-        "Testing 1234",
-        "How you doin ?",
-        NotificationDetails(
-            android: AndroidNotificationDetails(
-                channel.id, channel.name, channel.description,
-                importance: Importance.high,
-                color: Colors.blue,
-                playSound: true,
-                icon: '@mipmap/ic_launcher')));
+  getToken() async {
+    token = await FirebaseMessaging.instance.getToken();
+    print(token);
   }
+
+  // void hoit() {
+  //   flutterLocalNotificationsPlugin.show(
+  //       0,
+  //       "Testing 1234",
+  //       "How you doin ?",
+  //       NotificationDetails(
+  //           android: AndroidNotificationDetails(
+  //               channel.id, channel.name, channel.description,
+  //               importance: Importance.high,
+  //               color: Colors.blue,
+  //               playSound: true,
+  //               icon: '@mipmap/ic_launcher')));
+  // }
 
   final Location location = Location();
 
@@ -305,6 +349,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
           Get.offAll(() => MainLogin());
         } else {
+          if (token != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(controller.user!.uid)
+                .update({"token": token});
+          }
           Get.offAll(() => BottomNavigation());
         }
       } catch (e) {
@@ -336,29 +386,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ));
-  }
-
-  hohoh() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved 123");
-
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Notification"),
-              content: Text(event.notification!.body!),
-              actions: [
-                TextButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
-    });
   }
 }
 

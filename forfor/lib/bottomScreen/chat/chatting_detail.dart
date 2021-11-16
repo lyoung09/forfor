@@ -593,12 +593,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
             duration: Duration(milliseconds: 0),
             child: Offstage(offstage: !isShowSticker, child: emoji()))
         //     : SizedBox(height: 0)
-        // AnimatedContainer(
-        //     height: isShowSticker == true ? null : 0,
-        //     width: isShowSticker == true ? null : 0,
-
-        //     duration: const Duration(milliseconds: 0),
-        //     child: emoji()),
+      
       ],
     );
   }

@@ -9,13 +9,17 @@ admin.initializeApp({
 
 
 
-exports.sendFCM = functions.region("us-central1").https.onCall((data, context) => {
-  const payload = {
-    data: {
-      title: data["title"],
-      body: data["body"]
-    }
-  };
-  const result =  admin.messaging().sendToDevice(data["token"], payload);
-  return result;
+exports.sendFCM = functions.https.onCall((data, context) => {
+  
+  
+
+  // const payload = {
+  //   data: {
+  //     title: data.title,
+  //     body: data.body
+  //   }
+  // };
+
+  // const result =  admin.messaging().sendToDevice(data["token"], payload);
+  // return result;
 });

@@ -15,12 +15,14 @@ import 'package:forfor/bottomScreen/chat/chatting_detail.dart';
 import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
+import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 
 import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/service/notification_service.dart';
 
 import 'package:forfor/service/userdatabase.dart';
 
@@ -206,11 +208,6 @@ class _MyHomePageState extends State<MyHomePage> {
             payload: screen);
       }
     });
-
-    Future<dynamic> onSelectNotification(payload) async {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatUserList()));
-    }
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');

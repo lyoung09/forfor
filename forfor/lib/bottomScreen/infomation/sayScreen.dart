@@ -61,18 +61,23 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   }
 
   final HttpsCallable sendFCM =
-      FirebaseFunctions.instanceFor(region: 'europe-west1')
+      FirebaseFunctions.instanceFor(region: 'us-central1')
           .httpsCallable('sendFCM'); // 호출할 Cloud Functions 의 함수명
 
-  void sendSampleFCM(String token) async {
+  final HttpsCallable addCount =
+      FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('addCount'); // 호출할 Cloud Functions 의 함수명
+
+  void sendSampleFCM(String token, String uid, datetime, postid) async {
     try {
-      await sendFCM.call(
-        <dynamic, dynamic>{
-          "token": token,
-          "title": "Sample Title",
-          "body": "This is a Sample FCM"
-        },
-      );
+      final HttpsCallableResult result =
+          await addCount.call(<String, dynamic>{'count': 12});
+
+      // await sendFCM.call(<dynamic, dynamic>{
+      //   "token": token,
+      //   "title": "Sample Title",
+      //   "body": "This is a Sample FCM"
+      // });
     } catch (e) {
       print('${e} error');
     }
@@ -246,7 +251,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "count": FieldValue.increment(1),
       });
       print(token);
-      sendSampleFCM(token);
+      sendSampleFCM(token, controller.user!.uid, myDateTime, posting[index].id);
     }
     if (!favorite[index]) {
       // await FirebaseFirestore.instance.runTransaction((transaction) async {

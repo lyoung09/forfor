@@ -200,7 +200,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   channel.name,
                   channel.description,
                   color: Colors.blue,
-                  playSound: true,
+                  enableVibration: false,
+                  playSound: false,
                   icon: '@mipmap/ic_launcher',
                 ),
                 iOS: IOSNotificationDetails(

@@ -42,6 +42,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       FirebaseFirestore.instance.collection('posting');
   CollectionReference _categoryref =
       FirebaseFirestore.instance.collection('category');
+  late String name;
   @override
   void initState() {
     // TODO: implement initState
@@ -68,16 +69,14 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       FirebaseFunctions.instanceFor(region: 'us-central1')
           .httpsCallable('addCount'); // 호출할 Cloud Functions 의 함수명
 
-  void sendSampleFCM(String token, String uid, datetime, postid) async {
+  void sendSampleFCM(String token, String uid, datetime, postingStory) async {
     try {
-      final HttpsCallableResult result =
-          await addCount.call(<String, dynamic>{'count': 12});
-
-      // await sendFCM.call(<dynamic, dynamic>{
-      //   "token": token,
-      //   "title": "Sample Title",
-      //   "body": "This is a Sample FCM"
-      // });
+      final HttpsCallableResult result = await sendFCM.call(<dynamic, dynamic>{
+        "token": token,
+        "title": "${name}님이 좋아합니다",
+        "body": postingStory
+      });
+      print(result.data);
     } catch (e) {
       print('${e} error');
     }
@@ -251,7 +250,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "count": FieldValue.increment(1),
       });
       print(token);
-      sendSampleFCM(token, controller.user!.uid, myDateTime, posting[index].id);
+      sendSampleFCM(token, name, myDateTime, posting[index]["story"]);
     }
     if (!favorite[index]) {
       // await FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -964,7 +963,6 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                       itemCount: user.data!.size,
                                       itemBuilder:
                                           (BuildContext context, count) {
-                                        late String name;
                                         late String url;
                                         late String country;
                                         late String introduction;

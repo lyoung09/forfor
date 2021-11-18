@@ -76,7 +76,9 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         "title": "${name}님이 좋아합니다",
         "body": postingStory
       });
-      print(result.data);
+      print(token);
+      print(name);
+      print(postingStory);
     } catch (e) {
       print('${e} error');
     }
@@ -259,6 +261,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       //   print(likesCount);
       //   await transaction.update(ref, {'count': likesCount - 1});
       // });
+
       ref.update({
         "count": FieldValue.increment(-1),
       });

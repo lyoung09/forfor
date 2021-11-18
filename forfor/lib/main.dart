@@ -25,12 +25,12 @@ import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/service/notification_service.dart';
 
 import 'package:forfor/service/userdatabase.dart';
+import 'package:location/location.dart';
 
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:kakao_flutter_sdk/all.dart';
-import 'package:location/location.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,6 +47,7 @@ import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login/screen/show.dart';
+import 'utils/permissionhadler.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
@@ -85,6 +86,7 @@ void main() async {
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
   await Firebase.initializeApp();
+  FirebaseMessaging.instance.requestPermission();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await flutterLocalNotificationsPlugin
@@ -185,22 +187,22 @@ class _MyHomePageState extends State<MyHomePage> {
     getLoc();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(message);
+
       Map<String, dynamic> data = message.data;
       String? screen = data['screen'].toString();
 
       if (message.data.isNotEmpty) {
-        print(screen);
         flutterLocalNotificationsPlugin.show(
             message.notification.hashCode,
-            message.data['title'],
-            message.data['body'],
+            data['title'],
+            data['body'],
             NotificationDetails(
                 android: AndroidNotificationDetails(
                   channel.id,
                   channel.name,
                   channel.description,
                   color: Colors.blue,
-                  enableVibration: false,
                   playSound: false,
                   icon: '@mipmap/ic_launcher',
                 ),
@@ -224,11 +226,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ));
       if (notification != null && android != null) {}
     });
+    //hoit();
   }
 
   getToken() async {
     token = await FirebaseMessaging.instance.getToken();
-    print(token);
+    print('myToken: ${token}');
   }
 
   // void hoit() {
@@ -360,6 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } else {
       prefs.setBool('seen', true);
+      Get.offAll(() => MainLogin());
     }
     // Navigator.of(context).push(
     //   MaterialPageRoute(

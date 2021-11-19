@@ -84,7 +84,6 @@ dependencies:
   path_provider: ^2.0.0
   flutter_slidable: ^0.6.0
   swipe_to: ^0.0.1+8
-  gallery_saver: ^0.0.5
   emoji_picker_flutter: ^1.0.6
   flutter_local_notifications: ^5.0.0+4
   flutter_keyboard_visibility: ^5.0.0

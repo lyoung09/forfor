@@ -12,6 +12,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>nb</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>forfor</string>
 	<key>CFBundlePackageType</key>
@@ -28,17 +33,17 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>&lt;?xml</string>
-				<string>version="1.0"</string>
-				<string>encoding="UTF-8"?&gt;
+				<string>version=&quot;1.0&quot;</string>
+				<string>encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE</string>
 				<string>plist</string>
 				<string>PUBLIC</string>
-				<string>"-//Apple//DTD</string>
+				<string>&quot;-//Apple//DTD</string>
 				<string>PLIST</string>
-				<string>1.0//EN"</string>
-				<string>"http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+				<string>1.0//EN&quot;</string>
+				<string>&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
 &lt;plist</string>
-				<string>version="1.0"&gt;
+				<string>version=&quot;1.0&quot;&gt;
 &lt;string&gt;com.googleusercontent.apps.767895469306-vni5ckdadtfmr17saliknduoikkd4mcp&lt;/string&gt;
 &lt;/plist&gt;
 
@@ -65,7 +70,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
-	<string>NO</string>
+	<false/>
 	<key>KAKAO_APP_KEY</key>
 	<string>bbc30e62de88b34dadbc0e199b220cc4</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -79,14 +84,25 @@
 	<true/>
 	<key>MinimumOSVersion</key>
 	<string>9.0</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to demonstrate image picker plugin</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>local network</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<dict>
 		<key>YourPurposeKey</key>
-		<string>The example App requires temporary access to the device's precise location.</string>
+		<string>The example App requires temporary access to the device&apos;s precise location.</string>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
@@ -96,15 +112,11 @@
 	<string>Used to demonstrate image picker plugin</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>CFBundleLocalizations</key>
-<array>
-	<string>en</string>
-	<string>nb</string>
-</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -122,5 +134,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>accessNotificationPolicy</key>
+	<string>YES</string>
+	<key>manageExternalStorage</key>
+	<string>YES</string>
+	<key>requestInstallPackages</key>
+	<string>YES</string>
+	<key>systemAlertWindow</key>
+	<string>YES</string>
 </dict>
 </plist>

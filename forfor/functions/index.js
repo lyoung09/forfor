@@ -12,6 +12,7 @@ admin.initializeApp({
 
 exports.addCount= functions.https.onCall((data, context) => {
   console.log(data["count"]);
+
   const count = parseInt(data["count"]);
   return count;
 });
@@ -21,6 +22,23 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 });
 
 exports.sendFCM = functions.https.onCall((data, context) => {
+  const title = data["title"];
+  const body = data["body"];
+  const token =data["token"];
+
+  const payload = {
+    notification: {
+      "title": title,
+      "body": body,
+      "sound": "default",
+    },
+  };
+
+  const result = admin.messaging().sendToDevice(token, payload);
+  return result;
+});
+
+exports.sendChattingFCM = functions.https.onCall((data, context) => {
   const payload = {
     data: {
       title: data["title"],

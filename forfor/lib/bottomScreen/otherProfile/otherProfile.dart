@@ -35,7 +35,7 @@ class OtherProfile extends StatefulWidget {
 class _OtherProfileState extends State<OtherProfile> {
   late ScrollController scrollController;
   final controller = Get.put(AuthController());
-  late UserModel us;
+  UserModel? us;
   @override
   void dispose() {
     scrollController.dispose();
@@ -44,26 +44,25 @@ class _OtherProfileState extends State<OtherProfile> {
 
   @override
   void initState() {
+    otherUserProfile();
     super.initState();
     scrollController = new ScrollController();
     scrollController.addListener(() => setState(() {}));
-    otherUserProfile();
   }
 
+  UserModel? other;
   otherUserProfile() async {
     us = await UserDatabase().getUser(widget.uid);
-
-    print(us.nickname);
-    print(us.address);
-    print(us.country);
-    print(us.introduction);
+    setState(() {
+      other = us;
+    });
   }
 
   Widget _buildtitle() {
     Widget profile = new Container(
       height: 30.0,
       width: 200.0,
-      child: Text("${us.nickname}",
+      child: Text("${other!.nickname}",
           overflow: TextOverflow.fade,
           maxLines: 1,
           style: TextStyle(color: Colors.black)),
@@ -358,15 +357,15 @@ class _OtherProfileState extends State<OtherProfile> {
                                           child: CircleAvatar(
                                               radius: 25,
                                               backgroundColor: Colors.white,
-                                              backgroundImage:
-                                                  NetworkImage("${us.url}")),
+                                              backgroundImage: NetworkImage(
+                                                  "${other!.url}")),
                                         ),
                                         Positioned(
                                           bottom: 0,
                                           right: 0,
                                           child: CircleAvatar(
                                             backgroundImage: AssetImage(
-                                                'icons/flags/png/${us.country}.png',
+                                                'icons/flags/png/${other!.country}.png',
                                                 package: 'country_icons'),
                                             backgroundColor: Colors.white,
                                             radius: 8,
@@ -382,7 +381,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                           bottom: 10.0, left: 5, right: 5),
                                       child: Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text('${us.nickname}',
+                                          child: Text('${other!.nickname}',
                                               //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -768,15 +767,15 @@ class _OtherProfileState extends State<OtherProfile> {
                                           child: CircleAvatar(
                                               radius: 25,
                                               backgroundColor: Colors.white,
-                                              backgroundImage:
-                                                  NetworkImage("${us.url}")),
+                                              backgroundImage: NetworkImage(
+                                                  "${other!.url}")),
                                         ),
                                         Positioned(
                                           bottom: 0,
                                           right: 0,
                                           child: CircleAvatar(
                                             backgroundImage: AssetImage(
-                                                'icons/flags/png/${us.country}.png',
+                                                'icons/flags/png/${other!.country}.png',
                                                 package: 'country_icons'),
                                             backgroundColor: Colors.white,
                                             radius: 8,
@@ -792,7 +791,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                           bottom: 10.0, left: 5, right: 5),
                                       child: Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text('${us.nickname}',
+                                          child: Text('${other!.nickname}',
                                               //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -1007,7 +1006,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         child: CircleAvatar(
                           radius: 45,
                           backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage(us.url!),
+                          backgroundImage: NetworkImage(other!.url!),
                         ),
                       ),
                       Positioned(
@@ -1015,7 +1014,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         left: 10,
                         child: CircleAvatar(
                           backgroundImage: AssetImage(
-                              'icons/flags/png/${us.country}.png',
+                              'icons/flags/png/${other!.country}.png',
                               package: 'country_icons'),
                           backgroundColor: Colors.white,
                           radius: 15,
@@ -1031,7 +1030,7 @@ class _OtherProfileState extends State<OtherProfile> {
                     children: [
                       Container(
                         width: MediaQuery.of(context).size.width * 0.6,
-                        child: Text(us.nickname!,
+                        child: Text(other!.nickname!,
                             //"1widget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userName",
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -1042,7 +1041,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         width: MediaQuery.of(context).size.width * 0.6,
                         child: Padding(
                           padding: const EdgeInsets.all(5),
-                          child: Text(us.address!,
+                          child: Text(other!.address!,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: TextStyle(fontSize: 15)),
@@ -1070,7 +1069,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         padding: EdgeInsets.all(10),
                         height: 100,
                         width: MediaQuery.of(context).size.width * 0.85,
-                        child: Text(us.introduction!,
+                        child: Text(other!.introduction!,
                             // "write yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourself",
                             maxLines: 5,
                             overflow: TextOverflow.ellipsis,

@@ -101,12 +101,8 @@ class _ConversationListState extends State<ConversationList> {
 
   otherProfile() {
     Get.to(() => OtherProfile(
-        uid: widget.talker,
-        userName: widget.nickname,
-        userImage: widget.url,
-        introduction: introduction!,
-        country: country!,
-        address: address!));
+          uid: widget.talker,
+        ));
   }
 
   @override

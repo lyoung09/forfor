@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,7 +31,7 @@ class ChatFirebase {
     return myDateTime;
   }
 
-  imgFromGallery() async {
+  imgFromGallery(token, username) async {
     ImagePicker imagePicker = ImagePicker();
     final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
     _file = imageFile != null ? File(imageFile.path) : null;
@@ -55,12 +56,14 @@ class ChatFirebase {
       }).then((value) {
         cs.doc(chatId).update({"lastMessageTime": now()});
       });
+      sendChattingFCM(
+          username, "[image]", messageTo, messageFrom, chatId, token);
     } catch (e) {
       print(e);
     }
   }
 
-  sendMessage(message) async {
+  sendMessage(message, token, userName) async {
     if (message.text.trim().isEmpty) {
     } else {
       try {
@@ -76,6 +79,8 @@ class ChatFirebase {
         }).then((value) {
           cs.doc(chatId).update({"lastMessageTime": now()});
         });
+        sendChattingFCM(
+            userName, message.text, messageTo, messageFrom, chatId, token);
         message.clear();
       } catch (e) {
         print(e);
@@ -83,10 +88,32 @@ class ChatFirebase {
     }
   }
 
+  final HttpsCallable sendChattingFCMCall =
+      FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('sendChattingFCM'); // 호출할 Cloud Functions 의 함수명
+
+  void sendChattingFCM(title, body, myId, userId, chatId, token) async {
+    try {
+      print(body);
+      final HttpsCallableResult result =
+          await sendChattingFCMCall.call(<dynamic, dynamic>{
+        "token": token,
+        "title": '${title}님이 메세지를 보냈습니다.',
+        "body": body,
+        "myId": myId,
+        "otherId": userId,
+        "chattingId": chatId
+      });
+    } catch (e) {
+      print('${e} error');
+    }
+  }
+
   String replymessageName = "";
   String replymessage = "";
 
-  sendReply(message, replymessage, replymessageName, replyImage) async {
+  sendReply(message, replymessage, replymessageName, replyImage, token,
+      username) async {
     print(replymessageName);
     print(replymessage);
     if (message.text.trim().isEmpty) {
@@ -104,6 +131,8 @@ class ChatFirebase {
         }).then((value) {
           cs.doc(chatId).update({"lastMessageTime": now()});
         });
+        sendChattingFCM(
+            username, message.text, messageTo, messageFrom, chatId, token);
         message.clear();
       } catch (e) {
         print(e);

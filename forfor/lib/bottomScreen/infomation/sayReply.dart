@@ -185,11 +185,6 @@ class _SayReplyState extends State<SayReply> {
                       onTap: () {
                         Get.to(() => OtherProfile(
                               uid: post["authorId"],
-                              userName: snapshot.data!["nickname"],
-                              userImage: snapshot.data!["url"],
-                              country: snapshot.data!["country"],
-                              introduction: snapshot.data!["introduction"],
-                              address: snapshot.data!["address"],
                             ));
                       },
                       child: Padding(
@@ -468,17 +463,6 @@ class _SayReplyState extends State<SayReply> {
                                     onTap: () {
                                       Get.to(() => OtherProfile(
                                             uid: review[index]["replyId"],
-                                            userName: users.data!
-                                                .docs[userCount]["nickname"],
-                                            userImage: users
-                                                .data!.docs[userCount]["url"],
-                                            country: users.data!.docs[userCount]
-                                                ["country"],
-                                            introduction:
-                                                users.data!.docs[userCount]
-                                                    ["introduction"],
-                                            address: users.data!.docs[userCount]
-                                                ["address"],
                                           ));
                                     },
                                     child: Stack(

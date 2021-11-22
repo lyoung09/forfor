@@ -69,17 +69,8 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                                   MaterialPageRoute(
                                     builder: (BuildContext context) {
                                       return OtherProfile(
-                                          uid: users.data!.docs[count]["uid"],
-                                          userName: users.data!.docs[count]
-                                              ["nickname"],
-                                          userImage: users.data!.docs[count]
-                                              ["url"],
-                                          introduction: users.data!.docs[count]
-                                              ["introduction"],
-                                          country: users.data!.docs[count]
-                                              ["country"],
-                                          address: users.data!.docs[count]
-                                              ["address"]);
+                                        uid: users.data!.docs[count]["uid"],
+                                      );
                                     },
                                   ),
                                 );
@@ -266,19 +257,9 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                                           MaterialPageRoute(
                                             builder: (BuildContext context) {
                                               return OtherProfile(
-                                                  uid: replyUser
-                                                      .data!.docs[userC]["uid"],
-                                                  userName: replyUser.data!
-                                                      .docs[userC]["nickname"],
-                                                  userImage: replyUser
-                                                      .data!.docs[userC]["url"],
-                                                  introduction: replyUser
-                                                          .data!.docs[userC]
-                                                      ["introduction"],
-                                                  country: replyUser.data!
-                                                      .docs[userC]["country"],
-                                                  address: replyUser.data!
-                                                      .docs[userC]["address"]);
+                                                uid: replyUser.data!.docs[userC]
+                                                    ["uid"],
+                                              );
                                             },
                                           ),
                                         );
@@ -627,25 +608,11 @@ class _SayAlarmState extends State<SayAlarm> with TickerProviderStateMixin {
                                                     builder:
                                                         (BuildContext context) {
                                                       return OtherProfile(
-                                                          uid: userInfo.data!.docs[userInfoCount]
-                                                              ["uid"],
-                                                          userName: userInfo
-                                                                  .data!
-                                                                  .docs[userInfoCount]
-                                                              ["nickname"],
-                                                          userImage: userInfo
-                                                                  .data!
-                                                                  .docs[userInfoCount]
-                                                              ["url"],
-                                                          introduction: userInfo
-                                                                  .data!
-                                                                  .docs[userInfoCount]
-                                                              ["introduction"],
-                                                          country: userInfo.data!.docs[userInfoCount]
-                                                              ["country"],
-                                                          address: userInfo
-                                                              .data!
-                                                              .docs[userInfoCount]["address"]);
+                                                        uid: userInfo
+                                                                    .data!.docs[
+                                                                userInfoCount]
+                                                            ["uid"],
+                                                      );
                                                     },
                                                   ),
                                                 );

@@ -101,12 +101,8 @@ class _SearchPageState extends State<SearchPage> {
                             MaterialPageRoute(
                               builder: (BuildContext context) {
                                 return OtherProfile(
-                                    uid: data["uid"],
-                                    userName: data["nickname"],
-                                    userImage: data["url"],
-                                    introduction: data["introduction"],
-                                    country: data["country"],
-                                    address: data["address"]);
+                                  uid: data["uid"],
+                                );
                               },
                             ),
                           );

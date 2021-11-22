@@ -285,13 +285,8 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                       MaterialPageRoute(
                         builder: (BuildContext context) {
                           return OtherProfile(
-                              uid: userData.data!.docs[index]["uid"],
-                              userName: userData.data!.docs[index]["nickname"],
-                              userImage: userData.data!.docs[index]["url"],
-                              introduction: userData.data!.docs[index]
-                                  ["introduction"],
-                              country: userData.data!.docs[index]["country"],
-                              address: userData.data!.docs[index]["address"]);
+                            uid: userData.data!.docs[index]["uid"],
+                          );
                         },
                       ),
                     );

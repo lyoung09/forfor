@@ -40,9 +40,13 @@ exports.sendFCM = functions.https.onCall((data, context) => {
 
 exports.sendChattingFCM = functions.https.onCall((data, context) => {
   const payload = {
-    data: {
+    notification: {
       title: data["title"],
       body: data["body"],
+      myId: data["myId"],
+      otherId: data["otherId"],
+      chattingId: data["chattingId"],
+      room: "chatting",
     },
   };
   const result = admin.messaging().sendToDevice(data["token"], payload);

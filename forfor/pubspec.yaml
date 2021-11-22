@@ -91,6 +91,7 @@ dependencies:
   keyboard_attachable: ^2.0.0
   show_up_animation: ^2.0.0
   rxdart: ^0.27.2
+  awesome_notifications: ^0.6.17
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -380,18 +380,8 @@ class DistancerUserState extends State<DistanceUser> {
                       MaterialPageRoute(
                         builder: (BuildContext context) {
                           return OtherProfile(
-                              uid: userData.data!.docs[sortedKeys[index]]
-                                  ["uid"],
-                              userName: userData.data!.docs[sortedKeys[index]]
-                                  ["nickname"],
-                              userImage: userData.data!.docs[sortedKeys[index]]
-                                  ["url"],
-                              introduction: userData.data!
-                                  .docs[sortedKeys[index]]["introduction"],
-                              country: userData.data!.docs[sortedKeys[index]]
-                                  ["country"],
-                              address: userData.data!.docs[sortedKeys[index]]
-                                  ["address"]);
+                            uid: userData.data!.docs[sortedKeys[index]]["uid"],
+                          );
                         },
                       ),
                     );

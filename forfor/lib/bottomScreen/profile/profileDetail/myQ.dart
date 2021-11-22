@@ -513,16 +513,6 @@ class _MyQuestionState extends State<MyQuestion> {
                                     Get.to(() => OtherProfile(
                                           uid: posting.data!.docs[index]
                                               ["authorId"],
-                                          userName: snapshot.data!.docs[count]
-                                              ["nickname"],
-                                          userImage: snapshot.data!.docs[count]
-                                              ["url"],
-                                          country: snapshot.data!.docs[count]
-                                              ["country"],
-                                          introduction: snapshot.data!
-                                              .docs[count]["introduction"],
-                                          address: snapshot.data!.docs[count]
-                                              ["address"],
                                         ));
                                   },
                                   child: Stack(

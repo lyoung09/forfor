@@ -67,6 +67,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
   final TextEditingController _message = new TextEditingController();
   String? replyStory;
   double height = 0.0;
+  String? userName;
   @override
   initState() {
     isShowSticker = false;
@@ -94,8 +95,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
     super.dispose();
   }
 
-  sendPic() async {
-    x.imgFromGallery();
+  sendPic(token, username) async {
+    x.imgFromGallery(token, username);
     _focus.unfocus();
   }
 
@@ -202,6 +203,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
   }
 
   bool? amI;
+  String? token;
   Widget otherWidget(snapshot, index) {
     return SwipeTo(
       onRightSwipe: () {
@@ -497,7 +499,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
     });
   }
 
-  Widget chatFormContainer() {
+  Widget chatFormContainer(userName, token) {
     return Column(
       children: [
         Container(
@@ -508,7 +510,11 @@ class _ChattingDetailState extends State<ChattingDetail> {
           child: Row(
             children: <Widget>[
               GestureDetector(
-                onTap: isShowSticker == true ? _onBackspacePressed : sendPic,
+                onTap: () {
+                  isShowSticker == true
+                      ? _onBackspacePressed
+                      : sendPic(token, userName);
+                },
                 child: Container(
                   height: 30,
                   width: 30,
@@ -553,9 +559,9 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 iconSize: 18,
                 onPressed: () {
                   reply == true
-                      ? x.sendReply(
-                          _message, replymessage, replymessageName, replyImage)
-                      : x.sendMessage(_message);
+                      ? x.sendReply(_message, replymessage, replymessageName,
+                          replyImage, token, userName)
+                      : x.sendMessage(_message, token, userName);
 
                   // changeController();
 
@@ -591,9 +597,16 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 ? null
                 : 0,
             duration: Duration(milliseconds: 0),
-            child: Offstage(offstage: !isShowSticker, child: emoji()))
-        //     : SizedBox(height: 0)
-      
+            child: Offstage(
+                offstage: !isShowSticker,
+                child: AnimatedOpacity(
+                    duration: Duration(milliseconds: 0),
+                    opacity: isShowSticker == true &&
+                            MediaQuery.of(context).viewInsets.bottom == 0.0
+                        ? 1
+                        : 0,
+                    child: emoji())))
+        //      : SizedBox(height: 0)
       ],
     );
   }
@@ -647,7 +660,8 @@ class _ChattingDetailState extends State<ChattingDetail> {
                 if (!snapshot.hasData) {
                   return Container();
                 }
-
+                userName = snapshot.data!["nickname"];
+                token = snapshot.data!["token"];
                 return Text(
                   snapshot.data!["nickname"],
                   overflow: TextOverflow.clip,
@@ -791,7 +805,7 @@ class _ChattingDetailState extends State<ChattingDetail> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       keyboard(),
-                      chatFormContainer(),
+                      chatFormContainer(userName, token),
                       //Offstage(offstage: !isShowSticker, child: emoji())
                     ],
                   ),

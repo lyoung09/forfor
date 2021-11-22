@@ -63,12 +63,8 @@ class _SearchChatState extends State<SearchChat> {
 
   otherProfile() {
     Get.to(() => OtherProfile(
-        uid: widget.talker,
-        userName: widget.userName,
-        userImage: widget.userAvatar,
-        introduction: introduction!,
-        country: country!,
-        address: address!));
+          uid: widget.talker,
+        ));
   }
 
   @override

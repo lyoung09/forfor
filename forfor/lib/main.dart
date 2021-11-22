@@ -16,6 +16,7 @@ import 'package:forfor/bottomScreen/group/groupPage/groupchatting.dart';
 import 'package:forfor/bottomScreen/group/groupPage/hidden_drawer.dart/hidden.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
+import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 
 import 'package:forfor/login/screen/login_main.dart';
@@ -59,23 +60,66 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
-  print(message.data['title']);
-  print('A bg message just showed up :  ${message.messageId}');
+  if (message.data["room"] == "chatting") {
+    flutterLocalNotificationsPlugin.show(
+        message.notification.hashCode,
+        message.data['title'],
+        message.data['body'],
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            color: Colors.blue,
+            playSound: true,
+            icon: '@mipmap/ic_launcher',
+          ),
+        ));
 
-  flutterLocalNotificationsPlugin.show(
-      message.notification.hashCode,
-      message.data['title'],
-      message.data['body'],
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channel.description,
-          color: Colors.blue,
-          playSound: true,
-          icon: '@mipmap/ic_launcher',
-        ),
-      ));
+    Get.to(() => ChattingDetail(
+          messageFrom: message.data["otherId"],
+          messageTo: message.data["myId"],
+          chatId: message.data["chattingId"],
+        ));
+  }
+  if (message.data["room"] == "group") {
+    // flutterLocalNotificationsPlugin.show(
+    //   message.notification.hashCode,
+    //   message.data['title'],
+    //   message.data['body'],
+    //   NotificationDetails(
+    //     android: AndroidNotificationDetails(
+    //       channel.id,
+    //       channel.name,
+    //       channel.description,
+    //       color: Colors.blue,
+    //       playSound: true,
+    //       icon: '@mipmap/ic_launcher',
+    //     ),
+    //   ));
+
+    // Get.to(() => ChattingDetail(
+    //       messageFrom: message.data["otherId"],
+    //       messageTo: message.data["myId"],
+    //       chatId: message.data["chattingId"],
+    //     ));
+  }
+  if (message.data["room"] == "buddy") {
+    flutterLocalNotificationsPlugin.show(
+        message.notification.hashCode,
+        message.data['title'],
+        message.data['body'],
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            color: Colors.blue,
+            playSound: true,
+            icon: '@mipmap/ic_launcher',
+          ),
+        ));
+  }
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -207,6 +251,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 iOS: IOSNotificationDetails(
                     presentAlert: true, presentSound: true)),
             payload: screen);
+        if (data["room"] == "chatting") {
+          Get.to(() => ChattingDetail(
+                messageFrom: data["otherId"],
+                messageTo: data["myId"],
+                chatId: data["chattingId"],
+              ));
+        }
+        if (data["room"] == "group") {}
+        if (data["room"] == "buddy") {}
       }
     });
 

@@ -62,14 +62,8 @@ class _FavoriteUserState extends State<FavoriteUser> {
                         MaterialPageRoute(
                           builder: (BuildContext context) {
                             return OtherProfile(
-                                uid: snapshot.data!.docs[count]["uid"],
-                                userName: snapshot.data!.docs[count]
-                                    ["nickname"],
-                                userImage: snapshot.data!.docs[count]["url"],
-                                introduction: snapshot.data!.docs[count]
-                                    ["introduction"],
-                                country: snapshot.data!.docs[count]["country"],
-                                address: snapshot.data!.docs[count]["address"]);
+                              uid: snapshot.data!.docs[count]["uid"],
+                            );
                           },
                         ),
                       );

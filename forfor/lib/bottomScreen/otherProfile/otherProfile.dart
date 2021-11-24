@@ -44,25 +44,16 @@ class _OtherProfileState extends State<OtherProfile> {
 
   @override
   void initState() {
-    otherUserProfile();
     super.initState();
     scrollController = new ScrollController();
     scrollController.addListener(() => setState(() {}));
   }
 
-  UserModel? other;
-  otherUserProfile() async {
-    us = await UserDatabase().getUser(widget.uid);
-    setState(() {
-      other = us;
-    });
-  }
-
-  Widget _buildtitle() {
+  Widget _buildtitle(snapshot) {
     Widget profile = new Container(
       height: 30.0,
       width: 200.0,
-      child: Text("${other!.nickname}",
+      child: Text("${12121212121121}",
           overflow: TextOverflow.fade,
           maxLines: 1,
           style: TextStyle(color: Colors.black)),
@@ -95,50 +86,6 @@ class _OtherProfileState extends State<OtherProfile> {
       decoration: BoxDecoration(color: Colors.orange[50]),
       child: controller.user!.uid == widget.uid
           ? Text("")
-          // InkWell(
-          //     onTap: () {
-          //       Get.to(() => UserUpdate(
-          //           category: snapshot.data!["category"],
-          //           image: widget.userImage,
-          //           nickname: widget.userName,
-          //           introduction: widget.introduction,
-          //           uid: controller.user!.uid));
-          //     },
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       children: [
-          //         Spacer(),
-          //         // InkWell(
-          //         //     onTap: () {},
-          //         //     child: Column(
-          //         //       children: [
-          //         //         Image.asset(
-          //         //           'assets/icon/buddy.png',
-          //         //           width: 35,
-          //         //           height: 30,
-          //         //         ),
-          //         //         Text("buddy", style: TextStyle(fontSize: 20)),
-          //         //       ],
-          //         //     )),
-
-          //         Text(
-          //           "My Group",
-          //           style: TextStyle(fontSize: 20),
-          //         ),
-          //         Padding(padding: EdgeInsets.only(left: 20)),
-
-          //         SvgPicture.asset(
-          //           "assets/svg/profileBottom.svg",
-          //           fit: BoxFit.fill,
-          //           width: 35,
-          //           height: 33,
-          //         ),
-          //         Spacer(),
-          //         //Iconutton(onPressed: () {}, icon: Icon(Icons.ac_unit)),
-          //       ],
-          //     ),
-          //   )
           : InkWell(
               onTap: () async {
                 String chatId;
@@ -303,7 +250,7 @@ class _OtherProfileState extends State<OtherProfile> {
     return x;
   }
 
-  Widget q() {
+  Widget q(snapshot) {
     return SingleChildScrollView(
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -358,14 +305,14 @@ class _OtherProfileState extends State<OtherProfile> {
                                               radius: 25,
                                               backgroundColor: Colors.white,
                                               backgroundImage: NetworkImage(
-                                                  "${other!.url}")),
+                                                  "${snapshot.data["url"]}")),
                                         ),
                                         Positioned(
                                           bottom: 0,
                                           right: 0,
                                           child: CircleAvatar(
                                             backgroundImage: AssetImage(
-                                                'icons/flags/png/${other!.country}.png',
+                                                'icons/flags/png/${snapshot.data["country"]}.png',
                                                 package: 'country_icons'),
                                             backgroundColor: Colors.white,
                                             radius: 8,
@@ -381,7 +328,8 @@ class _OtherProfileState extends State<OtherProfile> {
                                           bottom: 10.0, left: 5, right: 5),
                                       child: Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text('${other!.nickname}',
+                                          child: Text(
+                                              '${snapshot.data["nickname"]}',
                                               //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -547,41 +495,6 @@ class _OtherProfileState extends State<OtherProfile> {
                         ),
                       ),
                       Container(width: 5),
-                      // Column(
-                      //   children: [
-                      //     Padding(
-                      //       padding: EdgeInsets.only(left: 8.0),
-                      //       child: Stack(
-                      //         children: [
-                      //           Align(
-                      //             alignment: Alignment.topLeft,
-                      //             child: ClipRRect(
-                      //               borderRadius: BorderRadius.all(Radius.circular(10)),
-                      //               child: Container(
-                      //                   width: 85,
-                      //                   height: 85,
-                      //                   child: Image.network(
-                      //                     '${posting[index]["authorImage"]}',
-                      //                     fit: BoxFit.fitWidth,
-                      //                   )),
-                      //             ),
-                      //           ),
-                      //           Positioned(
-                      //             bottom: 0,
-                      //             right: -5,
-                      //             child: CircleAvatar(
-                      //               backgroundImage: AssetImage(
-                      //                   'icons/flags/png/${posting[index]["authorCountry"]}.png',
-                      //                   package: 'country_icons'),
-                      //               backgroundColor: Colors.white,
-                      //               radius: 15,
-                      //             ),
-                      //           )
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
                     ],
                   ),
                 );
@@ -631,20 +544,6 @@ class _OtherProfileState extends State<OtherProfile> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              // ListTile(
-              //   title: Row(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       Icon(Icons.share),
-              //       SizedBox(width: 7.5),
-              //       Text('Share'),
-              //     ],
-              //   ),
-              //   onTap: () {
-              //     share(story, userUrl);
-              //     Navigator.pop(context);
-              //   },
-              // ),
               Padding(padding: EdgeInsets.only(top: 20)),
               ListTile(
                 title:
@@ -714,7 +613,7 @@ class _OtherProfileState extends State<OtherProfile> {
         });
   }
 
-  Widget a() {
+  Widget a(snapshot) {
     return SingleChildScrollView(
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -768,14 +667,14 @@ class _OtherProfileState extends State<OtherProfile> {
                                               radius: 25,
                                               backgroundColor: Colors.white,
                                               backgroundImage: NetworkImage(
-                                                  "${other!.url}")),
+                                                  "${snapshot.data["url"]}")),
                                         ),
                                         Positioned(
                                           bottom: 0,
                                           right: 0,
                                           child: CircleAvatar(
                                             backgroundImage: AssetImage(
-                                                'icons/flags/png/${other!.country}.png',
+                                                'icons/flags/png/${snapshot.data["country"]}.png',
                                                 package: 'country_icons'),
                                             backgroundColor: Colors.white,
                                             radius: 8,
@@ -791,7 +690,8 @@ class _OtherProfileState extends State<OtherProfile> {
                                           bottom: 10.0, left: 5, right: 5),
                                       child: Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text('${other!.nickname}',
+                                          child: Text(
+                                              '${snapshot.data["nickname"]}',
                                               //"ehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhlahrlkhehlehlhelrhla",
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -969,6 +869,109 @@ class _OtherProfileState extends State<OtherProfile> {
     );
   }
 
+  Widget silverappbar(snapshot) {
+    return Container(
+      //decoration: BoxDecoration(color: Colors.orange[50]),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 100,
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Spacer(),
+            Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: CircleAvatar(
+                    radius: 45,
+                    backgroundColor: Colors.white,
+                    backgroundImage: NetworkImage(snapshot.data!["url"]),
+                  ),
+                ),
+                Positioned(
+                  bottom: 5,
+                  left: 10,
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage(
+                        'icons/flags/png/${snapshot.data!["country"]}.png',
+                        package: 'country_icons'),
+                    backgroundColor: Colors.white,
+                    radius: 15,
+                  ),
+                )
+              ],
+            ),
+            Padding(
+                padding: EdgeInsets.only(
+              left: MediaQuery.of(context).size.width * 0.02,
+            )),
+            Column(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Text(snapshot.data!["nickname"],
+                      //"1widget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userName",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(snapshot.data!["address"],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 15)),
+                  ),
+                )
+              ],
+            ),
+            Spacer()
+          ]),
+          SizedBox(
+            height: 30,
+          ),
+          Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+              side: BorderSide(
+                color: Colors.black,
+                width: 1.0,
+              ),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  height: 100,
+                  width: MediaQuery.of(context).size.width * 0.85,
+                  child: Text(snapshot.data!["introduction"],
+                      // "write yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourself",
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      style:
+                          //userModel.introduction == null
+
+                          //  ?
+                          TextStyle(color: Colors.black, fontSize: 12)
+                      // : MyText.subhead(context)!
+                      //     .copyWith(
+                      //         color: Colors.grey[900])
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var flexibleSpaceWidget = new SliverAppBar(
@@ -987,116 +990,21 @@ class _OtherProfileState extends State<OtherProfile> {
           color: Colors.black,
         ),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
-          title: _buildtitle(),
-          background: Container(
-            //decoration: BoxDecoration(color: Colors.orange[50]),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 100,
-                ),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Spacer(),
-                  Stack(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: CircleAvatar(
-                          radius: 45,
-                          backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage(other!.url!),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 5,
-                        left: 10,
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(
-                              'icons/flags/png/${other!.country}.png',
-                              package: 'country_icons'),
-                          backgroundColor: Colors.white,
-                          radius: 15,
-                        ),
-                      )
-                    ],
-                  ),
-                  Padding(
-                      padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.02,
-                  )),
-                  Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Text(other!.nickname!,
-                            //"1widget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userNamewidget.userName",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w600)),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(other!.address!,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 15)),
-                        ),
-                      )
-                    ],
-                  ),
-                  Spacer()
-                ]),
-                SizedBox(
-                  height: 30,
-                ),
-                Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    side: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        height: 100,
-                        width: MediaQuery.of(context).size.width * 0.85,
-                        child: Text(other!.introduction!,
-                            // "write yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourselfwrite yourself",
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                            style:
-                                //userModel.introduction == null
-
-                                //  ?
-                                TextStyle(color: Colors.black, fontSize: 12)
-                            // : MyText.subhead(context)!
-                            //     .copyWith(
-                            //         color: Colors.grey[900])
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )),
+      flexibleSpace: FutureBuilder(
+          future: UserDatabase().getUserDs(widget.uid),
+          builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            }
+            return FlexibleSpaceBar(
+                centerTitle: true,
+                title: _buildtitle(snapshot),
+                background: silverappbar(snapshot));
+          }),
     );
 
     return FutureBuilder(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.uid)
-            .get(),
+        future: UserDatabase().getUserDs(widget.uid),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: Text(""));
@@ -1143,7 +1051,9 @@ class _OtherProfileState extends State<OtherProfile> {
                 body: new TabBarView(
                   children: <Widget>[
                     group(snapshot),
-                    controller.user!.uid == widget.uid ? q() : a(),
+                    controller.user!.uid == widget.uid
+                        ? q(snapshot)
+                        : a(snapshot),
                   ],
                 ),
               ),

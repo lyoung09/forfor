@@ -9,7 +9,6 @@ import 'package:forfor/controller/bind/usercontroller.dart';
 
 import 'package:forfor/model/scientist.dart';
 import 'package:forfor/model/user.dart';
-import 'package:forfor/model/userLocation.dart';
 import 'package:forfor/widget/custom_dialog.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

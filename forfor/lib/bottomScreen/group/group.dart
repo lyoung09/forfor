@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:forfor/model/userLocation.dart';
+
 import 'package:get/get.dart';
 
 import 'package:forfor/data/user.dart';

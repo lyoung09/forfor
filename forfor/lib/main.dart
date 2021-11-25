@@ -23,6 +23,7 @@ import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/hopeInfo.dart';
 
 import 'package:forfor/login/screen/userInfo.dart';
+import 'package:forfor/model/category.dart';
 import 'package:forfor/service/notification_service.dart';
 
 import 'package:forfor/service/userdatabase.dart';
@@ -41,27 +42,18 @@ import 'bottomScreen/group/groupPage/groupPosting.dart';
 import 'bottomScreen/group/groupPage/groupQnA.dart';
 import 'bottomScreen/group/groupPage/groupSearch.dart';
 
-import 'bottomScreen/infomation/infomationDetail/WritingPage.dart';
-
 import 'controller/bind/authbinding.dart';
 import 'home/bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login/screen/show.dart';
+import 'model/user.dart';
 import 'utils/permissionhadler.dart';
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
-    importance: Importance.high,
-    playSound: true);
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-
   if (message.data["room"] == "chatting") {
-    flutterLocalNotificationsPlugin.show(
+    NotificationShow.flutterLocalNotificationsPlugin.show(
         message.notification.hashCode,
         message.data['title'],
         message.data['body'],
@@ -105,7 +97,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     //     ));
   }
   if (message.data["room"] == "buddy") {
-    flutterLocalNotificationsPlugin.show(
+    NotificationShow.flutterLocalNotificationsPlugin.show(
         message.notification.hashCode,
         message.data['title'],
         message.data['body'],
@@ -122,27 +114,23 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "bbc30e62de88b34dadbc0e199b220cc4";
   KakaoContext.javascriptClientId = "3a2436ea281f9a46f309cef0f4d05b25";
   await Firebase.initializeApp();
   FirebaseMessaging.instance.requestPermission();
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  NotificationShow().init();
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
+
   runApp(MyApp());
 }
 
@@ -199,7 +187,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/userInfomation': (context) => UserInfomation(),
         '/hopeInformation': (context) => HopeInfomation(),
-        '/writingpage': (context) => WritingPage(),
       },
     );
   }
@@ -215,74 +202,31 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
 
-    var initialzationsettingAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    var initialzationsettingIos = IOSInitializationSettings(
-        requestAlertPermission: false,
-        requestBadgePermission: false,
-        requestSoundPermission: false);
-
-    var initSetting = InitializationSettings(
-        android: initialzationsettingAndroid, iOS: initialzationsettingIos);
-
-    flutterLocalNotificationsPlugin.initialize(initSetting);
     getToken();
     getLoc();
+    NotificationShow().mainInit();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      Map<String, dynamic> data = message.data;
-      String? screen = data['screen'].toString();
+    NotificationShow().onMessageListen();
 
-      if (message.data.isNotEmpty) {
-        flutterLocalNotificationsPlugin.show(
-            message.notification.hashCode,
-            data['title'],
-            data['body'],
-            NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  channel.description,
-                  color: Colors.blue,
-                  playSound: false,
-                  icon: '@mipmap/ic_launcher',
-                ),
-                iOS: IOSNotificationDetails(
-                    presentAlert: true, presentSound: true)),
-            payload: screen);
-        if (data["room"] == "chatting") {
-          Get.to(() => ChattingDetail(
-                messageFrom: data["otherId"],
-                messageTo: data["myId"],
-                chatId: data["chattingId"],
-              ));
-        }
-        if (data["room"] == "group") {}
-        if (data["room"] == "buddy") {}
-      }
-    });
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   print('A new onMessageOpenedApp event was published!');
+    //   RemoteNotification? notification = message.notification;
+    //   AndroidNotification? android = message.notification?.android;
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-
-      final routeFromName = message.data["route"];
-      print('${routeFromName} asas');
-      Get.to(() => ChattingDetail(
-            messageFrom: '7Ldq42bdxmbqQIp1PG2Mxii6MnF3',
-            messageTo: '9UbDWOQrLOXirtzGQEwMUiuVnGb2',
-            chatId: "4AS8GIib2QUJ1cOo6pTH",
-          ));
-      if (notification != null && android != null) {}
-    });
+    //   final routeFromName = message.data["route"];
+    //   print('${routeFromName} asas');
+    //   Get.to(() => ChattingDetail(
+    //         messageFrom: '7Ldq42bdxmbqQIp1PG2Mxii6MnF3',
+    //         messageTo: '9UbDWOQrLOXirtzGQEwMUiuVnGb2',
+    //         chatId: "4AS8GIib2QUJ1cOo6pTH",
+    //       ));
+    //   if (notification != null && android != null) {}
+    // });
     //hoit();
   }
 
   getToken() async {
     token = await FirebaseMessaging.instance.getToken();
-    print('myToken: ${token}');
   }
 
   // void hoit() {
@@ -441,184 +385,3 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter/services.dart';
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       // Remove the debug banner
-//       debugShowCheckedModeBanner: false,
-//       title: 'Kindacode.com',
-//       home: HomePage(),
-//     );
-//   }
-// }
-
-// class HomePage extends StatefulWidget {
-//   @override
-//   _HomePageState createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   final TextEditingController _nameController = TextEditingController();
-//   final TextEditingController _priceController = TextEditingController();
-
-//   CollectionReference _productss =
-//       FirebaseFirestore.instance.collection('user');
-
-//   initState() {
-//     super.initState();
-//     var a;
-
-// //Do
-//   }
-
-//   // This function is triggered when the floatting button or one of the edit buttons is pressed
-//   // Adding a product if no documentSnapshot is passed
-//   // If documentSnapshot != null then update an existing product
-//   Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
-//     String action = 'create';
-
-//     // print('documentSnapshot! ${documentSnapshot!}');
-//     if (documentSnapshot != null) {
-//       action = 'update';
-//       _nameController.text = documentSnapshot['name'];
-//       _priceController.text = documentSnapshot['price'].toString();
-//     }
-
-//     await showModalBottomSheet(
-//         isScrollControlled: true,
-//         context: context,
-//         builder: (BuildContext ctx) {
-//           return Padding(
-//             padding: const EdgeInsets.all(20.0),
-//             child: Column(
-//               mainAxisSize: MainAxisSize.min,
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 TextField(
-//                   controller: _nameController,
-//                   decoration: InputDecoration(labelText: 'Name'),
-//                 ),
-//                 TextField(
-//                   keyboardType: TextInputType.numberWithOptions(decimal: true),
-//                   controller: _priceController,
-//                   decoration: InputDecoration(
-//                     labelText: 'Price',
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   height: 20,
-//                 ),
-//                 ElevatedButton(
-//                   child: Text(action == 'create' ? 'Create' : 'Update'),
-//                   onPressed: () async {
-//                     final String? name = _nameController.text;
-//                     final double? price =
-//                         double.tryParse(_priceController.text);
-//                     if (name != null && price != null) {
-//                       if (action == 'create') {
-//                         // Persist a new product to Firestore
-//                         await _productss.add({"name": name, "price": price});
-//                       }
-
-//                       if (action == 'update') {
-//                         // Update the product
-
-//                         await _productss
-//                             .doc(documentSnapshot?.id)
-//                             .update({"name": name, "price": price});
-//                       }
-
-//                       // Clear the text fields
-//                       _nameController.text = '';
-//                       _priceController.text = '';
-
-//                       // Hide the bottom sheet
-//                       Navigator.of(context).pop();
-//                     }
-//                   },
-//                 )
-//               ],
-//             ),
-//           );
-//         });
-//   }
-
-//   // Deleteing a product by id
-//   Future<void> _deleteProduct(String productId) async {
-//     await _productss.doc(productId).delete();
-
-//     // Show a snackbar
-//     ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('You have successfully deleted a product')));
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Kindacode.com'),
-//       ),
-//       // Using StreamBuilder to display all products from Firestore in real-time
-//       body: StreamBuilder(
-//         stream: _productss.snapshots(),
-//         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-//           if (streamSnapshot.hasData) {
-//             return ListView.builder(
-//               itemCount: streamSnapshot.data!.docs.length,
-//               itemBuilder: (context, index) {
-//                 final DocumentSnapshot documentSnapshot =
-//                     streamSnapshot.data!.docs[index];
-//                 return Card(
-//                   margin: EdgeInsets.all(10),
-//                   child: ListTile(
-//                     title: Text(documentSnapshot['name']),
-//                     subtitle: Text(documentSnapshot['price'].toString()),
-//                     trailing: SizedBox(
-//                       width: 100,
-//                       child: Row(
-//                         children: [
-//                           // Press this button to edit a single product
-//                           IconButton(
-//                               icon: Icon(Icons.edit),
-//                               onPressed: () =>
-//                                   _createOrUpdate(documentSnapshot)),
-//                           // This icon button is used to delete a single product
-//                           IconButton(
-//                               icon: Icon(Icons.delete),
-//                               onPressed: () =>
-//                                   _deleteProduct(documentSnapshot.id)),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 );
-//               },
-//             );
-//           }
-
-//           return Center(
-//             child: CircularProgressIndicator(),
-//           );
-//         },
-//       ),
-//       // Add new product
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () => _createOrUpdate(),
-//         child: Icon(Icons.add),
-//       ),
-//     );
-//   }
-// }

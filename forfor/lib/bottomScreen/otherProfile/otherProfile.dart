@@ -220,15 +220,9 @@ class _OtherProfileState extends State<OtherProfile> {
         "likeDatetime": myDateTime,
         "postingId": posting.data!.docs[index].id
       });
-      ref.update({
-        "count": FieldValue.increment(1),
-      });
     }
     if (!favorite[index]) {
       ref.collection('likes').doc(controller.user!.uid).delete();
-      ref.update({
-        "count": FieldValue.increment(-1),
-      });
     } else {}
   }
 

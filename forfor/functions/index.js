@@ -21,7 +21,7 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 
-exports.sendFCM = functions.https.onCall((data, context) => {
+exports.sendBuddyFCM = functions.https.onCall((data, context) => {
   const title = data["title"];
   const body = data["body"];
   const token =data["token"];
@@ -30,7 +30,24 @@ exports.sendFCM = functions.https.onCall((data, context) => {
     notification: {
       "title": title,
       "body": body,
-      "sound": "default",
+      "room": "buddy",
+    },
+  };
+
+  const result = admin.messaging().sendToDevice(token, payload);
+  return result;
+});
+
+exports.sendGroupFCM = functions.https.onCall((data, context) => {
+  const title = data["title"];
+  const body = data["body"];
+  const token =data["token"];
+
+  const payload = {
+    notification: {
+      "title": title,
+      "body": body,
+      "room": "group",
     },
   };
 

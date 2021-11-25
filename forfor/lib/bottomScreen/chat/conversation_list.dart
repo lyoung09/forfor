@@ -278,9 +278,51 @@ class _ConversationListState extends State<ConversationList> {
                                           fontSize: 15,
                                           fontWeight: FontWeight.w300),
                                       maxLines: 1),
-                              trailing: Text(widget.lastTime == null
-                                  ? ""
-                                  : "${DatetimeFunction().ago(widget.lastTime)}"),
+                              trailing: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(widget.lastTime == null
+                                      ? ""
+                                      : "${DatetimeFunction().ago(widget.lastTime)}"),
+                                  StreamBuilder(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('message')
+                                          .doc(widget.roomId)
+                                          .collection('chatting')
+                                          .where("isRead", isEqualTo: false)
+                                          .where("messageFrom",
+                                              isEqualTo: controller.user!.uid)
+                                          .snapshots(),
+                                      builder: (context,
+                                          AsyncSnapshot<QuerySnapshot>
+                                              notRead) {
+                                        if (!notRead.hasData) {
+                                          return Container(
+                                            width: 0,
+                                            height: 0,
+                                          );
+                                        }
+
+                                        return notRead.data!.docs.length == 0
+                                            ? Container(
+                                                width: 0,
+                                                height: 0,
+                                              )
+                                            : Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 3, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey[200],
+                                                    shape: BoxShape.circle),
+                                                child: Text(notRead
+                                                    .data!.docs.length
+                                                    .toString()),
+                                              );
+                                      })
+                                ],
+                              ),
                             );
                           }),
                     ),

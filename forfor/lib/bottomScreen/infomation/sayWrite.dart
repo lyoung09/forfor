@@ -68,7 +68,6 @@ class _SayWritingState extends State<SayWriting> {
         "story": _storycontroller.text.isEmpty ? "" : _storycontroller.text,
         "authorId": widget.uid,
         "timestamp": myDateTime,
-        "count": 0,
         "save": [],
         "replyCount": 0,
         "category": category,
@@ -79,6 +78,7 @@ class _SayWritingState extends State<SayWriting> {
               .collection('posting')
               .doc(value.id)
               .update({"postingId": value.id});
+
           Get.back();
         } else {
           Get.dialog(Loading());

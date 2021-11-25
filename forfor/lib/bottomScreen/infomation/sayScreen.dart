@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/controller/categoryController.dart';
 import 'package:forfor/utils/datetime.dart';
 import 'package:forfor/widget/safe_tap.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,6 +39,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
   late Animation<double> animation1, animation1View;
   TextEditingController _filter = new TextEditingController();
   final controller = Get.put(AuthController());
+  final controller2 = Get.put(CategoryController());
   CollectionReference _postingref =
       FirebaseFirestore.instance.collection('posting');
   CollectionReference _categoryref =
@@ -61,28 +63,29 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     });
   }
 
-  final HttpsCallable sendFCM =
-      FirebaseFunctions.instanceFor(region: 'us-central1')
-          .httpsCallable('sendFCM'); // 호출할 Cloud Functions 의 함수명
+  // final HttpsCallable sendFCM =
+  //     FirebaseFunctions.instanceFor(region: 'us-central1')
+  //         .httpsCallable('sendFCM'); // 호출할 Cloud Functions 의 함수명
 
-  final HttpsCallable addCount =
-      FirebaseFunctions.instanceFor(region: 'us-central1')
-          .httpsCallable('addCount'); // 호출할 Cloud Functions 의 함수명
+  // final HttpsCallable addCount =
+  //     FirebaseFunctions.instanceFor(region: 'us-central1')
+  //         .httpsCallable('addCount'); // 호출할 Cloud Functions 의 함수명
 
-  void sendSampleFCM(String token, String uid, datetime, postingStory) async {
-    try {
-      final HttpsCallableResult result = await sendFCM.call(<dynamic, dynamic>{
-        "token": token,
-        "title": "${name}님이 좋아합니다",
-        "body": postingStory
-      });
-    } catch (e) {
-      print('${e} error');
-    }
-  }
+  // void sendSampleFCM(String token, String uid, datetime, postingStory) async {
+  //   try {
+  //     final HttpsCallableResult result = await sendFCM.call(<dynamic, dynamic>{
+  //       "token": token,
+  //       "title": "${name}님이 좋아합니다",
+  //       "body": postingStory
+  //     });
+  //   } catch (e) {
+  //     print('${e} error');
+  //   }
+  // }
 
   String category = "all";
   int checkCategory = 0;
+
   Widget gridViewCategory() {
     return SizeTransition(
       sizeFactor: animation1View,
@@ -236,17 +239,13 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
         likes[posting[index].id] = value.docs.length;
       });
     });
-
+    print(posting[index].id);
     if (favorite[index]) {
       ref.collection("likes").doc(controller.user!.uid).set({
-        "likeId": controller.user!.uid,
+       "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
         "authorId": posting[index]["authorId"],
         "postingId": posting[index].id
-      });
-
-      ref.update({
-        "count": FieldValue.increment(1),
       });
 
       // sendSampleFCM(token, name, myDateTime, posting[index]["story"]);
@@ -259,10 +258,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       //   await transaction.update(ref, {'count': likesCount - 1});
       // });
 
-      ref.update({
-        "count": FieldValue.increment(-1),
-      });
-      ref.collection('likes').doc(controller.user!.uid).delete();
+      ref.collection('click').doc(controller.user!.uid).delete();
     }
   }
 
@@ -521,13 +517,13 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return SafeOnTap(
-                                onSafeTap: () {
+                              return IconButton(
+                                onPressed: () {
                                   favorite[index] = !favorite[index];
                                   check(posting, index, favorite,
                                       user[count]["token"]);
                                 },
-                                child: Icon(
+                                icon: Icon(
                                   Icons.favorite,
                                   color: favorite[index] == true
                                       ? Colors.red[400]
@@ -536,16 +532,29 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               );
                             }),
                         SizedBox(width: 15),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            posting[index]["count"] == null ||
-                                    posting[index]["count"] < 1
-                                ? ""
-                                : "${posting[index]["count"]} ",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
+                        StreamBuilder(
+                            stream: _postingref
+                                .doc(posting[index].id)
+                                .collection('likes')
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container(
+                                  height: 0,
+                                  width: 0,
+                                );
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  snapshot.data!.docs.length < 1
+                                      ? ""
+                                      : "${snapshot.data!.docs.length.toString()} ",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              );
+                            }),
                         SizedBox(
                           width: 5,
                         ),
@@ -761,12 +770,12 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               if (likeUser.hasData) {
                                 favorite[index] = likeUser.data!.exists;
                               }
-                              return SafeOnTap(
-                                onSafeTap: () {
+                              return IconButton(
+                                onPressed: () {
                                   favorite[index] = !favorite[index];
                                   check(posting, index, favorite, token);
                                 },
-                                child: Icon(
+                                icon: Icon(
                                   Icons.favorite,
                                   color: favorite[index] == true
                                       ? Colors.red[400]
@@ -775,15 +784,29 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                               );
                             }),
                         SizedBox(width: 15),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            posting[index]["count"] < 1
-                                ? ""
-                                : "${posting[index]["count"]} ",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
+                        StreamBuilder(
+                            stream: _postingref
+                                .doc(posting[index].id)
+                                .collection('likes')
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container(
+                                  height: 0,
+                                  width: 0,
+                                );
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  snapshot.data!.docs.length < 1
+                                      ? ""
+                                      : "${snapshot.data!.docs.length.toString()} ",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              );
+                            }),
                         IconButton(
                           iconSize: 17.5,
                           icon: Icon(Icons.chat_bubble_outline_outlined),
@@ -841,6 +864,16 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       favoriteUser[index] = tt.exists;
     });
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   // TODO: implement build
+  //   return Obx(() => ListView.builder(
+  //         itemCount: controller2.categorys.length,
+  //         itemBuilder: (context, index) =>
+  //             Card(child: Text(controller2.categorys[index].categoryName!)),
+  //       ));
+  // }
 
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -999,42 +1032,11 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                                 }
                                 return Container();
                               });
-
-                          // StreamBuilder<DocumentSnapshot>(
-                          //     stream: FirebaseFirestore.instance
-                          //         .collection('posting')
-                          //         .doc(snapshot.data!.docs[index].id)
-                          //         .snapshots(),
-                          //     builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                          //       //snapshot.collection('likes');
-                          //       if(!snapshot.hasData){
-
-                          //       }
-
-                          //       return Container();
-                          //     });
                         },
                       ),
                     ],
                   ));
             }));
-  }
-
-  Future<List<Map<dynamic, dynamic>>> getCollection() async {
-    List<DocumentSnapshot> templist;
-    List<Map<dynamic, dynamic>> list = [];
-    CollectionReference collectionRef =
-        FirebaseFirestore.instance.collection("path");
-    QuerySnapshot collectionSnapshot =
-        await collectionRef.get(); // <--- This method is now get().
-
-    templist = collectionSnapshot.docs; // <--- ERROR
-
-    list = templist.map((DocumentSnapshot docSnapshot) {
-      return docSnapshot.data() as Map<dynamic, dynamic>; // <--- Typecast this.
-    }).toList();
-
-    return list;
   }
 }
 

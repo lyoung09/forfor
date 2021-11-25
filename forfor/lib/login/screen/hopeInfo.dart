@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
+import 'package:forfor/controller/categoryController.dart';
+import 'package:forfor/model/category.dart';
 
 import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
@@ -26,6 +28,7 @@ class _HopeInfomationState extends State<HopeInfomation>
 
   FirebaseAuth auth = FirebaseAuth.instance;
   final controller = Get.put(AuthController());
+  final categoryController = Get.put(CategoryController());
 
   @override
   void initState() {
@@ -88,150 +91,131 @@ class _HopeInfomationState extends State<HopeInfomation>
             ),
           ),
         ),
-        body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('category')
-              .where("categoryId", isNotEqualTo: 0)
-              .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                  child: CircularProgressIndicator(
-                color: Colors.orange[50],
-              ));
-            } else {
-              return Column(
-                children: [
-                  Padding(padding: EdgeInsets.only(top: 30)),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: GridView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisSpacing: 1.0,
-                            mainAxisSpacing: 1.0,
-                            //maxCrossAxisExtent: 250,
+        body: Obx(
+          () => Column(
+            children: [
+              Padding(padding: EdgeInsets.only(top: 30)),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: GridView.builder(
+                      itemCount: categoryController.categorys.length,
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 1.0,
+                        mainAxisSpacing: 1.0,
+                        //maxCrossAxisExtent: 250,
 
-                            crossAxisCount: 2,
-                          ),
-                          itemBuilder: (ctx, index) {
-                            DocumentSnapshot user = snapshot.data!.docs[index];
-
-                            return Container(
-                              width: 75,
-                              height: 75,
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        checking[snapshot.data!.docs[index]
-                                                        ['categoryId']] ==
-                                                    null ||
-                                                checking[snapshot
-                                                            .data!.docs[index]
-                                                        ['categoryId']] ==
-                                                    false
-                                            ? checking[
-                                                snapshot.data!.docs[index]
-                                                    ['categoryId']] = true
-                                            : checking[
-                                                snapshot.data!.docs[index]
-                                                    ['categoryId']] = false;
-
-                                        checking
-                                            .removeWhere((k, v) => v == false);
-                                        if (checking.length > 3) {
-                                          if (checking.length % 3 == 1) {
-                                            checking.remove(
-                                                checking.entries.first.key);
-                                          }
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 10,
-                                          left: 10,
-                                          right: 10),
-                                      decoration: checking[snapshot.data!
-                                                  .docs[index]['categoryId']] ==
-                                              true
-                                          ? BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.redAccent,
-                                                  width: 2.5),
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(23),
-                                              ))
-                                          : BoxDecoration(
-                                              border: Border.all(),
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(20),
-                                              )),
-                                      child: Column(
-                                        children: [
-                                          ClipRRect(
-                                            child: Image.network(
-                                              snapshot.data!.docs[index]
-                                                  ['categoryImage'],
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                          Text(snapshot
-                                              .data!.docs[index]['categoryName']
-                                              .toString()),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
-                  ),
-                  SizedBox(height: height * 0.02),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      height: 50.0,
-                      margin: EdgeInsets.all(10),
-                      child: ElevatedButton(
-                        onPressed: next,
-                        style: ElevatedButton.styleFrom(
-                          primary: checking.length == 3
-                              ? Colors.orange[50]
-                              : Colors.white,
-                          onPrimary: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                              side: checking.length == 3
-                                  ? BorderSide(
-                                      color: Colors.orange[100]!, width: 2)
-                                  : BorderSide(color: Colors.black, width: 1)),
-                        ),
-                        child: Text(
-                          "${checking.length} / 3",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                        ),
+                        crossAxisCount: 2,
                       ),
+                      itemBuilder: (ctx, index) {
+                        CategoryModel user =
+                            categoryController.categorys[index];
+
+                        return Container(
+                          width: 75,
+                          height: 75,
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    checking[categoryController.categorys[index]
+                                                    .categoryId] ==
+                                                null ||
+                                            checking[categoryController
+                                                    .categorys[index]
+                                                    .categoryId] ==
+                                                false
+                                        ? checking[categoryController
+                                            .categorys[index]
+                                            .categoryId!] = true
+                                        : checking[categoryController
+                                            .categorys[index]
+                                            .categoryId!] = false;
+
+                                    checking.removeWhere((k, v) => v == false);
+                                    if (checking.length > 3) {
+                                      if (checking.length % 3 == 1) {
+                                        checking
+                                            .remove(checking.entries.first.key);
+                                      }
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      top: 10, bottom: 10, left: 10, right: 10),
+                                  decoration: checking[categoryController
+                                              .categorys[index].categoryId] ==
+                                          true
+                                      ? BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.redAccent,
+                                              width: 2.5),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(23),
+                                          ))
+                                      : BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(20),
+                                          )),
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        child: Image.network(
+                                          categoryController
+                                              .categorys[index].categoryImage!,
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Text(categoryController
+                                          .categorys[index].categoryName!),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+              ),
+              SizedBox(height: height * 0.02),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  height: 50.0,
+                  margin: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: next,
+                    style: ElevatedButton.styleFrom(
+                      primary: checking.length == 3
+                          ? Colors.orange[50]
+                          : Colors.white,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                          side: checking.length == 3
+                              ? BorderSide(color: Colors.orange[100]!, width: 2)
+                              : BorderSide(color: Colors.black, width: 1)),
+                    ),
+                    child: Text(
+                      "${checking.length} / 3",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ),
-                  SizedBox(height: height * 0.03),
-                ],
-              );
-            }
-          },
+                ),
+              ),
+              SizedBox(height: height * 0.03),
+            ],
+          ),
         ),
       ),
     );

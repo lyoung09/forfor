@@ -73,12 +73,10 @@ class _SayReplyState extends State<SayReply> {
       DocumentReference ref = FirebaseFirestore.instance
           .collection('posting')
           .doc(widget.postingId);
+ 
 
       await ref.update({
-        "replyCount": FieldValue.increment(1),
-      });
-      await ref.collection('review').add({
-        "reply": _reply.text.trim(),
+           "reply": _reply.text.trim(),
         "replyId": widget.userId,
         "datetime": myDateTime
       });
@@ -397,15 +395,9 @@ class _SayReplyState extends State<SayReply> {
           .collection('likes')
           .doc(widget.userId)
           .set({
-        "likeId": widget.userId,
+         "likeId": widget.userId,
         "likeDatetime": myDateTime,
         "postingId": widget.postingId
-      });
-      FirebaseFirestore.instance
-          .collection('posting')
-          .doc('${widget.postingId}')
-          .update({
-        "count": FieldValue.increment(1),
       });
     }
     if (!favoriteThis) {
@@ -415,12 +407,6 @@ class _SayReplyState extends State<SayReply> {
           .collection('likes')
           .doc(widget.userId)
           .delete();
-      FirebaseFirestore.instance
-          .collection('posting')
-          .doc('${widget.postingId}')
-          .update({
-        "count": FieldValue.increment(-1),
-      });
     } else {}
   }
 
@@ -731,33 +717,30 @@ class _SayReplyState extends State<SayReply> {
                   Padding(padding: EdgeInsets.only(top: 20)),
                   post(snapshot.data),
                   //좋아요 -> 누른 사람얼굴
-                  snapshot.data!['count'] == 0
-                      ? Container(height: 0)
-                      : StreamBuilder<QuerySnapshot>(
-                          stream: _postingRef
-                              .doc(widget.postingId)
-                              .collection('likes')
-                              .snapshots(),
-                          builder:
-                              (context, AsyncSnapshot<QuerySnapshot> likes) {
-                            if (!likes.hasData) {
-                              return Center(child: Text(""));
-                            }
-                            if (likes.hasData && likes.data!.size > 0) {
-                              List<dynamic> a = [];
-                              for (int k = 0; k < likes.data!.size; k++) {
-                                a.add(likes.data!.docs[k].id);
-                              }
+                  StreamBuilder<QuerySnapshot>(
+                      stream: _postingRef
+                          .doc(widget.postingId)
+                          .collection('likes')
+                          .where('story', isEqualTo: "like")
+                          .snapshots(),
+                      builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
+                        if (!likes.hasData) {
+                          return Center(child: Text(""));
+                        }
+                        if (likes.hasData && likes.data!.size > 0) {
+                          List<dynamic> a = [];
+                          for (int k = 0; k < likes.data!.size; k++) {
+                            a.add(likes.data!.docs[k].id);
+                          }
 
-                              return Container(
-                                  height: 60,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration:
-                                      BoxDecoration(color: Colors.white),
-                                  child: likesUser(a));
-                            }
-                            return Container();
-                          }),
+                          return Container(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: likesUser(a));
+                        }
+                        return Container();
+                      }),
                   //댓글 리스트
 
                   snapshot.data!['replyCount'] == 0
@@ -768,6 +751,7 @@ class _SayReplyState extends State<SayReply> {
                           stream: _postingRef
                               .doc(widget.postingId)
                               .collection('review')
+                              
                               .snapshots(),
                           builder: (context,
                               AsyncSnapshot<QuerySnapshot> reviewList) {

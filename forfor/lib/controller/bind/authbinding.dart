@@ -1,3 +1,4 @@
+import 'package:forfor/controller/categoryController.dart';
 import 'package:get/get.dart';
 
 import 'authcontroller.dart';
@@ -8,5 +9,8 @@ class AuthBinding extends Bindings {
   void dependencies() {
     Get.put<AuthController>(AuthController());
     Get.put<UserController>(UserController());
+    Get.lazyPut<CategoryController>(
+      () => CategoryController(),
+    );
   }
 }

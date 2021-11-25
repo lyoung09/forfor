@@ -80,17 +80,15 @@ class _MyQuestionState extends State<MyQuestion> {
     DocumentReference ref = FirebaseFirestore.instance
         .collection('posting')
         .doc(posting.data.docs[index].id);
-    ref.collection('likes');
 
+    ref.collection("likes");
     if (favorite[index]) {
       ref.collection("likes").doc(widget.myId).set({
         "likeId": widget.myId,
         "likeDatetime": myDateTime,
         "postingId": posting.data!.docs[index].id
       });
-      ref.update({
-        "count": FieldValue.increment(1),
-      });
+
       //.update({
       // "count": FieldValue.increment(1),
       // "likes": FieldValue.arrayUnion([
@@ -103,9 +101,6 @@ class _MyQuestionState extends State<MyQuestion> {
     }
     if (!favorite[index]) {
       ref.collection('likes').doc(widget.myId).delete();
-      ref.update({
-        "count": FieldValue.increment(-1),
-      });
 
       //     .update(
       //   {

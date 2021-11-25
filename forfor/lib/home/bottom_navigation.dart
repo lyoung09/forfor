@@ -7,8 +7,9 @@ import 'package:forfor/bottomScreen/buddy/invitePeopleScreen.dart';
 import 'package:forfor/bottomScreen/chat/chat.dart';
 import 'package:forfor/bottomScreen/chat/chat_main.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
+import 'package:forfor/bottomScreen/infomation/info_page/posting_screen.dart';
 import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
-import 'package:forfor/bottomScreen/infomation/timeline.dart';
+
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 
@@ -16,7 +17,6 @@ import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
-import 'package:forfor/model/userLocation.dart';
 import 'package:forfor/service/location_service.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
@@ -43,6 +43,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     InvitePersonScreen(),
 
     SayScreen(),
+    //.PostingMainScreen(),
     MyProfile(),
   ];
 

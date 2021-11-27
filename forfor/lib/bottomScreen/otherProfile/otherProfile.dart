@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:forfor/bottomScreen/chat/chatting_detail.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/model/user.dart';
+import 'package:forfor/service/postingervice.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/safe_tap.dart';
 import 'package:http/http.dart' as http;
@@ -35,7 +36,7 @@ class OtherProfile extends StatefulWidget {
 class _OtherProfileState extends State<OtherProfile> {
   late ScrollController scrollController;
   final controller = Get.put(AuthController());
-  UserModel? us;
+
   @override
   void dispose() {
     scrollController.dispose();
@@ -53,7 +54,7 @@ class _OtherProfileState extends State<OtherProfile> {
     Widget profile = new Container(
       height: 30.0,
       width: 200.0,
-      child: Text("${12121212121121}",
+      child: Text("${snapshot.data!["nickname"]}",
           overflow: TextOverflow.fade,
           maxLines: 1,
           style: TextStyle(color: Colors.black)),
@@ -425,16 +426,29 @@ class _OtherProfileState extends State<OtherProfile> {
                                     Padding(
                                       padding:
                                           const EdgeInsets.only(right: 10.0),
-                                      child: Text(
-                                        posting.data!.docs[index]["count"] ==
-                                                    null ||
-                                                posting.data!.docs[index]
-                                                        ["count"] <
-                                                    1
-                                            ? ""
-                                            : "${posting.data!.docs[index]["count"]} ",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
+                                      child: StreamBuilder(
+                                          stream: PostingService().favorite(
+                                              posting.data!.docs[index].id),
+                                          builder: (context,
+                                              AsyncSnapshot<QuerySnapshot>
+                                                  snapshot) {
+                                            if (!snapshot.hasData) {
+                                              return Container(
+                                                height: 0,
+                                                width: 0,
+                                              );
+                                            }
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8.0),
+                                              child: Text(
+                                                snapshot.data!.docs.length < 1
+                                                    ? ""
+                                                    : "${snapshot.data!.docs.length.toString()} ",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            );
+                                          }),
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -787,16 +801,29 @@ class _OtherProfileState extends State<OtherProfile> {
                                     Padding(
                                       padding:
                                           const EdgeInsets.only(right: 10.0),
-                                      child: Text(
-                                        posting.data!.docs[index]["count"] ==
-                                                    null ||
-                                                posting.data!.docs[index]
-                                                        ["count"] <
-                                                    1
-                                            ? ""
-                                            : "${posting.data!.docs[index]["count"]} ",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
+                                      child: StreamBuilder(
+                                          stream: PostingService().favorite(
+                                              posting.data!.docs[index].id),
+                                          builder: (context,
+                                              AsyncSnapshot<QuerySnapshot>
+                                                  snapshot) {
+                                            if (!snapshot.hasData) {
+                                              return Container(
+                                                height: 0,
+                                                width: 0,
+                                              );
+                                            }
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8.0),
+                                              child: Text(
+                                                snapshot.data!.docs.length < 1
+                                                    ? ""
+                                                    : "${snapshot.data!.docs.length.toString()} ",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            );
+                                          }),
                                     ),
                                     SizedBox(
                                       width: 5,

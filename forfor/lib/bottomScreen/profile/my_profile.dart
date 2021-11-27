@@ -18,7 +18,16 @@ import 'package:get/get.dart';
 //   _MyProfileState createState() => _MyProfileState();
 // }
 
-class MyProfile extends GetWidget<AuthController> {
+class Profile extends StatefulWidget {
+  const Profile({Key? key}) : super(key: key);
+
+  @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  final controller = Get.put(AuthController());
+
   updateUser(nickname, image, introduction, category) {
     Get.to(() => UserUpdate(
         category: category,
@@ -115,10 +124,8 @@ class MyProfile extends GetWidget<AuthController> {
                                                       backgroundColor:
                                                           Colors.white,
                                                       backgroundImage:
-                                                          NetworkImage(
-                                                              snapshot.data![
-                                                                      "url"] ??
-                                                                  ""),
+                                                          NetworkImage(snapshot
+                                                              .data!["url"]),
                                                     ),
                                                   ),
                                                 ),

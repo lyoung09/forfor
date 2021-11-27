@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/categoryController.dart';
+import 'package:forfor/service/postingervice.dart';
 import 'package:forfor/utils/datetime.dart';
 import 'package:forfor/widget/safe_tap.dart';
 import 'package:path_provider/path_provider.dart';
@@ -242,9 +243,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
     print(posting[index].id);
     if (favorite[index]) {
       ref.collection("likes").doc(controller.user!.uid).set({
-       "likeId": controller.user!.uid,
+        "likeId": controller.user!.uid,
         "likeDatetime": myDateTime,
-        "authorId": posting[index]["authorId"],
         "postingId": posting[index].id
       });
 
@@ -258,7 +258,7 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
       //   await transaction.update(ref, {'count': likesCount - 1});
       // });
 
-      ref.collection('click').doc(controller.user!.uid).delete();
+      ref.collection('likes').doc(controller.user!.uid).delete();
     }
   }
 
@@ -533,10 +533,8 @@ class _SayScreenState extends State<SayScreen> with TickerProviderStateMixin {
                             }),
                         SizedBox(width: 15),
                         StreamBuilder(
-                            stream: _postingref
-                                .doc(posting[index].id)
-                                .collection('likes')
-                                .snapshots(),
+                            stream:
+                                PostingService().favorite(posting[index].id),
                             builder: (context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (!snapshot.hasData) {

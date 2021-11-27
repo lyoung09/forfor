@@ -32,7 +32,7 @@ class UserModel {
       this.lat,
       this.lng});
 
-  UserModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
+  UserModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
     id = documentSnapshot.id;
     email = documentSnapshot["email"];
     gender = documentSnapshot["gender"];

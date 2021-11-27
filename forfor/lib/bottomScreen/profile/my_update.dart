@@ -113,7 +113,10 @@ class _UserUpdateState extends State<UserUpdate> {
 
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.camera);
+    final imageFile = await imagePicker.getImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
     _file = imageFile != null ? File(imageFile.path) : null;
     _cropImage();
 

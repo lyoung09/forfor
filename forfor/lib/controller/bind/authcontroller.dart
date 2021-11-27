@@ -39,9 +39,9 @@ class AuthController extends GetxController {
   User? get user => _user.value;
   String? errorType;
   @override
-
-  // ignore: must_call_super
+  @override
   void onInit() async {
+    super.onInit();
     _user.bindStream(_auth.authStateChanges());
   }
 
@@ -72,21 +72,15 @@ class AuthController extends GetxController {
     this.lat = latitude;
     this.lng = longitude;
 
-    if (this.lat == -1) {
-      this.address = "";
-      updateUserLocatioin(uid, -1.2, -1.2, "");
-    } else {
-      final coordinates = new Coordinates(this.lat, this.lng);
-      var addresses =
-          await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      var first = addresses.first;
+    final coordinates = new Coordinates(this.lat, this.lng);
+    var addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
 
-      this.address = '${first.adminArea.capitalize}';
-      // print(
-      //     '${first.adminArea.capitalize}, ${first.coordinates} ${first.countryCode} ${first.countryName} ${first.featureName} ${first.subAdminArea} ${first.subLocality} ${first.subThoroughfare} ${first.thoroughfare}');
-      updateUserLocatioin(uid, this.lat, this.lng, this.address);
-    }
-    return this.address;
+    this.address = '${first.adminArea.capitalize}';
+
+    updateUserLocatioin(uid, this.lat, this.lng, this.address);
+
     // this.address=first.
   }
 
@@ -252,12 +246,8 @@ class AuthController extends GetxController {
   void updateUserLocatioin(
       String uid, double lat, double lng, String addr) async {
     try {
-      if (await UserDatabase()
-          .updateLocationUser(_auth.currentUser!.uid, lat, lng, addr)) {
-        Get.put(UserController()).user.lat = lat;
-        Get.put(UserController()).user.lng = lng;
-        Get.put(UserController()).user.address = addr;
-      }
+      await UserDatabase()
+          .updateLocationUser(_auth.currentUser!.uid, lat, lng, addr);
     } catch (e) {}
   }
 

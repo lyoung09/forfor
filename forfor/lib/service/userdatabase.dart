@@ -104,7 +104,7 @@ class UserDatabase {
       DocumentSnapshot _doc =
           await _firestore.collection("users").doc(uid).get();
 
-      return UserModel.fromDocumentSnapshot(documentSnapshot: _doc);
+      return UserModel.fromDocumentSnapshot(_doc);
     } catch (e) {
       print(e);
       rethrow;

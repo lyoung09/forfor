@@ -22,5 +22,9 @@ class PostingService {
         .snapshots();
   }
 
+  favorite(postingId) {
+    return _postingref.doc(postingId).collection('likes').snapshots();
+  }
+
   //_categoryref.orderBy("categoryId").snapshots()
 }

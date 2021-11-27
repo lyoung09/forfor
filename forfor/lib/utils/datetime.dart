@@ -9,6 +9,8 @@ class DatetimeFunction {
         .replaceAll("minutes", "분")
         .replaceAll("a minute", "1분")
         .replaceAll("a moment", "방금")
+        .replaceAll("a month", "한 달")
+        .replaceAll("month", "한달")
         .replaceAll("a day", "1일")
         .replaceAll("ago", "전")
         .replaceAll("about", "")
@@ -16,6 +18,7 @@ class DatetimeFunction {
         .replaceAll("hours", "시간")
         .replaceAll("days", "일")
         .replaceAll("one year", "1년")
+        .replaceAll("day", "일")
         .replaceAll("years", "년");
     return x;
   }

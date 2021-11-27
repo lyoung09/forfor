@@ -17,7 +17,6 @@ import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/userInfo.dart';
 import 'package:forfor/model/user.dart';
-import 'package:forfor/service/location_service.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
@@ -33,18 +32,20 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedIndex = 0;
-
+  final PageStorageBucket bucket = PageStorageBucket();
   final controller = Get.put(AuthController());
   //tabbar에 따라 움직이는 screen list
-  List<Widget> _widgetOptions = <Widget>[
+  List<Widget> _widgetOptions = [
     //GroupCategoryMain(),
-    Group(),
+    Group(
+        // key: PageStorageKey('Page1'),
+        ),
     ChatUserList(),
     InvitePersonScreen(),
 
     SayScreen(),
     //.PostingMainScreen(),
-    MyProfile(),
+    Profile(),
   ];
 
   @override
@@ -64,10 +65,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
       _currentPosition = await location.getLocation();
       AuthController().saveLocation(controller.user!.uid,
           _currentPosition.latitude ?? -1, _currentPosition.longitude ?? -1);
-    } else if (_permissionGranted == PermissionStatus.denied) {
-      AuthController().saveLocation(controller.user!.uid, -1, -1);
     } else {
-      AuthController().saveLocation(controller.user!.uid, -1, -1);
+      AuthController().updateUserLocatioin(controller.user!.uid, -1, -1, "");
     }
   }
 
@@ -79,7 +78,17 @@ class _BottomNavigationState extends State<BottomNavigation> {
           return Future(() => false);
         },
         child: Scaffold(
-          body: _widgetOptions.elementAt(_selectedIndex),
+          body: IndexedStack(index: _selectedIndex, children: [
+            Group(
+                // key: PageStorageKey('Page1'),
+                ),
+            ChatUserList(),
+            InvitePersonScreen(),
+
+            SayScreen(),
+            //.PostingMainScreen(),
+            Profile(),
+          ]),
           // return TabBarView(
           //   children: <Widget>[
           //     Group(user: user),
@@ -157,7 +166,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
               onTap: (index) {
                 setState(() {
                   _selectedIndex = index;
-                  saveUserLocation();
+
+                  // saveUserLocation();
                 });
               },
             ),

@@ -16,6 +16,11 @@ class CategoryController extends GetxController {
     categorys.bindStream(getAllCategogy());
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Stream<List<CategoryModel>> getAllCategogy() =>
       collectionReference.snapshots().map((query) =>
           query.docs.map((item) => CategoryModel.fromMap(item)).toList());

@@ -6,9 +6,7 @@ import 'package:forfor/bottomScreen/chat/search_chat.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
 import 'package:forfor/controller/chatting/chatcontroller.dart';
-import 'package:forfor/controller/user/usercontroller.dart';
 
-import 'package:forfor/model/chat/chatUser.dart';
 import 'package:forfor/service/chat_firebase_api.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/utils/datetime.dart';

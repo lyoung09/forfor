@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
+import 'package:forfor/service/postingervice.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bubble/bubble.dart';
@@ -378,13 +379,27 @@ class _MyQuestionState extends State<MyQuestion> {
                       favoriteCheck(posting, favorite, index),
                       Padding(
                         padding: const EdgeInsets.only(right: 10.0),
-                        child: Text(
-                          posting.data!.docs[index]["count"] == null ||
-                                  posting.data!.docs[index]["count"] < 1
-                              ? ""
-                              : "${posting.data!.docs[index]["count"]} ",
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        child: StreamBuilder(
+                            stream: PostingService()
+                                .favorite(posting.data!.docs[index].id),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container(
+                                  height: 0,
+                                  width: 0,
+                                );
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  snapshot.data!.docs.length < 1
+                                      ? ""
+                                      : "${snapshot.data!.docs.length.toString()} ",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              );
+                            }),
                       ),
                       SizedBox(
                         width: 5,
@@ -637,16 +652,29 @@ class _MyQuestionState extends State<MyQuestion> {
                                   favoriteCheck(posting, favorite, index),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 10.0),
-                                    child: Text(
-                                      posting.data!.docs[index]["count"] ==
-                                                  null ||
-                                              posting.data!.docs[index]
-                                                      ["count"] <
-                                                  1
-                                          ? ""
-                                          : "${posting.data!.docs[index]["count"]} ",
-                                      style: TextStyle(fontSize: 12),
-                                    ),
+                                    child: StreamBuilder(
+                                        stream: PostingService().favorite(
+                                            posting.data!.docs[index].id),
+                                        builder: (context,
+                                            AsyncSnapshot<QuerySnapshot>
+                                                snapshot) {
+                                          if (!snapshot.hasData) {
+                                            return Container(
+                                              height: 0,
+                                              width: 0,
+                                            );
+                                          }
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
+                                            child: Text(
+                                              snapshot.data!.docs.length < 1
+                                                  ? ""
+                                                  : "${snapshot.data!.docs.length.toString()} ",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          );
+                                        }),
                                   ),
                                   SizedBox(
                                     width: 5,

@@ -6,6 +6,7 @@ import 'package:forfor/bottomScreen/infomation/favoriteList.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/home/bottom_navigation.dart';
+import 'package:forfor/service/postingervice.dart';
 import 'package:forfor/utils/datetime.dart';
 import 'package:forfor/widget/safe_tap.dart';
 import 'package:get/get.dart';
@@ -73,10 +74,9 @@ class _SayReplyState extends State<SayReply> {
       DocumentReference ref = FirebaseFirestore.instance
           .collection('posting')
           .doc(widget.postingId);
- 
 
       await ref.update({
-           "reply": _reply.text.trim(),
+        "reply": _reply.text.trim(),
         "replyId": widget.userId,
         "datetime": myDateTime
       });
@@ -326,12 +326,12 @@ class _SayReplyState extends State<SayReply> {
                           if (likeUser.hasData) {
                             favoriteThis = likeUser.data!.exists;
 
-                            return SafeOnTap(
-                              onSafeTap: () {
+                            return IconButton(
+                              onPressed: () {
                                 favoriteThis = !favoriteThis;
                                 check();
                               },
-                              child: Icon(
+                              icon: Icon(
                                 Icons.favorite,
                                 color: favoriteThis == true
                                     ? Colors.red[400]
@@ -344,15 +344,26 @@ class _SayReplyState extends State<SayReply> {
                     SizedBox(
                       width: 15,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(
-                        post!["count"] == 0 || post!["count"] < 1
-                            ? ""
-                            : "${post!["count"]} ",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    StreamBuilder(
+                        stream: PostingService().favorite(widget.postingId),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData) {
+                            return Container(
+                              height: 0,
+                              width: 0,
+                            );
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              snapshot.data!.docs.length < 1
+                                  ? ""
+                                  : "${snapshot.data!.docs.length.toString()} ",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          );
+                        }),
                     IconButton(
                       iconSize: 12,
                       icon: Icon(Icons.chat_bubble_outline_outlined),
@@ -395,7 +406,7 @@ class _SayReplyState extends State<SayReply> {
           .collection('likes')
           .doc(widget.userId)
           .set({
-         "likeId": widget.userId,
+        "likeId": widget.userId,
         "likeDatetime": myDateTime,
         "postingId": widget.postingId
       });
@@ -721,7 +732,6 @@ class _SayReplyState extends State<SayReply> {
                       stream: _postingRef
                           .doc(widget.postingId)
                           .collection('likes')
-                          .where('story', isEqualTo: "like")
                           .snapshots(),
                       builder: (context, AsyncSnapshot<QuerySnapshot> likes) {
                         if (!likes.hasData) {
@@ -751,7 +761,6 @@ class _SayReplyState extends State<SayReply> {
                           stream: _postingRef
                               .doc(widget.postingId)
                               .collection('review')
-                              
                               .snapshots(),
                           builder: (context,
                               AsyncSnapshot<QuerySnapshot> reviewList) {

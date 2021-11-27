@@ -2,7 +2,7 @@ import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/bottomScreen/infomation/info_controller/posting_controller.dart';
-import 'package:forfor/bottomScreen/infomation/info_service/posting_service.dart';
+
 import 'package:forfor/bottomScreen/infomation/info_widget/qna_screen_widget.dart';
 import 'package:forfor/bottomScreen/infomation/sayReply.dart';
 import 'package:forfor/bottomScreen/infomation/sayWrite.dart';
@@ -11,6 +11,7 @@ import 'package:forfor/controller/bind/authcontroller.dart';
 import 'dart:math' as math;
 
 import 'package:forfor/controller/categoryController.dart';
+import 'package:forfor/service/postingervice.dart';
 import 'package:forfor/utils/datetime.dart';
 import 'package:get/get.dart';
 

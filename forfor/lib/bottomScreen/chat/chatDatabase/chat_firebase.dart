@@ -33,7 +33,10 @@ class ChatFirebase {
 
   imgFromGallery(token, username) async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
+    final imageFile = await imagePicker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     _file = imageFile != null ? File(imageFile.path) : null;
 
     try {

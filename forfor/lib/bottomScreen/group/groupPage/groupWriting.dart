@@ -28,7 +28,10 @@ class _GroupWritingState extends State<GroupWriting> {
 
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
+    final imageFile = await imagePicker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     setState(() {
       _image = imageFile!.path;
     });

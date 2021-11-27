@@ -6,6 +6,7 @@ import 'package:forfor/bottomScreen/buddy/searchPage.dart';
 import 'package:forfor/bottomScreen/otherProfile/otherProfile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
 import 'package:forfor/controller/bind/usercontroller.dart';
+import 'package:forfor/controller/categoryController.dart';
 
 import 'package:forfor/model/scientist.dart';
 import 'package:forfor/model/user.dart';
@@ -42,13 +43,12 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
   var detail;
   var uid;
   final controller = Get.put(AuthController());
-  final userController = Get.put(UserController());
+  final categoryController = Get.put(CategoryController());
 
   @override
   initState() {
     super.initState();
     uid = controller.user!.uid;
-    print(userController.user.lat);
   }
 
   @override
@@ -98,9 +98,6 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
             .where("categoryId", whereIn: data["category"])
             .get(),
         builder: (context, AsyncSnapshot<QuerySnapshot> categoryData) {
-          if (!categoryData.hasData) {
-            return Text("");
-          }
           if (detail == null) {
             detail = categoryData.data!.docs[0]["categoryId"];
           }
@@ -245,9 +242,7 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
 
     // if (string == "new")
     //   futureUser = exceptMyself.orderBy("timeStamp", descending: true).get();
-    if (string == "near")
-      futureUser =
-          exceptMyself.where("email", isEqualTo: "lyoung09@hanmail.net").get();
+
     if (string == "gender")
       futureUser = exceptMyself.where("gender", isEqualTo: detail).get();
     if (string == "country" && id == 2)
@@ -712,12 +707,6 @@ class _InvitePersonScreenState extends State<InvitePersonScreen> {
                 if (string == "category" && detail == null)
                   gridviewWidget(string, datas["category"][0]),
                 if (string == "near")
-                  // DistanceUser(
-                  //   uid: snapshot.data!["uid"],
-                  // )
-                  // DistanceUser(
-                  //   uid: snapshot.data!['uid'],
-                  // )
                   DistanceUser(
                       uid: snapshot.data!['uid'],
                       lat: snapshot.data!['lat'],

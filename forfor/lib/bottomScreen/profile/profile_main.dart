@@ -99,7 +99,10 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
 
   _imgFromCamera() async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.camera);
+    final imageFile = await imagePicker.getImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
 
     setState(() {
       _image = imageFile!.path;
@@ -124,7 +127,10 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
 
   _imgFromGallery() async {
     ImagePicker imagePicker = ImagePicker();
-    final imageFile = await imagePicker.getImage(source: ImageSource.gallery);
+    final imageFile = await imagePicker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     setState(() {
       _image = imageFile!.path;
     });

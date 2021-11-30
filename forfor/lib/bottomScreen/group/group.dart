@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:forfor/data/user.dart';
 import 'package:forfor/model/user.dart';
 import 'package:forfor/service/userdatabase.dart';
 import 'package:forfor/widget/circle_image.dart';

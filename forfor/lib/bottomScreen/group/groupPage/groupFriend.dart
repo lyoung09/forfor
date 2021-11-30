@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:forfor/adapter/buddylistAdapter.dart';
-import 'package:forfor/data/dummy.dart';
+
 import 'package:forfor/model/people.dart';
 import 'package:forfor/widget/my_colors.dart';
 import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
@@ -39,9 +39,6 @@ class _GroupFriendState extends State<GroupFriend> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     this.context = context;
-    List<People> items = Dummy.getPeopleData();
-    items.addAll(Dummy.getPeopleData());
-    items.addAll(Dummy.getPeopleData());
 
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +72,7 @@ class _GroupFriendState extends State<GroupFriend> {
                 scrollDirection: Axis.horizontal,
               ),
             ),
-            BuddyListAdapter(items, onItemClick).getView(),
+            // BuddyListAdapter(items, onItemClick).getView(),
           ],
         ),
       ),

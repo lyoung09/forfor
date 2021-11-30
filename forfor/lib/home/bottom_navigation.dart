@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_svg/svg.dart';
-import 'package:forfor/bottomScreen/buddy/buddy_main.dart';
 import 'package:forfor/bottomScreen/buddy/invitePeopleScreen.dart';
 import 'package:forfor/bottomScreen/chat/chat.dart';
-import 'package:forfor/bottomScreen/chat/chat_main.dart';
 import 'package:forfor/bottomScreen/group/group.dart';
 import 'package:forfor/bottomScreen/infomation/info_page/posting_screen.dart';
 import 'package:forfor/bottomScreen/infomation/sayScreen.dart';
-
 import 'package:forfor/bottomScreen/profile/my_profile.dart';
 import 'package:forfor/controller/bind/authcontroller.dart';
-
 import 'package:forfor/login/screen/hopeInfo.dart';
 import 'package:forfor/login/screen/login_main.dart';
 import 'package:forfor/login/screen/userInfo.dart';
@@ -78,26 +73,20 @@ class _BottomNavigationState extends State<BottomNavigation> {
           return Future(() => false);
         },
         child: Scaffold(
-          body: IndexedStack(index: _selectedIndex, children: [
-            Group(
-                // key: PageStorageKey('Page1'),
-                ),
-            ChatUserList(),
-            InvitePersonScreen(),
+          body: _widgetOptions.elementAt(_selectedIndex),
+          // IndexedStack(
+          //   index: _selectedIndex,
+          //   children: [
+          //   Group(
 
-            SayScreen(),
-            //.PostingMainScreen(),
-            Profile(),
-          ]),
-          // return TabBarView(
-          //   children: <Widget>[
-          //     Group(user: user),
-          //     ChatMainScreen(),
-          //     InvitePersonScreen(),
-          //     SayScreen(),
-          //     MyProfile(),
-          //   ],
-          // );
+          //       ),
+          //   ChatUserList(),
+          //   InvitePersonScreen(),
+
+          //   SayScreen(),
+
+          //   Profile(),
+          // ]),
 
           bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(

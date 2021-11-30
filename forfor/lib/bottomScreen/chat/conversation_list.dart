@@ -292,7 +292,7 @@ class _ConversationListState extends State<ConversationList> {
                                           .doc(widget.roomId)
                                           .collection('chatting')
                                           .where("isRead", isEqualTo: false)
-                                          .where("messageFrom",
+                                          .where("messageTo",
                                               isEqualTo: controller.user!.uid)
                                           .snapshots(),
                                       builder: (context,

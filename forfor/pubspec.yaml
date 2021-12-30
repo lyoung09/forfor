@@ -57,7 +57,7 @@ dependencies:
   collapsible_sidebar: ^2.0.1
   validators: ^3.0.0
   url_launcher: ^6.0.9
-  http:
+  http: ^0.13.2
   permission_handler: 
   google_fonts: ^2.1.0
   get: ^4.3.6
